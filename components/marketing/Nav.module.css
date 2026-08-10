@@ -1,0 +1,138 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(12, 31, 25, 0.82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--jade-line);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  height: 4.25rem;
+}
+
+.brand {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+  margin-right: auto;
+}
+
+.desktopNav {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.link {
+  font-size: 0.9rem;
+  color: var(--cream-soft);
+  transition: color 0.18s var(--ease);
+}
+
+.link:hover {
+  color: var(--cream);
+}
+
+.actions {
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.signin {
+  padding-block: 0.7rem;
+  padding-inline: 1.1rem;
+}
+
+/* Burger */
+.burger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: transparent;
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  padding: 0;
+}
+
+.burger span,
+.burger span::before,
+.burger span::after {
+  content: "";
+  display: block;
+  width: 1.1rem;
+  height: 1.5px;
+  background: var(--cream);
+  transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+}
+
+.burger span {
+  position: relative;
+}
+
+.burger span::before {
+  position: absolute;
+  top: -5px;
+  left: 0;
+}
+
+.burger span::after {
+  position: absolute;
+  top: 5px;
+  left: 0;
+}
+
+.burger span[data-open="true"] {
+  background: transparent;
+}
+
+.burger span[data-open="true"]::before {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.burger span[data-open="true"]::after {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--jade-line);
+  background: var(--shade);
+}
+
+.mobileLink {
+  padding: 0.75rem 0;
+  color: var(--cream-soft);
+  border-bottom: 1px solid var(--jade-line);
+}
+
+.mobileControls {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--jade-line);
+}
+
+.mobileNav .btn {
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 820px) {
+  .desktopNav,
+  .actions {
+    display: flex;
+  }
+  .burger {
+    display: none;
+  }
+}
