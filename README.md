@@ -118,6 +118,15 @@ See [PLAN.md](PLAN.md) for the full context.
   visitor's email client with the message pre-filled (works with no backend). Set it to a
   Formspree endpoint or your own handler (accepts JSON `{ name, email, business, locations,
   message }`) to collect submissions server-side. Form labels are translated in all locales.
+- **First-visit terms modal** (`components/TermsGate.tsx`) — a required disclaimer shown
+  once per visitor (persisted in `localStorage`; bump `version` in
+  `lib/disclaimer/en.ts` to re-prompt everyone). It states the risks and a broad liability
+  waiver. The text lives in `lib/disclaimer/<locale>.ts`, isolated from the general UI
+  dictionary so the legal wording is easy to audit; a missing locale falls back to English.
+  Caveats worth heeding before launch: (a) it is not legal advice; (b) a blanket "no
+  liability whatsoever" waiver is limited or unenforceable in many jurisdictions — have a
+  lawyer set the real terms; (c) the non-English versions are machine-translated and a
+  mistranslated waiver is a genuine risk, so get them reviewed.
 - **`/faq` is the operator guide** — how to place the QR code, what pace to keep, and the
   patterns that get review campaigns filtered or penalised (velocity spikes, single-IP
   clustering, shared devices, incentives, review gating). It is the most legally sensitive

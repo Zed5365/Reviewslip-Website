@@ -8,6 +8,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { CurrencyProvider } from "@/lib/CurrencyProvider";
 import Nav from "@/components/marketing/Nav";
 import Footer from "@/components/marketing/Footer";
+import TermsGate from "@/components/TermsGate";
 import "../globals.css";
 
 // `thai` is included so Thai copy renders in the brand fonts rather than a
@@ -100,6 +101,7 @@ export default async function RootLayout({
           />
           <main>{children}</main>
           <Footer lang={lang} t={t} />
+          <TermsGate lang={lang} />
         </CurrencyProvider>
       </body>
     </html>
