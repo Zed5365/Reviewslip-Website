@@ -1,0 +1,360 @@
+/* The customer dashboard, on the same paper-slip palette as the marketing
+   site. Tokens come from globals.css — nothing is redefined here. */
+
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 2.5rem);
+  border-bottom: 1px solid var(--jade-line);
+}
+
+.brand {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: 1.35rem;
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem) 4rem;
+}
+
+.head {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  color: var(--paper);
+  margin: 0 0 0.35rem;
+}
+
+.sub {
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 720px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.card {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 1.4rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.cardName {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.address {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  word-break: break-all;
+  margin: 0 0 1rem;
+}
+
+/* --------------------------------------------------------------- statuses */
+
+.pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pillActive {
+  background: rgba(130, 180, 155, 0.22);
+  color: #2f5f4c;
+}
+
+.pillWarn {
+  background: rgba(233, 160, 59, 0.22);
+  color: #8a5a12;
+}
+
+.pillOff {
+  background: rgba(27, 42, 35, 0.12);
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ meter */
+
+.meters {
+  display: grid;
+  gap: 0.9rem;
+  margin-bottom: 1.1rem;
+}
+
+.meterHead {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.meterLabel {
+  color: var(--ink-soft);
+}
+
+.meterValue {
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(27, 42, 35, 0.12);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--jade);
+}
+
+.fillWarn {
+  background: var(--marigold);
+}
+
+/* ------------------------------------------------------------------ stats */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 720px) {
+  .stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.statValue {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.8rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
+}
+
+/* ------------------------------------------------------------------ chart */
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 90px;
+  margin-top: 0.75rem;
+}
+
+.bar {
+  flex: 1;
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--jade);
+  opacity: 0.85;
+}
+
+.barEmpty {
+  background: rgba(27, 42, 35, 0.12);
+}
+
+/* ------------------------------------------------------------------ forms */
+
+.form {
+  display: grid;
+  gap: 1.15rem;
+  max-width: 34rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--paper);
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid var(--jade-line);
+  background: rgba(243, 236, 220, 0.06);
+  color: var(--paper);
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--jade);
+  outline-offset: 1px;
+}
+
+.origin {
+  font-style: normal;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  margin-left: 0.4rem;
+}
+
+.rows {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rowRemove {
+  flex: 0 0 auto;
+  width: 2.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--jade-line);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.rowRemove:hover {
+  color: var(--paper);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.notice {
+  min-height: 1.25rem;
+  font-size: 0.88rem;
+}
+
+.noticeError {
+  color: #e98b7b;
+}
+
+.noticeOk {
+  color: var(--jade);
+}
+
+/* ------------------------------------------------------------------- auth */
+
+.authWrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 25rem;
+}
+
+.authTitle {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: 2rem;
+  color: var(--paper);
+  margin: 0 0 0.3rem;
+}
+
+.authSub {
+  color: var(--ink-soft);
+  margin: 0 0 1.75rem;
+}
+
+.authAlt {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.empty {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+}
