@@ -38,6 +38,11 @@ const de: Dictionary = {
       description:
         "Testen Sie Reviewslip selbst. Wählen Sie aus, was Ihnen gefallen hat, und sehen Sie den 5-Sterne-Entwurf entstehen — ohne Anmeldung.",
     },
+    faq: {
+      title: "Leitfaden & FAQ",
+      description:
+        "Bewertungsprogramm richtig aufsetzen, ohne dass Bewertungen gefiltert werden: Tempo, Googles Warnsignale und was auf dem Spiel steht.",
+    },
     contact: {
       title: "Kontakt",
       description:
@@ -61,6 +66,7 @@ const de: Dictionary = {
     pricing: "Preise",
     trust: "Vertrauen",
     demo: "Live-Demo",
+    faq: "Leitfaden & FAQ",
     contact: "Kontakt",
   },
 
@@ -152,6 +158,7 @@ const de: Dictionary = {
 
     faqEyebrow: "Fragen",
     faqTitle: "Häufig gestellt.",
+    faqMore: "Zum vollständigen Leitfaden: Einrichtung, Risiken & Warnsignale →",
     faq: [
       {
         q: "Sind das nicht einfach gefälschte Bewertungen?",
@@ -287,6 +294,145 @@ const de: Dictionary = {
     p4End: ".",
     disclaimer:
       "Diese Seite ist eine allgemeinverständliche Zusammenfassung, keine Rechtsberatung. Prüfen Sie die aktuellen FTC-Leitlinien und die Richtlinien jeder Plattform für Ihre Rechtsordnung.",
+  },
+
+  faqPage: {
+    eyebrow: "Leitfaden & FAQ",
+    title: "So nutzen Sie Reviewslip, ohne markiert zu werden.",
+    lede: "Reviewslip hilft nur dann, wenn Sie es so einsetzen, wie es die Bewertungsplattformen erwarten. Dieser Leitfaden behandelt die richtige Einrichtung, das angemessene Tempo, die Muster, die dazu führen, dass Bewertungskampagnen gefiltert oder bestraft werden, und was tatsächlich auf dem Spiel steht, wenn Sie es falsch machen.",
+
+    warningLead: "Der mit Abstand größte Fehler:",
+    warning:
+      "Den QR-Code nur an Kunden zu geben, von denen Sie glauben, dass sie zufrieden sind. Das ist Bewertungsselektion (review gating) — Google verbietet sie, und die FTC-Regel von 2024 zielt gezielt darauf ab. Bieten Sie allen denselben Weg zur Bewertung an und lassen Sie ehrliche Meinungen dort landen, wo sie landen.",
+
+    sections: [
+      {
+        title: "Die Einrichtung",
+        blurb:
+          "Die meisten Probleme entstehen schon zu Beginn. Wo und wann Sie den QR-Code platzieren, entscheidet darüber, ob die folgenden Bewertungen natürlich wirken.",
+        items: [
+          {
+            q: "Wo sollte der QR-Code angebracht werden?",
+            a: "Dort, wo jeder Kunde am Ende seines Besuchs vorbeikommt — auf dem Kassenbon, einer Tischkarte, der Zimmermappe, dem Kassenbildschirm. Ziel ist, dass alle dieselbe Gelegenheit zum Scannen erhalten, und nicht, dass Sie auswählen, wer ihn zu sehen bekommt. Vermeiden Sie Platzierungen, an denen ihn nur bestimmte Kunden je zu Gesicht bekommen.",
+          },
+          {
+            q: "Wann ist der richtige Moment zu fragen?",
+            a: "Nachdem das Erlebnis abgeschlossen ist — beim Bezahlen, beim Auschecken oder beim Gehen. Früh genug, dass der Besuch noch frisch im Gedächtnis ist, und spät genug, dass die Kunden tatsächlich alles erlebt haben. Fragen Sie nicht mitten im Service: Sie würden jemanden bitten, etwas zu bewerten, das er noch nicht abgeschlossen hat.",
+          },
+          {
+            q: "Soll ich jeden Kunden fragen oder nur die zufriedenen?",
+            a: "Jeden Kunden. Gezielt nur die Personen zu fragen, von denen Sie eine positive Rückmeldung erwarten, ist Bewertungsselektion und nach den Richtlinien von Google sowie nach der FTC-Regel von 2024 verboten. Es ist außerdem kontraproduktiv: Ein Eintrag, bei dem jede einzelne Bewertung fünf Sterne hat, wirkt auf Interessenten weniger vertrauenswürdig als einer mit einer realistischen Streuung. Machen Sie den QR-Code für alle zugänglich.",
+          },
+          {
+            q: "Was, wenn jemand eine schlechte Erfahrung gemacht hat?",
+            a: "Lassen Sie ihn das sagen — oder besser: Lösen Sie das Problem, bevor er geht. Reviewslip erstellt den Entwurf aus dem, was der Kunde auswählt; der ehrliche Weg für einen unzufriedenen Gast besteht also darin, eigene Worte zu schreiben oder Sie direkt anzusprechen. Was Sie niemals tun dürfen: jemandem den Weg zur Bewertung verbergen oder vorenthalten, weil Sie Kritik erwarten. Genau das Unterdrücken negativer Bewertungen soll die FTC-Regel verhindern.",
+          },
+        ],
+      },
+      {
+        title: "Tempo und Muster",
+        blurb:
+          "Echte Bewertungen sammeln sich in einem glaubwürdigen Tempo an. Die Form Ihres Bewertungsverlaufs ist ebenso wichtig wie der Inhalt.",
+        items: [
+          {
+            q: "Wie viele Bewertungen sind zu viele in zu kurzer Zeit?",
+            a: "Es gibt keinen veröffentlichten Schwellenwert — Google nennt keinen, und wer eine genaue Zahl angibt, rät. Das Prinzip lautet Verhältnismäßigkeit: Ihre Bewertungsrate sollte einem plausiblen Anteil Ihres tatsächlichen Kundenaufkommens entsprechen und sich nicht abrupt ändern. Ein Café mit 500 Gästen pro Woche verträgt weit mehr als eine Pension mit sechs Zimmern. Als praktische Faustregel gilt: Wenn die Bewertungen einer Woche Ihre Gesamtzahl um mehr als etwa ein Fünftel erhöhen würden, treten Sie kürzer.",
+          },
+          {
+            q: "Wie sieht ein verdächtiger Anstieg konkret aus?",
+            a: "Ein Eintrag, der drei Jahre lang im Schnitt zwei Bewertungen pro Monat hatte und dann in neun Tagen vierzig sammelt, ist das Musterbeispiel für gekaufte Bewertungen, und automatische Filter sind genau auf dieses Muster ausgelegt. Die Bewertungen erscheinen möglicherweise nie, erscheinen und verschwinden Tage später wieder oder ziehen den gesamten Eintrag in eine Prüfung. Ein allmählicher Aufbau — zunächst ein Bruchteil der Kunden, über Wochen hinweg ausgeweitet — vermeidet dieses Muster vollständig.",
+          },
+          {
+            q: "Ist es ein Problem, wenn alle über mein WiFi posten?",
+            a: "Ja, und daran scheitern viele. Wenn jeder Kunde scannt und postet, während er in Ihrem Gästenetzwerk ist, stammt eine ganze Reihe von Bewertungen von einer einzigen IP-Adresse. Das ist ein starkes Clustering-Signal, und es sieht sehr danach aus, als würde jemand die Bewertungen aus dem Hinterzimmer schreiben. Kunden im eigenen Mobilfunknetz vermeiden das ganz von selbst — drängen Sie also niemanden ins WiFi des Betriebs, nur um eine Bewertung abzugeben.",
+          },
+          {
+            q: "Können Kunden über ein Tablet an der Theke posten?",
+            a: "Nein. Mehrere Bewertungen von einem Gerät — derselbe Fingerabdruck, oft derselbe angemeldete Browser — gehören zu den deutlichsten Signalen für künstliche Bewertungen, die es gibt. Außerdem ist es von dort nur ein kleiner Schritt dahin, die Bewertung selbst zu tippen. Bewertungen sollten immer vom eigenen Telefon und dem eigenen Konto des Kunden kommen.",
+          },
+          {
+            q: "Kann ich meine gesamte Kundenliste auf einmal per E-Mail oder SMS anschreiben?",
+            a: "Vorsicht. Eine Rundnachricht an Tausende früherer Kunden erzeugt genau den oben beschriebenen Geschwindigkeitsanstieg, und Bewertungen zu Besuchen von vor Monaten sind vager und weniger glaubwürdig. Wenn Sie Kunden ansprechen, dann in kleinen Chargen, an kürzlich dagewesene Kunden und zeitlich verteilt.",
+          },
+        ],
+      },
+      {
+        title: "Warnsignale, die zu Sanktionen führen",
+        blurb:
+          "Das sind die Praktiken, die aus einem legitimen Bewertungsprogramm ein Risiko machen. Keine davon ist es wert.",
+        items: [
+          {
+            q: "Kann ich einen Rabatt oder eine Gratisleistung für eine Bewertung anbieten?",
+            a: "Nein. Anreizbasierte Bewertungen sind von Google verboten, und die FTC-Regel erfasst auch nicht offengelegte Anreize. Das gilt selbst dann, wenn Sie im Gegenzug bereitwillig eine negative Bewertung akzeptieren würden — das Problem ist die Bezahlung, nicht die Bewertungstendenz. Sie dürfen sich bedanken. Sie dürfen nicht bezahlen.",
+          },
+          {
+            q: "Dürfen Mitarbeitende, Freunde oder Familie Bewertungen abgeben?",
+            a: "Nein. Bewertungen von Personen, die mit dem Unternehmen verbunden sind, sind grundsätzlich verboten und oft leicht zu erkennen. Dazu zählen Mitarbeitende, die ihren eigenen Arbeitsplatz bewerten, und Freunde, die nach einem schlechten Monat die Zahl aufpolstern sollen.",
+          },
+          {
+            q: "Lesen sich KI-erstellte Bewertungen alle gleich?",
+            a: "Das können sie, und das ist ein reales Risiko. Reviewslip mindert es, indem Entwürfe aus den konkreten Punkten entstehen, die jeder Kunde auswählt, und beim Neugenerieren andere Formulierungen angeboten werden — der eigentliche Schutz ist jedoch, dass der Kunde den Text bearbeitet. Ermutigen Sie dazu. Eine Seite voller Bewertungen mit gleichem Satzbau und Wortschatz ist ein erkennbares Muster, ganz gleich, wer oder was sie geschrieben hat.",
+          },
+          {
+            q: "Kann ich die Bewertung für einen Kunden schreiben, der sagt, er sei zufrieden?",
+            a: "Nein. Selbst mit mündlicher Erlaubnis wird sie dadurch, dass Sie sie schreiben und veröffentlichen, zu einer Bewertung von Ihnen und nicht von ihm — und genau das ist die Definition einer gefälschten Bewertung, sowohl nach Googles Richtlinie als auch nach der FTC-Regel. Geben Sie ihm den QR-Code und lassen Sie ihn es selbst tun.",
+          },
+        ],
+      },
+      {
+        title: "Was tatsächlich auf dem Spiel steht",
+        blurb:
+          "Die Folgen reichen von unsichtbar bis gravierend, und einige treten erst Monate später ein.",
+        items: [
+          {
+            q: "Was ist das Schlimmste, das passieren kann?",
+            a: "Grob nach Schweregrad: Einzelne Bewertungen werden gefiltert und erscheinen nie; ein ganzer Schwung wird nachträglich entfernt, manchmal Monate später; der Eintrag erhält einen Verbraucherhinweis, der Besucher warnt, dass verdächtige Aktivitäten festgestellt wurden; oder der Eintrag wird gesperrt. Rechtlich sieht die FTC-Regel zivilrechtliche Bußgelder vor, die pro Verstoß bemessen werden — also pro gefälschter Bewertung, nicht pro Unternehmen. Hinzu kommt der schlichte Reputationsschaden, öffentlich ertappt worden zu sein.",
+          },
+          {
+            q: "Was verbietet die FTC-Regel eigentlich?",
+            a: "Die Regel von 2024 richtet sich gegen gefälschte und KI-erfundene Bewertungen von Personen, die nie eine echte Erfahrung gemacht haben, gegen nicht offengelegte anreizbasierte Bewertungen, gegen Insider, die sich als Kunden ausgeben, und gegen das Unterdrücken oder Verbergen negativer Bewertungen. Nicht verboten ist, einem echten Kunden dabei zu helfen, seine eigene ehrliche Meinung in Worte zu fassen — und genau darauf ist Reviewslip ausgelegt.",
+          },
+          {
+            q: "Wenn Bewertungen entfernt werden, ist das die Schuld von Reviewslip oder meine?",
+            a: "In der Praxis Ihre. Reviewslip schränkt ein, was die KI sagen darf, und veröffentlicht niemals im Namen anderer, aber es kann nicht steuern, wem Sie den QR-Code geben, wie stark Sie drängen oder ob Sie Anreize bieten. Die Praktiken auf dieser Seite bestimmen das Ergebnis.",
+          },
+          {
+            q: "Gilt das auch außerhalb der Vereinigten Staaten?",
+            a: "Die FTC-Regel ist US-Recht, die Plattformrichtlinien gelten jedoch weltweit — Googles Regeln zu gefälschten, anreizbasierten und selektiv eingeholten Bewertungen gelten überall, wo Sie tätig sind. Viele andere Rechtsordnungen haben eigene Verbraucherschutzvorschriften zu irreführenden Bewertungen, und mehrere verschärfen sie derzeit. Betrachten Sie die Hinweise hier als Mindeststandard, nicht als Obergrenze.",
+          },
+        ],
+      },
+      {
+        title: "Gut umgesetzt",
+        blurb:
+          "Wie ein gesundes, dauerhaft tragfähiges Bewertungsprogramm in der Praxis aussieht.",
+        items: [
+          {
+            q: "Wie sieht ein gesundes Bewertungsmuster aus?",
+            a: "Ein stetiges Rinnsal statt einzelner Schübe. Eine Mischung aus Bewertungen statt einer Wand aus fünf Sternen. Bewertungen unterschiedlicher Länge — mal eine Zeile, mal ausführlich. Zeitlich über Tage und Stunden verteilt statt gebündelt. Antworten des Inhabers auf gute wie auf schlechte Bewertungen. Dieses Profil ist das, was die Plattformen erwarten, und zugleich das, was jemanden überzeugt, der Ihren Eintrag liest.",
+          },
+          {
+            q: "Wie soll ich mit einer negativen Bewertung umgehen?",
+            a: "Antworten Sie öffentlich, ohne zu streiten. Nehmen Sie die Kritik an, ergänzen Sie kurz den Kontext, falls es einen gibt, und sagen Sie, was Sie ändern. Interessenten lesen die Antworten ebenso aufmerksam wie die Bewertungen. Fordern Sie keine Löschung, sofern nicht wirklich gegen die Plattformrichtlinien verstoßen wird, und versuchen Sie niemals, die Bewertung unter einer Welle neuer positiver Bewertungen zu begraben — das ist wieder das Anstiegsmuster, diesmal mit einem offensichtlichen Motiv.",
+          },
+          {
+            q: "Wie schnell werde ich Ergebnisse sehen?",
+            a: "Langsamer, als Ihnen lieb ist — und genau das ist der Punkt. Ein Programm, das jede Woche eine Handvoll echter Bewertungen hinzugewinnt, summiert sich über Monate zu einem deutlich stärkeren Eintrag und wirkt zu keinem Zeitpunkt auffällig. Versuche, das auf zwei Wochen zu komprimieren, lösen genau all das aus, was oben beschrieben wurde.",
+          },
+          {
+            q: "Kann ich Reviewslip für andere Plattformen als Google nutzen?",
+            a: "Noch nicht — vorerst nur für Google-Bewertungen. Bedenken Sie, dass andere Plattformen eigene Regeln haben, und manche sind noch strenger: Mehrere untersagen das Einholen von Bewertungen ausdrücklich vollständig. Prüfen Sie die Richtlinie einer Plattform, bevor Sie Kunden dorthin verweisen.",
+          },
+        ],
+      },
+    ],
+
+    ctaTitle: "Richten Sie es vom ersten Tag an richtig ein.",
+    ctaLede:
+      "Erzählen Sie uns von Ihrem Unternehmen, und wir helfen Ihnen, richtig zu starten.",
+
+    disclaimer:
+      "Dies sind praktische Hinweise auf Grundlage veröffentlichter Plattformrichtlinien und der FTC-Regel — keine Rechtsberatung. Plattformregeln ändern sich, und die Anforderungen an Ihrem Standort können abweichen. Prüfen Sie die aktuellen Vorgaben für Ihre Rechtsordnung und holen Sie professionellen Rat ein, wenn Sie unsicher sind.",
   },
 
   demo: {

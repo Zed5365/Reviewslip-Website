@@ -38,6 +38,11 @@ const fr: Dictionary = {
       description:
         "Essayez Reviewslip vous-même. Choisissez ce qui vous a marqué et voyez apparaître un vrai brouillon d'avis 5 étoiles — sans inscription.",
     },
+    faq: {
+      title: "Guide et FAQ",
+      description:
+        "Mener un programme d'avis sans être signalé : bonne configuration, rythme à tenir, signaux surveillés par Google et ce qui est en jeu.",
+    },
     contact: {
       title: "Contact",
       description:
@@ -61,6 +66,7 @@ const fr: Dictionary = {
     pricing: "Tarifs",
     trust: "Confiance",
     demo: "Démo en direct",
+    faq: "Guide et FAQ",
     contact: "Contact",
   },
 
@@ -152,6 +158,7 @@ const fr: Dictionary = {
 
     faqEyebrow: "Questions",
     faqTitle: "Questions fréquentes.",
+    faqMore: "Lire le guide complet : mise en place, risques et signaux d'alerte →",
     faq: [
       {
         q: "N'est-ce pas simplement de faux avis ?",
@@ -287,6 +294,145 @@ const fr: Dictionary = {
     p4End: ".",
     disclaimer:
       "Cette page est un résumé en langage clair, et non un conseil juridique. Consultez les directives actuelles de la FTC et les politiques de chaque plateforme pour votre juridiction.",
+  },
+
+  faqPage: {
+    eyebrow: "Guide et FAQ",
+    title: "Comment utiliser Reviewslip sans être signalé.",
+    lede: "Reviewslip n'est utile que si vous l'utilisez comme les plateformes d'avis l'attendent. Ce guide couvre une mise en place correcte, le rythme à tenir, les schémas qui font filtrer ou sanctionner les campagnes d'avis, et ce qui est réellement en jeu si vous vous y prenez mal.",
+
+    warningLead: "La plus grosse erreur :",
+    warning:
+      "Ne remettre le QR code qu'aux clients que vous pensez satisfaits. C'est de la sollicitation sélective des avis (review gating) — Google l'interdit et la règle de la FTC de 2024 la vise spécifiquement. Proposez le même parcours d'avis à tout le monde, et laissez les opinions honnêtes se déposer où elles se déposent.",
+
+    sections: [
+      {
+        title: "La mise en place",
+        blurb:
+          "La plupart des problèmes se créent dès le départ. L'endroit et le moment où vous placez le QR code déterminent si les avis qui suivront paraîtront naturels.",
+        items: [
+          {
+            q: "Où placer le QR code ?",
+            a: "À un endroit par lequel passe chaque client à la fin de sa visite — sur le reçu, un chevalet de table, le classeur de la chambre, l'écran de paiement. L'objectif est que tout le monde ait la même occasion de le scanner, et non que vous choisissiez qui le voit. Évitez les emplacements où seuls certains clients le rencontreront.",
+          },
+          {
+            q: "Quel est le bon moment pour demander ?",
+            a: "Une fois l'expérience terminée — au moment de payer, du départ ou de la sortie. Assez tôt pour que la visite soit encore fraîche à l'esprit, assez tard pour qu'ils aient réellement vécu l'ensemble. Ne sollicitez pas en plein service : vous demanderiez à quelqu'un d'évaluer quelque chose qu'il n'a pas terminé.",
+          },
+          {
+            q: "Dois-je demander à tous les clients, ou seulement à ceux qui sont satisfaits ?",
+            a: "À tous les clients. Ne solliciter que les personnes dont vous attendez un avis positif constitue une sollicitation sélective des avis (review gating), interdite par les politiques de Google et par la règle de la FTC de 2024. C'est également contre-productif : une fiche où absolument tous les avis sont de cinq étoiles inspire moins confiance aux acheteurs qu'une fiche présentant une répartition réaliste. Rendez le QR code accessible à tout le monde.",
+          },
+          {
+            q: "Et si quelqu'un a eu une mauvaise expérience ?",
+            a: "Laissez-le le dire — ou mieux, réglez le problème avant son départ. Reviewslip rédige à partir de ce que le client sélectionne ; la voie honnête pour un visiteur mécontent est donc d'écrire ses propres mots ou de vous en parler directement. Ce que vous ne devez jamais faire, c'est masquer le parcours d'avis ou en priver quelqu'un parce que vous vous attendez à une critique. Supprimer les avis négatifs est précisément ce que la règle de la FTC a été écrite pour empêcher.",
+          },
+        ],
+      },
+      {
+        title: "Rythme et schémas",
+        blurb:
+          "Les avis authentiques s'accumulent à un rythme crédible. La forme de votre historique d'avis compte autant que leur contenu.",
+        items: [
+          {
+            q: "Combien d'avis, en combien de temps, est-ce trop ?",
+            a: "Il n'existe aucun seuil publié — Google n'en publie pas, et quiconque cite un chiffre précis fait une supposition. Le principe est celui de la proportionnalité : votre rythme d'avis doit ressembler à une fraction plausible de votre volume réel de clients, et il ne doit pas changer brusquement. Un café qui sert 500 personnes par semaine peut en soutenir bien plus qu'une maison d'hôtes de six chambres. Comme règle empirique, si les avis d'une seule semaine devaient augmenter votre total historique de plus d'environ un cinquième, levez le pied.",
+          },
+          {
+            q: "À quoi ressemble concrètement un pic suspect ?",
+            a: "Une fiche qui affichait en moyenne deux avis par mois pendant trois ans et qui en recueille ensuite quarante en neuf jours présente la signature typique des avis achetés, et les filtres automatiques sont réglés précisément pour cette forme. Les avis peuvent ne jamais apparaître, apparaître puis disparaître quelques jours plus tard, ou entraîner l'examen de la fiche entière. Une montée en puissance progressive — une fraction des clients au début, élargie au fil des semaines — évite entièrement cette forme.",
+          },
+          {
+            q: "Est-ce un problème si tout le monde publie depuis mon WiFi ?",
+            a: "Oui, et c'est un piège fréquent. Si chaque client scanne et publie en étant connecté à votre réseau invité, un lot d'avis provient tout entier d'une seule adresse IP. C'est un fort signal de regroupement, et cela ressemble beaucoup à quelqu'un qui publierait des avis depuis l'arrière-boutique. Les clients qui utilisent leurs propres données mobiles évitent naturellement ce problème : ne poussez donc pas les gens à se connecter au WiFi de l'établissement uniquement pour laisser un avis.",
+          },
+          {
+            q: "Les clients peuvent-ils publier depuis une tablette au comptoir ?",
+            a: "Non. Plusieurs avis provenant d'un même appareil — même empreinte, souvent le même navigateur connecté — comptent parmi les signaux d'avis artificiels les plus évidents qui soient. Cela vous place aussi à un pas de rédiger l'avis vous-même. Les avis doivent toujours provenir du téléphone du client et de son propre compte.",
+          },
+          {
+            q: "Puis-je envoyer un e-mail ou un SMS à toute ma liste de clients d'un coup ?",
+            a: "Soyez prudent. Un envoi massif à des milliers d'anciens clients produit exactement le pic de vitesse décrit plus haut, et des avis portant sur des visites remontant à plusieurs mois sont plus vagues et moins crédibles. Si vous prenez contact, procédez par petits lots, auprès de clients récents, et étalez-les dans le temps.",
+          },
+        ],
+      },
+      {
+        title: "Les signaux d'alerte qui vous font sanctionner",
+        blurb:
+          "Voici les pratiques qui transforment un programme d'avis légitime en risque. Aucune n'en vaut la peine.",
+        items: [
+          {
+            q: "Puis-je offrir une remise ou un produit gratuit en échange d'un avis ?",
+            a: "Non. Les avis incités sont interdits par Google, et la règle de la FTC couvre également les incitations non divulguées. Cela vaut même si vous accepteriez volontiers un avis négatif en échange — c'est le paiement qui pose problème, pas le sentiment exprimé. Vous pouvez remercier les gens. Vous ne pouvez pas les payer.",
+          },
+          {
+            q: "Le personnel, les amis ou la famille peuvent-ils laisser des avis ?",
+            a: "Non. Les avis provenant de personnes liées à l'entreprise sont purement et simplement interdits et sont souvent faciles à repérer. Cela inclut le personnel qui évalue son propre lieu de travail et le fait de demander à des amis de gonfler le compteur après un mauvais mois.",
+          },
+          {
+            q: "Les avis rédigés par IA vont-ils tous se ressembler ?",
+            a: "Ils le peuvent, et c'est un risque réel. Reviewslip l'atténue en rédigeant à partir des éléments précis que chaque client sélectionne et en proposant de nouvelles formulations lors de la régénération — mais la véritable protection, c'est que le client modifie le texte. Encouragez-le. Une page d'avis partageant la même structure de phrases et le même vocabulaire constitue un schéma détectable, peu importe qui ou quoi les a écrits.",
+          },
+          {
+            q: "Puis-je rédiger l'avis pour un client qui dit être satisfait ?",
+            a: "Non. Même avec son accord verbal, le fait que vous le rédigiez et le publiiez en fait un avis émanant de vous, et non de lui — et c'est la définition même d'un faux avis, tant selon la politique de Google que selon la règle de la FTC. Remettez-lui le QR code et laissez-le faire.",
+          },
+        ],
+      },
+      {
+        title: "Ce qui est réellement en jeu",
+        blurb:
+          "Les conséquences vont de l'invisible au grave, et certaines surviennent des mois après les faits.",
+        items: [
+          {
+            q: "Quel est le pire qui puisse arriver ?",
+            a: "À peu près par ordre de gravité : des avis individuels sont filtrés et n'apparaissent jamais ; un lot est supprimé rétroactivement, parfois des mois plus tard ; la fiche reçoit une alerte consommateur avertissant les visiteurs qu'une activité suspecte a été détectée ; ou la fiche est suspendue. Sur le plan juridique, la règle de la FTC prévoit des sanctions civiles évaluées par infraction — c'est-à-dire par faux avis, et non par entreprise. Et il y a tout simplement l'atteinte à la réputation lorsqu'on est publiquement pris sur le fait.",
+          },
+          {
+            q: "Qu'interdit réellement la règle de la FTC ?",
+            a: "La règle de 2024 vise les faux avis et les avis fabriqués par IA émanant de personnes n'ayant jamais vécu de véritable expérience, les avis incités non divulgués, les initiés se faisant passer pour des clients, ainsi que la suppression ou la dissimulation d'avis négatifs. Ce qu'elle n'interdit pas, c'est d'aider un vrai client à mettre en mots sa propre opinion honnête — ce qui est précisément la conception de Reviewslip.",
+          },
+          {
+            q: "Si des avis sont supprimés, est-ce la faute de Reviewslip ou la mienne ?",
+            a: "La vôtre, en pratique. Reviewslip limite ce que l'IA peut dire et ne publie jamais au nom de quiconque, mais il ne peut pas contrôler à qui vous remettez le QR code, avec quelle insistance vous sollicitez, ni si vous offrez des incitations. Ce sont les pratiques décrites sur cette page qui déterminent le résultat.",
+          },
+          {
+            q: "Cela s'applique-t-il en dehors des États-Unis ?",
+            a: "La règle de la FTC est une loi américaine, mais les politiques des plateformes sont mondiales — les règles de Google sur les avis faux, incités et filtrés en amont s'appliquent partout où vous exercez. De nombreuses autres juridictions disposent de leurs propres régimes de protection des consommateurs couvrant les avis trompeurs, et plusieurs les ont renforcés. Considérez ces recommandations comme un minimum, et non comme un maximum.",
+          },
+        ],
+      },
+      {
+        title: "Bien mener son programme",
+        blurb:
+          "À quoi ressemble concrètement un programme d'avis sain et durable.",
+        items: [
+          {
+            q: "À quoi ressemble un schéma d'avis sain ?",
+            a: "Un flux régulier plutôt que des rafales. Un mélange de notes plutôt qu'un mur de cinq étoiles. Des avis de longueur variable — certains d'une ligne, d'autres détaillés. Des horaires répartis sur les jours et les heures plutôt que regroupés. Des réponses du propriétaire aux bons comme aux mauvais avis. Ce profil correspond à la fois à ce qu'attendent les plateformes et à ce qui convainc réellement une personne qui consulte votre fiche.",
+          },
+          {
+            q: "Comment gérer un avis négatif ?",
+            a: "Répondez publiquement, sans polémiquer. Reconnaissez-le, ajoutez brièvement du contexte s'il y en a, et indiquez ce que vous changez. Les clients potentiels lisent les réponses aussi attentivement que les avis. Ne demandez pas sa suppression sauf s'il enfreint réellement la politique de la plateforme, et n'essayez jamais de l'enterrer sous un afflux de nouveaux avis positifs — c'est de nouveau le schéma du pic, cette fois avec un motif évident.",
+          },
+          {
+            q: "En combien de temps verrai-je des résultats ?",
+            a: "Plus lentement que vous ne le souhaiteriez, et c'est justement l'intérêt. Un programme qui ajoute une poignée d'avis authentiques chaque semaine se cumule en une fiche nettement plus solide au fil des mois, sans jamais paraître anormal à aucun moment. Les tentatives de comprimer cela en une quinzaine de jours sont ce qui déclenche tout ce qui est décrit plus haut.",
+          },
+          {
+            q: "Puis-je utiliser Reviewslip pour d'autres plateformes que Google ?",
+            a: "Pas encore — uniquement les avis Google pour le moment. Gardez à l'esprit que les autres plateformes ont leurs propres règles, et que certaines sont encore plus strictes : plusieurs interdisent explicitement toute sollicitation d'avis. Vérifiez la politique de toute plateforme avant d'y diriger vos clients.",
+          },
+        ],
+      },
+    ],
+
+    ctaTitle: "Mettez-le en place correctement dès le premier jour.",
+    ctaLede:
+      "Parlez-nous de votre établissement et nous vous aiderons à démarrer du bon pied.",
+
+    disclaimer:
+      "Il s'agit de conseils pratiques tirés des politiques publiées des plateformes et de la règle de la FTC — ce n'est pas un conseil juridique. Les règles des plateformes évoluent, et les exigences applicables là où vous exercez peuvent différer. Vérifiez les directives en vigueur dans votre juridiction et faites appel à un professionnel en cas de doute.",
   },
 
   demo: {

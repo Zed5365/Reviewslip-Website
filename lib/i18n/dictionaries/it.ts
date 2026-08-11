@@ -38,6 +38,11 @@ const it: Dictionary = {
       description:
         "Prova Reviewslip. Scegli cosa ti ha colpito e guarda apparire una bozza di recensione autentica a 5 stelle — senza registrazione.",
     },
+    faq: {
+      title: "Guida e FAQ",
+      description:
+        "Come gestire un programma di recensioni senza essere segnalato: configurazione corretta, ritmo da tenere, segnali che Google monitora e cosa rischi.",
+    },
     contact: {
       title: "Contatti",
       description:
@@ -61,6 +66,7 @@ const it: Dictionary = {
     pricing: "Prezzi",
     trust: "Affidabilità",
     demo: "Demo dal vivo",
+    faq: "Guida e FAQ",
     contact: "Contatti",
   },
 
@@ -152,6 +158,7 @@ const it: Dictionary = {
 
     faqEyebrow: "Domande",
     faqTitle: "Domande frequenti.",
+    faqMore: "Leggi la guida completa: configurazione, rischi e segnali d'allarme →",
     faq: [
       {
         q: "Non sono forse solo recensioni false?",
@@ -287,6 +294,145 @@ const it: Dictionary = {
     p4End: ".",
     disclaimer:
       "Questa pagina è un riepilogo in linguaggio semplice, non una consulenza legale. Consulta le linee guida FTC attuali e le policy di ciascuna piattaforma per la tua giurisdizione.",
+  },
+
+  faqPage: {
+    eyebrow: "Guida e FAQ",
+    title: "Come usare Reviewslip senza essere segnalato.",
+    lede: "Reviewslip è utile solo se lo usi come si aspettano le piattaforme di recensioni. Questa guida spiega come configurarlo correttamente, il ritmo da tenere, i comportamenti che portano le campagne di recensioni a essere filtrate o penalizzate e cosa rischi davvero se sbagli.",
+
+    warningLead: "L'errore più grave in assoluto:",
+    warning:
+      "Consegnare il codice QR solo ai clienti che ritieni soddisfatti. Questo è review gating (selezione preventiva dei recensori) — Google lo vieta e la norma FTC del 2024 lo prende specificamente di mira. Offri a tutti lo stesso percorso di recensione e lascia che le opinioni oneste arrivino dove devono arrivare.",
+
+    sections: [
+      {
+        title: "La configurazione",
+        blurb:
+          "La maggior parte dei problemi nasce già in fase di impostazione. Dove e quando metti il codice QR decide se le recensioni che ne derivano appariranno naturali.",
+        items: [
+          {
+            q: "Dove va messo il codice QR?",
+            a: "In un punto in cui passa ogni cliente alla fine della visita — sullo scontrino, su una scheda da tavolo, nella cartellina della camera, sullo schermo della cassa. L'obiettivo è che tutti abbiano la stessa possibilità di scansionarlo, non che sia tu a scegliere chi lo vede. Evita posizioni in cui solo alcuni clienti potranno mai incontrarlo.",
+          },
+          {
+            q: "Qual è il momento giusto per chiederlo?",
+            a: "Dopo che l'esperienza è finita — mentre pagano, fanno il check-out o se ne vanno. Abbastanza presto perché la visita sia ancora fresca nella mente, abbastanza tardi perché l'abbiano effettivamente vissuta per intero. Non sollecitare a metà del servizio: chiederesti a qualcuno di recensire qualcosa che non ha ancora finito.",
+          },
+          {
+            q: "Devo chiederlo a ogni cliente o solo a quelli soddisfatti?",
+            a: "A ogni cliente. Chiederlo in modo selettivo solo alle persone che ti aspetti siano positive è review gating, ed è vietato dalle policy di Google e dalla norma FTC del 2024. È anche controproducente: una scheda in cui ogni singola recensione è a cinque stelle risulta meno affidabile agli occhi di chi acquista rispetto a una con una distribuzione realistica. Rendi il QR disponibile a tutti.",
+          },
+          {
+            q: "E se qualcuno ha avuto un'esperienza negativa?",
+            a: "Lascia che lo dica — o meglio, risolvi il problema prima che se ne vada. Reviewslip crea la bozza a partire da ciò che il cliente seleziona, quindi il percorso onesto per un visitatore insoddisfatto è scrivere con parole proprie oppure segnalartelo direttamente. Ciò che non devi mai fare è nascondere o negare il percorso di recensione a qualcuno perché ti aspetti una critica. Sopprimere le recensioni negative è esattamente ciò che la norma FTC è stata scritta per fermare.",
+          },
+        ],
+      },
+      {
+        title: "Ritmo e schemi ricorrenti",
+        blurb:
+          "Le recensioni autentiche si accumulano a un ritmo credibile. La forma del tuo storico di recensioni conta quanto il contenuto.",
+        items: [
+          {
+            q: "Quante recensioni sono troppe, troppo in fretta?",
+            a: "Non esiste una soglia pubblicata — Google non ne pubblica una e chiunque citi un numero preciso sta tirando a indovinare. Il principio è la proporzionalità: il tuo ritmo di recensioni dovrebbe apparire come una frazione plausibile del tuo volume reale di clienti e non dovrebbe cambiare bruscamente. Un caffè che serve 500 persone a settimana può sostenerne molte di più di una pensione con sei camere. Come regola pratica, se le recensioni di una sola settimana facessero crescere il tuo totale complessivo di più di circa un quinto, rallenta.",
+          },
+          {
+            q: "Come si presenta davvero un picco sospetto?",
+            a: "Una scheda che per tre anni ha avuto una media di due recensioni al mese e poi ne raccoglie quaranta in nove giorni è la firma da manuale delle recensioni comprate, e i filtri automatici sono tarati esattamente su quella forma. Le recensioni potrebbero non comparire mai, comparire e poi sparire qualche giorno dopo, oppure portare l'intera scheda sotto esame. Aumentare gradualmente — all'inizio una parte dei clienti, allargando poi nell'arco di settimane — evita del tutto quella forma.",
+          },
+          {
+            q: "È un problema se tutti pubblicano dal mio WiFi?",
+            a: "Sì, e su questo in molti cascano. Se ogni cliente scansiona e pubblica mentre è collegato alla tua rete per gli ospiti, un blocco di recensioni proviene tutto da un unico indirizzo IP. È un forte segnale di aggregazione e somiglia moltissimo a qualcuno che pubblica recensioni dal retro del locale. I clienti che usano i propri dati mobili evitano il problema in modo naturale, quindi non spingere le persone a collegarsi al WiFi del locale solo per lasciare una recensione.",
+          },
+          {
+            q: "I clienti possono pubblicare da un tablet al bancone?",
+            a: "No. Più recensioni da un solo dispositivo — stessa impronta digitale, spesso lo stesso browser con l'accesso già effettuato — sono tra i segnali di recensioni artificiali più evidenti che esistano. Ti mette anche a un passo dallo scrivere tu stesso la recensione. Le recensioni devono sempre arrivare dal telefono del cliente e dal suo account.",
+          },
+          {
+            q: "Posso inviare email o SMS a tutta la mia lista clienti in una volta sola?",
+            a: "Fai attenzione. Un invio massivo a migliaia di clienti passati produce esattamente il picco di velocità descritto sopra, e le recensioni su visite di mesi fa sono più vaghe e meno credibili. Se decidi di contattarli, procedi a piccoli gruppi, con clienti recenti, distribuiti nel tempo.",
+          },
+        ],
+      },
+      {
+        title: "Segnali d'allarme che ti fanno penalizzare",
+        blurb:
+          "Sono queste le pratiche che trasformano un programma di recensioni legittimo in un rischio. Nessuna di esse ne vale la pena.",
+        items: [
+          {
+            q: "Posso offrire uno sconto o un omaggio in cambio di una recensione?",
+            a: "No. Le recensioni incentivate sono vietate da Google, e la norma FTC copre anche gli incentivi non dichiarati. Questo vale anche se accetteresti volentieri una recensione negativa in cambio — il problema è il pagamento, non il giudizio. Puoi ringraziare le persone. Non puoi pagarle.",
+          },
+          {
+            q: "Il personale, gli amici o i familiari possono lasciare recensioni?",
+            a: "No. Le recensioni di persone legate all'attività sono vietate in modo assoluto e spesso sono facili da individuare. Questo include i dipendenti che recensiscono il proprio luogo di lavoro e il chiedere agli amici di gonfiare il conteggio dopo un mese negativo.",
+          },
+          {
+            q: "Le recensioni scritte dall'AI si assomiglieranno tutte?",
+            a: "Può succedere, ed è un rischio reale. Reviewslip lo attenua scrivendo la bozza a partire dalle cose specifiche che ogni cliente sceglie e proponendo nuove formulazioni con la rigenerazione — ma la vera protezione è che sia il cliente a modificare il testo. Incoraggialo a farlo. Una pagina di recensioni che condividono struttura delle frasi e vocabolario è uno schema rilevabile, chiunque o qualunque cosa le abbia scritte.",
+          },
+          {
+            q: "Posso scrivere io la recensione per un cliente che dice di essere soddisfatto?",
+            a: "No. Anche con il suo permesso verbale, se sei tu a scriverla e pubblicarla diventa una recensione tua, non sua — ed è questa la definizione di recensione falsa sia secondo la policy di Google sia secondo la norma FTC. Consegnagli il codice QR e lascia che lo faccia lui.",
+          },
+        ],
+      },
+      {
+        title: "Cosa rischi davvero",
+        blurb:
+          "Le conseguenze vanno dall'invisibile al grave, e alcune arrivano mesi dopo i fatti.",
+        items: [
+          {
+            q: "Qual è la cosa peggiore che può succedere?",
+            a: "Grosso modo in ordine di gravità: le singole recensioni vengono filtrate e non compaiono mai; un blocco di recensioni viene rimosso retroattivamente, a volte mesi dopo; la scheda riceve un avviso ai consumatori che segnala ai visitatori il rilevamento di attività sospette; oppure la scheda viene sospesa. Sul piano legale, la norma FTC prevede sanzioni civili calcolate per ogni violazione — cioè per ogni recensione falsa, non per ogni attività. E c'è poi il puro danno reputazionale di essere scoperti pubblicamente.",
+          },
+          {
+            q: "Cosa vieta esattamente la norma FTC?",
+            a: "La norma del 2024 prende di mira le recensioni false e create dall'AI da parte di persone che non hanno mai vissuto un'esperienza autentica, le recensioni incentivate non dichiarate, gli interni all'azienda che si spacciano per clienti e la soppressione o l'occultamento delle recensioni negative. Ciò che non vieta è aiutare un cliente autentico a mettere in parole la propria opinione onesta — che è esattamente il modo in cui è progettato Reviewslip.",
+          },
+          {
+            q: "Se le recensioni vengono rimosse, la colpa è di Reviewslip o mia?",
+            a: "Tua, in pratica. Reviewslip limita ciò che l'AI può dire e non pubblica mai per conto di nessuno, ma non può controllare a chi consegni il codice QR, quanto insisti o se offri incentivi. Sono le pratiche descritte in questa pagina a determinare il risultato.",
+          },
+          {
+            q: "Vale anche fuori dagli Stati Uniti?",
+            a: "La norma FTC è legge statunitense, ma le policy delle piattaforme sono globali — le regole di Google su recensioni false, incentivate e selezionate a monte (review gating) valgono ovunque tu operi. Molte altre giurisdizioni hanno propri sistemi di tutela dei consumatori che riguardano le recensioni ingannevoli, e diverse li stanno inasprendo. Considera le indicazioni riportate qui come il livello minimo, non come il massimo.",
+          },
+        ],
+      },
+      {
+        title: "Gestirlo bene",
+        blurb:
+          "Come si presenta nella pratica un programma di recensioni sano e duraturo.",
+        items: [
+          {
+            q: "Come si presenta uno schema di recensioni sano?",
+            a: "Un flusso costante e regolare invece che a raffiche. Una varietà di valutazioni invece di un muro di cinque stelle. Recensioni di lunghezza diversa — alcune di una riga, altre dettagliate. Tempistiche distribuite tra giorni e orari invece che concentrate. Risposte del titolare sia alle recensioni positive sia a quelle negative. Questo profilo è al tempo stesso ciò che le piattaforme si aspettano e ciò che convince davvero chi legge la tua scheda.",
+          },
+          {
+            q: "Come dovrei gestire una recensione negativa?",
+            a: "Rispondi pubblicamente, senza polemizzare. Riconoscila, aggiungi brevemente il contesto se ce n'è uno e di' cosa stai cambiando. I potenziali clienti leggono le risposte con la stessa attenzione delle recensioni. Non chiederne la rimozione a meno che non violi davvero la policy della piattaforma, e non provare mai a seppellirla sotto una raffica di nuove recensioni positive — è di nuovo lo schema del picco, questa volta con un movente evidente.",
+          },
+          {
+            q: "Quanto in fretta vedrò i risultati?",
+            a: "Più lentamente di quanto vorresti, ed è proprio questo il punto. Un programma che aggiunge una manciata di recensioni autentiche ogni settimana si somma fino a una scheda nettamente più solida nel giro di mesi, e non appare mai anomalo in nessun momento. I tentativi di comprimere tutto questo in quindici giorni sono ciò che innesca tutto quanto descritto sopra.",
+          },
+          {
+            q: "Posso usare Reviewslip per piattaforme diverse da Google?",
+            a: "Non ancora — per ora solo recensioni Google. Tieni presente che le altre piattaforme hanno regole proprie, e alcune sono ancora più severe: diverse vietano esplicitamente qualsiasi sollecitazione di recensioni. Verifica la policy di qualunque piattaforma prima di indirizzarvi i clienti.",
+          },
+        ],
+      },
+    ],
+
+    ctaTitle: "Imposta tutto correttamente fin dal primo giorno.",
+    ctaLede:
+      "Raccontaci della tua attività e ti aiuteremo a partire con il piede giusto.",
+
+    disclaimer:
+      "Queste sono indicazioni pratiche tratte dalle policy pubblicate dalle piattaforme e dalla norma della FTC — non costituiscono consulenza legale. Le regole delle piattaforme cambiano e i requisiti nel luogo in cui operi possono essere diversi. Verifica le linee guida attuali per la tua giurisdizione e rivolgiti a un professionista se hai dubbi.",
   },
 
   demo: {

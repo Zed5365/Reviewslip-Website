@@ -39,6 +39,7 @@ app/
     how-it-works/       # step-by-step walkthrough
     compliance/         # FTC / platform compliance stance
     demo/               # public interactive slip demo
+    faq/                # guide: correct setup, risks, red flags to avoid
     contact/            # contact form
     legal/              # privacy + terms (template stubs)
 components/
@@ -117,6 +118,12 @@ See [PLAN.md](PLAN.md) for the full context.
   visitor's email client with the message pre-filled (works with no backend). Set it to a
   Formspree endpoint or your own handler (accepts JSON `{ name, email, business, locations,
   message }`) to collect submissions server-side. Form labels are translated in all locales.
+- **`/faq` is the operator guide** — how to place the QR code, what pace to keep, and the
+  patterns that get review campaigns filtered or penalised (velocity spikes, single-IP
+  clustering, shared devices, incentives, review gating). It is the most legally sensitive
+  copy on the site: it cites the FTC's 2024 rule and Google's policies, and it deliberately
+  gives no invented statistics or thresholds. Have it reviewed before launch, and re-check
+  it whenever platform policy changes.
 - **Pricing is placeholder** (`lib/plans.ts`) until finalised.
 - **Platform**: Google reviews only for v1.
 - The demo uses canned drafts and never calls an AI model.

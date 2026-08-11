@@ -42,6 +42,11 @@ const en = {
       description:
         "Try Reviewslip yourself. Pick what stood out and watch a genuine 5-star review draft appear — no signup needed.",
     },
+    faq: {
+      title: "Guide & FAQ",
+      description:
+        "How to run a review programme without getting flagged: correct setup, the pace to keep, the red flags Google watches for, and what's actually at stake.",
+    },
     contact: {
       title: "Contact",
       description:
@@ -65,6 +70,7 @@ const en = {
     pricing: "Pricing",
     trust: "Trust",
     demo: "Live demo",
+    faq: "Guide & FAQ",
     contact: "Contact",
   },
 
@@ -156,6 +162,7 @@ const en = {
 
     faqEyebrow: "Questions",
     faqTitle: "Frequently asked.",
+    faqMore: "Read the full guide: setup, risks & red flags →",
     faq: [
       {
         q: "Isn't this just fake reviews?",
@@ -291,6 +298,145 @@ const en = {
     p4End: ".",
     disclaimer:
       "This page is a plain-language summary, not legal advice. Review the current FTC guidance and each platform's policies for your jurisdiction.",
+  },
+
+  faqPage: {
+    eyebrow: "Guide & FAQ",
+    title: "How to use Reviewslip without getting flagged.",
+    lede: "Reviewslip only helps if you run it the way the review platforms expect. This guide covers setting it up properly, the pace to keep, the patterns that get review campaigns filtered or penalised, and what is actually at stake if you get it wrong.",
+
+    warningLead: "The single biggest mistake:",
+    warning:
+      "Handing the QR code only to customers you think are happy. That is review gating — Google prohibits it and the FTC's 2024 rule specifically targets it. Offer the same review path to everyone, and let honest opinions land where they land.",
+
+    sections: [
+      {
+        title: "Setting it up",
+        blurb:
+          "Most problems are designed in at the start. Where and when you put the QR code decides whether the reviews that follow look natural.",
+        items: [
+          {
+            q: "Where should the QR code go?",
+            a: "Somewhere every customer passes at the end of their visit — on the receipt, a table card, the room folder, the checkout screen. The goal is that everyone gets the same opportunity to scan it, not that you choose who sees it. Avoid placements where only certain customers will ever encounter it.",
+          },
+          {
+            q: "When is the right moment to ask?",
+            a: "After the experience is finished — as they pay, check out, or leave. Early enough that the visit is fresh in mind, late enough that they have actually experienced the whole thing. Do not prompt mid-service: you would be asking someone to review something they have not finished.",
+          },
+          {
+            q: "Should I ask every customer, or only the happy ones?",
+            a: "Every customer. Selectively asking only the people you expect to be positive is review gating, and it is prohibited by Google's policies and by the FTC's 2024 rule. It is also self-defeating: a listing where every single review is five stars reads as less trustworthy to shoppers than one with a realistic spread. Make the QR available to everyone.",
+          },
+          {
+            q: "What if someone had a bad experience?",
+            a: "Let them say so — or better, fix it before they leave. Reviewslip drafts from what the customer selects, so the honest path for an unhappy visitor is to write their own words or to raise it with you directly. What you must never do is hide or withhold the review path from someone because you expect criticism. Suppressing negative reviews is exactly what the FTC rule was written to stop.",
+          },
+        ],
+      },
+      {
+        title: "Pace and patterns",
+        blurb:
+          "Genuine reviews accumulate at a believable rate. The shape of your review history matters as much as the content.",
+        items: [
+          {
+            q: "How many reviews is too many, too fast?",
+            a: "There is no published threshold — Google does not publish one, and anyone quoting an exact number is guessing. The principle is proportionality: your review rate should look like a plausible fraction of your real customer volume, and it should not change abruptly. A café serving 500 people a week can sustain far more than a six-room guesthouse. As a working rule of thumb, if one week's reviews would grow your all-time total by more than roughly a fifth, ease off.",
+          },
+          {
+            q: "What does a suspicious spike actually look like?",
+            a: "A listing that averaged two reviews a month for three years and then collects forty in nine days is the textbook signature of bought reviews, and automated filters are tuned for precisely that shape. The reviews may never appear, may appear and then vanish days later, or may pull the whole listing into review. Ramping up gradually — a fraction of customers at first, widening over weeks — avoids the shape entirely.",
+          },
+          {
+            q: "Is it a problem if everyone posts from my WiFi?",
+            a: "Yes, and this one catches people out. If every customer scans and posts while on your guest network, a batch of reviews all originates from a single IP address. That is a strong clustering signal, and it looks a great deal like someone posting reviews from the back office. Customers on their own mobile data avoid this naturally, so do not push people onto the venue WiFi purely to leave a review.",
+          },
+          {
+            q: "Can customers post from a tablet at the counter?",
+            a: "No. Several reviews from one device — same fingerprint, often the same signed-in browser — is among the clearest artificial-review signals there is. It also puts you one short step from typing the review yourself. Reviews should always come from the customer's own phone and their own account.",
+          },
+          {
+            q: "Can I email or text my whole customer list at once?",
+            a: "Be careful. A blast to thousands of past customers produces exactly the velocity spike described above, and reviews about visits from months ago are vaguer and less credible. If you do reach out, work in small batches, to recent customers, spread over time.",
+          },
+        ],
+      },
+      {
+        title: "Red flags that get you penalised",
+        blurb:
+          "These are the practices that turn a legitimate review programme into a liability. None of them are worth it.",
+        items: [
+          {
+            q: "Can I offer a discount or a free item for a review?",
+            a: "No. Incentivised reviews are prohibited by Google, and the FTC rule covers undisclosed incentives as well. This holds even if you would happily accept a negative review in exchange — the payment is the problem, not the sentiment. You can thank people. You cannot pay them.",
+          },
+          {
+            q: "Can staff, friends or family leave reviews?",
+            a: "No. Reviews from people connected to the business are prohibited outright and are often easy to spot. That includes staff reviewing their own workplace and asking friends to pad the count after a bad month.",
+          },
+          {
+            q: "Will AI-drafted reviews all read the same?",
+            a: "They can, and it is a real risk. Reviewslip mitigates it by drafting from the specific things each customer picks and by offering fresh phrasings on regenerate — but the genuine protection is that the customer edits the text. Encourage that. A page of reviews sharing sentence structure and vocabulary is a detectable pattern no matter who or what wrote them.",
+          },
+          {
+            q: "Can I write the review for a customer who says they are happy?",
+            a: "No. Even with verbal permission, you writing and posting it makes it a review from you, not from them — and that is the definition of a fake review under both Google's policy and the FTC rule. Hand them the QR code and let them do it.",
+          },
+        ],
+      },
+      {
+        title: "What is actually at stake",
+        blurb:
+          "The consequences run from invisible to serious, and some of them arrive months after the fact.",
+        items: [
+          {
+            q: "What is the worst that can happen?",
+            a: "Roughly in order of severity: individual reviews get filtered and never appear; a batch is removed retroactively, sometimes months later; the listing receives a consumer alert warning visitors that suspicious activity was detected; or the listing is suspended. On the legal side, the FTC rule carries civil penalties assessed per violation — meaning per fake review, not per business. And there is the plain reputational damage of being publicly caught.",
+          },
+          {
+            q: "What does the FTC rule actually ban?",
+            a: "The 2024 rule targets fake and AI-fabricated reviews from people who never had a genuine experience, undisclosed incentivised reviews, insiders posing as customers, and the suppression or concealment of negative reviews. What it does not ban is helping a genuine customer put their own honest opinion into words — which is the whole design of Reviewslip.",
+          },
+          {
+            q: "If reviews get removed, is that Reviewslip's fault or mine?",
+            a: "Yours, in practice. Reviewslip constrains what the AI can say and never posts on anyone's behalf, but it cannot control who you hand the QR code to, how hard you push, or whether you offer incentives. The practices on this page are what determine the outcome.",
+          },
+          {
+            q: "Does this apply outside the United States?",
+            a: "The FTC rule is US law, but the platform policies are global — Google's rules on fake, incentivised and gated reviews apply wherever you operate. Many other jurisdictions have their own consumer-protection regimes covering misleading reviews, and several have been tightening them. Treat the guidance here as the floor, not the ceiling.",
+          },
+        ],
+      },
+      {
+        title: "Running it well",
+        blurb:
+          "What a healthy, durable review programme looks like in practice.",
+        items: [
+          {
+            q: "What does a healthy review pattern look like?",
+            a: "A steady trickle rather than bursts. A mix of ratings rather than a wall of fives. Reviews of varying length — some a line, some detailed. Timing spread across days and hours instead of clustered. Owner responses to the good and the bad alike. That profile is both what the platforms expect and what actually persuades someone reading your listing.",
+          },
+          {
+            q: "How should I handle a negative review?",
+            a: "Respond publicly, without arguing. Acknowledge it, add context briefly if there is any, and say what you are changing. Prospective customers read the responses as closely as the reviews. Do not request removal unless it genuinely breaches platform policy, and never try to bury it under a rush of new positive reviews — that is the spike pattern again, this time with an obvious motive attached.",
+          },
+          {
+            q: "How quickly will I see results?",
+            a: "More slowly than you would like, and that is rather the point. A programme adding a handful of genuine reviews each week compounds into a materially stronger listing over months, and never looks anomalous at any moment. Attempts to compress that into a fortnight are what trigger everything described above.",
+          },
+          {
+            q: "Can I use Reviewslip for platforms other than Google?",
+            a: "Not yet — Google reviews only for now. Bear in mind that other platforms have their own rules, and some are stricter still: several explicitly prohibit soliciting reviews at all. Check the policy of any platform before you point customers at it.",
+          },
+        ],
+      },
+    ],
+
+    ctaTitle: "Set it up properly from day one.",
+    ctaLede:
+      "Tell us about your business and we will help you start on the right footing.",
+
+    disclaimer:
+      "This is practical guidance drawn from published platform policies and the FTC's rule — it is not legal advice. Platform rules change, and the requirements where you operate may differ. Check the current guidance for your jurisdiction, and take professional advice if you are unsure.",
   },
 
   demo: {

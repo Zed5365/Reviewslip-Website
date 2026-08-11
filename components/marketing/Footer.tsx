@@ -13,6 +13,7 @@ export default function Footer({ lang, t }: { lang: Locale; t: Dictionary }) {
         { route: "/how-it-works", label: t.nav.howItWorks },
         { route: "/pricing", label: t.nav.pricing },
         { route: "/demo", label: t.nav.demo },
+        { route: "/faq", label: t.nav.faq },
       ],
     },
     {

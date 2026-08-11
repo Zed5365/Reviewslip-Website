@@ -15,6 +15,7 @@ export const ROUTES = [
   "/how-it-works",
   "/pricing",
   "/demo",
+  "/faq",
   "/compliance",
   "/contact",
   "/legal/privacy",

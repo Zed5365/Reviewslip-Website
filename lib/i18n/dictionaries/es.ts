@@ -38,6 +38,11 @@ const es: Dictionary = {
       description:
         "Prueba Reviewslip tú mismo. Elige lo que más te gustó y mira aparecer un borrador de reseña de 5 estrellas — sin registro.",
     },
+    faq: {
+      title: "Guía y preguntas frecuentes",
+      description:
+        "Cómo llevar un programa de reseñas sin que te marquen: configuración correcta, el ritmo a mantener, las señales de alerta de Google y qué está en juego.",
+    },
     contact: {
       title: "Contacto",
       description:
@@ -61,6 +66,7 @@ const es: Dictionary = {
     pricing: "Precios",
     trust: "Confianza",
     demo: "Demo en vivo",
+    faq: "Guía y FAQ",
     contact: "Contacto",
   },
 
@@ -152,6 +158,7 @@ const es: Dictionary = {
 
     faqEyebrow: "Preguntas",
     faqTitle: "Preguntas frecuentes.",
+    faqMore: "Lee la guía completa: configuración, riesgos y señales de alerta →",
     faq: [
       {
         q: "¿No son esto simplemente reseñas falsas?",
@@ -287,6 +294,145 @@ const es: Dictionary = {
     p4End: ".",
     disclaimer:
       "Esta página es un resumen en lenguaje sencillo, no asesoramiento legal. Revisa la guía vigente de la FTC y las políticas de cada plataforma para tu jurisdicción.",
+  },
+
+  faqPage: {
+    eyebrow: "Guía y preguntas frecuentes",
+    title: "Cómo usar Reviewslip sin que te marquen.",
+    lede: "Reviewslip solo sirve de algo si lo usas como esperan las plataformas de reseñas. Esta guía cubre cómo configurarlo correctamente, el ritmo que conviene mantener, los patrones que hacen que las campañas de reseñas se filtren o se penalicen, y qué está realmente en juego si te equivocas.",
+
+    warningLead: "El mayor error de todos:",
+    warning:
+      "Entregar el código QR solo a los clientes que crees que están contentos. Eso es filtrado selectivo de reseñas (review gating) — Google lo prohíbe y la norma de 2024 de la FTC lo aborda específicamente. Ofrece a todo el mundo el mismo camino hacia la reseña y deja que las opiniones honestas caigan donde caigan.",
+
+    sections: [
+      {
+        title: "La configuración",
+        blurb:
+          "La mayoría de los problemas quedan diseñados desde el principio. Dónde y cuándo colocas el código QR decide si las reseñas que vengan después parecerán naturales.",
+        items: [
+          {
+            q: "¿Dónde debe ir el código QR?",
+            a: "En algún punto por el que pase todo cliente al final de su visita — en el recibo, una tarjeta de mesa, la carpeta de la habitación, la pantalla de pago. El objetivo es que todo el mundo tenga la misma oportunidad de escanearlo, no que tú elijas quién lo ve. Evita ubicaciones donde solo ciertos clientes vayan a encontrarlo.",
+          },
+          {
+            q: "¿Cuál es el momento adecuado para pedirla?",
+            a: "Después de que la experiencia haya terminado — al pagar, al hacer el check-out o al marcharse. Lo bastante pronto como para que la visita esté fresca en la memoria, y lo bastante tarde como para que hayan vivido realmente el conjunto. No lo pidas a mitad del servicio: estarías pidiendo a alguien que reseñe algo que aún no ha terminado.",
+          },
+          {
+            q: "¿Debo pedírsela a todos los clientes o solo a los satisfechos?",
+            a: "A todos los clientes. Pedírsela de forma selectiva solo a quienes esperas que sean positivos es filtrado selectivo de reseñas (review gating), y está prohibido por las políticas de Google y por la norma de 2024 de la FTC. Además es contraproducente: una ficha en la que absolutamente todas las reseñas son de cinco estrellas resulta menos fiable para los compradores que una con una variedad realista. Pon el QR a disposición de todo el mundo.",
+          },
+          {
+            q: "¿Y si alguien tuvo una mala experiencia?",
+            a: "Déjale decirlo — o, mejor, resuélvelo antes de que se marche. Reviewslip redacta a partir de lo que el cliente selecciona, así que el camino honesto para un visitante descontento es escribir sus propias palabras o planteártelo a ti directamente. Lo que nunca debes hacer es ocultar o negar el camino hacia la reseña a alguien porque esperas críticas. Suprimir reseñas negativas es exactamente lo que la norma de la FTC se escribió para impedir.",
+          },
+        ],
+      },
+      {
+        title: "Ritmo y patrones",
+        blurb:
+          "Las reseñas genuinas se acumulan a un ritmo creíble. La forma de tu historial de reseñas importa tanto como el contenido.",
+        items: [
+          {
+            q: "¿Cuántas reseñas son demasiadas y demasiado rápido?",
+            a: "No hay un umbral publicado — Google no publica ninguno, y quien cite una cifra exacta está adivinando. El principio es la proporcionalidad: tu ritmo de reseñas debería parecer una fracción plausible de tu volumen real de clientes, y no debería cambiar de forma brusca. Una cafetería que atiende a 500 personas por semana puede sostener muchas más que una casa de huéspedes de seis habitaciones. Como regla práctica, si las reseñas de una semana hicieran crecer tu total histórico en más de aproximadamente una quinta parte, baja el ritmo.",
+          },
+          {
+            q: "¿Cómo es realmente un pico sospechoso?",
+            a: "Una ficha que promedió dos reseñas al mes durante tres años y de pronto acumula cuarenta en nueve días es la firma de manual de las reseñas compradas, y los filtros automáticos están ajustados precisamente para esa forma. Puede que las reseñas nunca aparezcan, que aparezcan y desaparezcan días después, o que arrastren toda la ficha a revisión. Aumentar de forma gradual — una fracción de los clientes al principio, ampliando a lo largo de semanas — evita esa forma por completo.",
+          },
+          {
+            q: "¿Es un problema que todos publiquen desde mi WiFi?",
+            a: "Sí, y este pilla a mucha gente. Si todos los clientes escanean y publican mientras están en tu red de invitados, un lote de reseñas se origina desde una única dirección IP. Esa es una fuerte señal de agrupamiento, y se parece muchísimo a alguien publicando reseñas desde la trastienda. Los clientes que usan sus propios datos móviles evitan esto de forma natural, así que no empujes a la gente al WiFi del local solo para dejar una reseña.",
+          },
+          {
+            q: "¿Pueden los clientes publicar desde una tableta en el mostrador?",
+            a: "No. Varias reseñas desde un mismo dispositivo — la misma huella digital, a menudo el mismo navegador con la sesión iniciada — están entre las señales más claras que existen de reseñas artificiales. Además te deja a un paso de escribir tú mismo la reseña. Las reseñas deben venir siempre del propio teléfono del cliente y de su propia cuenta.",
+          },
+          {
+            q: "¿Puedo enviar un correo o un mensaje a toda mi lista de clientes de una vez?",
+            a: "Ten cuidado. Un envío masivo a miles de clientes antiguos produce exactamente el pico de velocidad descrito arriba, y las reseñas sobre visitas de hace meses son más vagas y menos creíbles. Si contactas con ellos, hazlo en lotes pequeños, con clientes recientes y repartidos en el tiempo.",
+          },
+        ],
+      },
+      {
+        title: "Señales de alerta que te hacen acabar penalizado",
+        blurb:
+          "Estas son las prácticas que convierten un programa de reseñas legítimo en un riesgo. Ninguna merece la pena.",
+        items: [
+          {
+            q: "¿Puedo ofrecer un descuento o un producto gratis a cambio de una reseña?",
+            a: "No. Las reseñas incentivadas están prohibidas por Google, y la norma de la FTC cubre también los incentivos no divulgados. Esto se mantiene incluso si aceptarías de buen grado una reseña negativa a cambio — el problema es el pago, no la opinión. Puedes dar las gracias a la gente. No puedes pagarle.",
+          },
+          {
+            q: "¿Pueden dejar reseñas los empleados, los amigos o la familia?",
+            a: "No. Las reseñas de personas vinculadas al negocio están prohibidas de forma tajante y a menudo son fáciles de detectar. Eso incluye que el personal reseñe su propio lugar de trabajo y pedir a los amigos que engorden la cuenta después de un mes malo.",
+          },
+          {
+            q: "¿Sonarán todas iguales las reseñas redactadas con AI?",
+            a: "Pueden hacerlo, y es un riesgo real. Reviewslip lo mitiga redactando a partir de las cosas concretas que elige cada cliente y ofreciendo nuevas redacciones al regenerar — pero la protección de verdad es que el cliente edite el texto. Fomenta eso. Una página de reseñas que comparten estructura de frases y vocabulario es un patrón detectable, sin importar quién o qué las escribiera.",
+          },
+          {
+            q: "¿Puedo escribir la reseña por un cliente que dice estar satisfecho?",
+            a: "No. Incluso con permiso verbal, si tú la escribes y la publicas se convierte en una reseña tuya, no suya — y esa es la definición de reseña falsa tanto en la política de Google como en la norma de la FTC. Entrégale el código QR y deja que lo haga él.",
+          },
+        ],
+      },
+      {
+        title: "Qué está realmente en juego",
+        blurb:
+          "Las consecuencias van de lo invisible a lo grave, y algunas llegan meses después.",
+        items: [
+          {
+            q: "¿Qué es lo peor que puede pasar?",
+            a: "Aproximadamente en orden de gravedad: reseñas individuales se filtran y nunca aparecen; un lote se elimina de forma retroactiva, a veces meses después; la ficha recibe una alerta al consumidor que avisa a los visitantes de que se detectó actividad sospechosa; o la ficha queda suspendida. En el plano legal, la norma de la FTC conlleva sanciones civiles que se calculan por infracción — es decir, por cada reseña falsa, no por negocio. Y está el simple daño reputacional de que te pillen públicamente.",
+          },
+          {
+            q: "¿Qué prohíbe realmente la norma de la FTC?",
+            a: "La norma de 2024 apunta a las reseñas falsas y fabricadas con AI de personas que nunca tuvieron una experiencia genuina, a las reseñas incentivadas no divulgadas, a personas de dentro del negocio que se hacen pasar por clientes y a la supresión u ocultación de reseñas negativas. Lo que no prohíbe es ayudar a un cliente genuino a poner en palabras su propia opinión honesta — que es justo el diseño completo de Reviewslip.",
+          },
+          {
+            q: "Si eliminan reseñas, ¿es culpa de Reviewslip o mía?",
+            a: "Tuya, en la práctica. Reviewslip limita lo que la AI puede decir y nunca publica en nombre de nadie, pero no puede controlar a quién le entregas el código QR, con cuánta insistencia presionas ni si ofreces incentivos. Las prácticas de esta página son las que determinan el resultado.",
+          },
+          {
+            q: "¿Esto se aplica fuera de Estados Unidos?",
+            a: "La norma de la FTC es legislación estadounidense, pero las políticas de las plataformas son globales — las reglas de Google sobre reseñas falsas, incentivadas y filtradas selectivamente se aplican allá donde operes. Muchas otras jurisdicciones tienen sus propios regímenes de protección al consumidor que cubren las reseñas engañosas, y varias los han ido endureciendo. Toma esta guía como el mínimo, no como el máximo.",
+          },
+        ],
+      },
+      {
+        title: "Llevarlo bien",
+        blurb:
+          "Cómo es en la práctica un programa de reseñas sano y duradero.",
+        items: [
+          {
+            q: "¿Cómo es un patrón de reseñas sano?",
+            a: "Un goteo constante en lugar de ráfagas. Una mezcla de valoraciones en lugar de un muro de cincos. Reseñas de distinta extensión — unas de una línea, otras detalladas. Momentos repartidos entre días y horas en vez de agrupados. Respuestas del propietario tanto a las buenas como a las malas. Ese perfil es a la vez lo que esperan las plataformas y lo que de verdad convence a quien lee tu ficha.",
+          },
+          {
+            q: "¿Cómo debo gestionar una reseña negativa?",
+            a: "Responde públicamente, sin discutir. Reconócela, añade contexto brevemente si lo hay y di qué vas a cambiar. Los posibles clientes leen las respuestas con tanta atención como las reseñas. No pidas su eliminación salvo que incumpla realmente la política de la plataforma, y nunca intentes enterrarla bajo una avalancha de nuevas reseñas positivas — eso es de nuevo el patrón del pico, esta vez con un motivo evidente detrás.",
+          },
+          {
+            q: "¿Con qué rapidez veré resultados?",
+            a: "Más despacio de lo que te gustaría, y esa es precisamente la idea. Un programa que suma un puñado de reseñas genuinas cada semana se acumula hasta formar una ficha bastante más sólida a lo largo de los meses, y nunca parece anómalo en ningún momento. Los intentos de comprimir eso en quince días son los que desencadenan todo lo descrito arriba.",
+          },
+          {
+            q: "¿Puedo usar Reviewslip para plataformas distintas de Google?",
+            a: "Todavía no — por ahora, solo reseñas de Google. Ten en cuenta que otras plataformas tienen sus propias reglas, y algunas son aún más estrictas: varias prohíben explícitamente solicitar reseñas. Consulta la política de cualquier plataforma antes de dirigir a tus clientes a ella.",
+          },
+        ],
+      },
+    ],
+
+    ctaTitle: "Configúralo bien desde el primer día.",
+    ctaLede:
+      "Cuéntanos sobre tu negocio y te ayudaremos a empezar con buen pie.",
+
+    disclaimer:
+      "Esta es una guía práctica basada en las políticas publicadas de las plataformas y en la norma de la FTC — no es asesoramiento legal. Las reglas de las plataformas cambian, y los requisitos donde operas pueden ser distintos. Consulta la guía vigente de tu jurisdicción y busca asesoramiento profesional si tienes dudas.",
   },
 
   demo: {

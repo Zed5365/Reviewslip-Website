@@ -38,6 +38,11 @@ const pt: Dictionary = {
       description:
         "Experimente a Reviewslip. Escolha o que se destacou e veja surgir uma avaliação genuína de 5 estrelas — sem necessidade de registo.",
     },
+    faq: {
+      title: "Guia e FAQ",
+      description:
+        "Como gerir um programa de avaliações sem ser sinalizado: configuração correta, o ritmo a manter, os sinais de alerta do Google e o que está em jogo.",
+    },
     contact: {
       title: "Contacto",
       description:
@@ -61,6 +66,7 @@ const pt: Dictionary = {
     pricing: "Preços",
     trust: "Confiança",
     demo: "Demonstração ao vivo",
+    faq: "Guia e FAQ",
     contact: "Contacto",
   },
 
@@ -152,6 +158,7 @@ const pt: Dictionary = {
 
     faqEyebrow: "Perguntas",
     faqTitle: "Perguntas frequentes.",
+    faqMore: "Leia o guia completo: configuração, riscos e sinais de alerta →",
     faq: [
       {
         q: "Isto não são apenas avaliações falsas?",
@@ -287,6 +294,145 @@ const pt: Dictionary = {
     p4End: ".",
     disclaimer:
       "Esta página é um resumo em linguagem simples, não aconselhamento jurídico. Consulte as orientações atuais da FTC e as políticas de cada plataforma para a sua jurisdição.",
+  },
+
+  faqPage: {
+    eyebrow: "Guia e FAQ",
+    title: "Como usar a Reviewslip sem ser sinalizado.",
+    lede: "A Reviewslip só ajuda se a usar da forma que as plataformas de avaliação esperam. Este guia explica como configurá-la corretamente, o ritmo a manter, os padrões que levam a que as campanhas de avaliações sejam filtradas ou penalizadas e o que está realmente em jogo se errar.",
+
+    warningLead: "O maior erro de todos:",
+    warning:
+      "Entregar o código QR apenas aos clientes que julga estarem satisfeitos. Isso é filtragem seletiva de avaliações (review gating) — o Google proíbe-a e a regra de 2024 da FTC visa-a especificamente. Ofereça o mesmo caminho de avaliação a toda a gente e deixe que as opiniões honestas caiam onde caírem.",
+
+    sections: [
+      {
+        title: "Configuração",
+        blurb:
+          "A maioria dos problemas nasce logo no início. Onde e quando coloca o código QR determina se as avaliações que se seguem parecem naturais.",
+        items: [
+          {
+            q: "Onde deve ficar o código QR?",
+            a: "Num sítio por onde todos os clientes passem no fim da visita — no recibo, num cartão de mesa, na pasta do quarto, no ecrã de pagamento. O objetivo é que todos tenham a mesma oportunidade de o digitalizar, e não que seja você a escolher quem o vê. Evite colocações onde só determinados clientes alguma vez o encontrarão.",
+          },
+          {
+            q: "Qual é o momento certo para pedir?",
+            a: "Depois de a experiência terminar — quando pagam, fazem o check-out ou saem. Cedo o suficiente para a visita estar fresca na memória, tarde o suficiente para já terem vivido a experiência toda. Não peça a meio do serviço: estaria a pedir a alguém que avaliasse algo que ainda não terminou.",
+          },
+          {
+            q: "Devo pedir a todos os clientes ou apenas aos satisfeitos?",
+            a: "A todos os clientes. Pedir seletivamente apenas às pessoas que espera que sejam positivas é filtragem seletiva de avaliações, e é proibido pelas políticas do Google e pela regra de 2024 da FTC. É também contraproducente: uma ficha em que todas as avaliações são de cinco estrelas parece menos fiável a quem procura do que uma com uma distribuição realista. Disponibilize o código QR a toda a gente.",
+          },
+          {
+            q: "E se alguém teve uma má experiência?",
+            a: "Deixe-o dizê-lo — ou, melhor ainda, resolva a situação antes de ele sair. A Reviewslip redige a partir do que o cliente seleciona, por isso o caminho honesto para um visitante insatisfeito é escrever as suas próprias palavras ou expor a questão diretamente consigo. O que nunca pode fazer é esconder ou negar o caminho de avaliação a alguém por esperar críticas. Suprimir avaliações negativas é exatamente aquilo que a regra da FTC foi escrita para travar.",
+          },
+        ],
+      },
+      {
+        title: "Ritmo e padrões",
+        blurb:
+          "As avaliações genuínas acumulam-se a um ritmo credível. A forma do seu histórico de avaliações importa tanto como o conteúdo.",
+        items: [
+          {
+            q: "Quantas avaliações são demasiadas, demasiado depressa?",
+            a: "Não existe um limite publicado — o Google não publica nenhum, e quem indicar um número exato está a adivinhar. O princípio é a proporcionalidade: o seu ritmo de avaliações deve corresponder a uma fração plausível do seu volume real de clientes e não deve mudar de forma abrupta. Um café que serve 500 pessoas por semana aguenta muito mais do que uma pensão de seis quartos. Como regra prática, se as avaliações de uma semana fizerem crescer o seu total de sempre em mais de cerca de um quinto, abrande.",
+          },
+          {
+            q: "Como é, na prática, um pico suspeito?",
+            a: "Uma ficha com uma média de duas avaliações por mês durante três anos que passa a receber quarenta em nove dias é a assinatura clássica de avaliações compradas, e os filtros automáticos estão afinados precisamente para essa forma. As avaliações podem nunca aparecer, podem aparecer e desaparecer dias depois, ou podem levar toda a ficha a ser analisada. Aumentar gradualmente — uma fração dos clientes ao início, alargando ao longo de semanas — evita completamente esse padrão.",
+          },
+          {
+            q: "É problemático se toda a gente publicar a partir do meu WiFi?",
+            a: "Sim, e este apanha muita gente desprevenida. Se todos os clientes digitalizarem e publicarem enquanto estão na sua rede para visitantes, um conjunto de avaliações tem origem num único endereço IP. É um forte sinal de agrupamento e parece muito com alguém a publicar avaliações a partir do escritório. Os clientes que usam os seus próprios dados móveis evitam isto naturalmente, por isso não empurre as pessoas para o WiFi do espaço apenas para deixarem uma avaliação.",
+          },
+          {
+            q: "Os clientes podem publicar a partir de um tablet ao balcão?",
+            a: "Não. Várias avaliações a partir de um único dispositivo — a mesma impressão digital, muitas vezes o mesmo navegador com sessão iniciada — estão entre os sinais mais claros de avaliações artificiais que existem. Além disso, deixa-o a um curto passo de escrever a avaliação você mesmo. As avaliações devem vir sempre do telemóvel do próprio cliente e da sua própria conta.",
+          },
+          {
+            q: "Posso enviar um email ou SMS a toda a minha lista de clientes de uma vez?",
+            a: "Tenha cuidado. Um envio em massa para milhares de antigos clientes produz exatamente o pico de velocidade descrito acima, e as avaliações sobre visitas de há meses são mais vagas e menos credíveis. Se contactar os clientes, faça-o em pequenos lotes, dirigidos a clientes recentes e distribuídos ao longo do tempo.",
+          },
+        ],
+      },
+      {
+        title: "Sinais de alerta que levam a penalizações",
+        blurb:
+          "Estas são as práticas que transformam um programa de avaliações legítimo num risco. Nenhuma delas compensa.",
+        items: [
+          {
+            q: "Posso oferecer um desconto ou um brinde por uma avaliação?",
+            a: "Não. As avaliações incentivadas são proibidas pelo Google, e a regra da FTC abrange também os incentivos não divulgados. Isto aplica-se mesmo que aceitasse de bom grado uma avaliação negativa em troca — o problema é o pagamento, não o teor da avaliação. Pode agradecer às pessoas. Não pode pagar-lhes.",
+          },
+          {
+            q: "O pessoal, amigos ou familiares podem deixar avaliações?",
+            a: "Não. As avaliações de pessoas ligadas ao negócio são pura e simplesmente proibidas e são muitas vezes fáceis de detetar. Isso inclui funcionários a avaliar o seu próprio local de trabalho e pedir a amigos que engrossem a contagem depois de um mau mês.",
+          },
+          {
+            q: "As avaliações redigidas por IA vão soar todas iguais?",
+            a: "Podem soar, e é um risco real. A Reviewslip atenua-o redigindo a partir das coisas específicas que cada cliente escolhe e propondo novas redações ao gerar novamente — mas a verdadeira proteção é o cliente editar o texto. Incentive-o a fazê-lo. Uma página de avaliações que partilham a mesma estrutura frásica e o mesmo vocabulário é um padrão detetável, independentemente de quem ou do que as escreveu.",
+          },
+          {
+            q: "Posso escrever a avaliação por um cliente que diz estar satisfeito?",
+            a: "Não. Mesmo com autorização verbal, se for você a escrevê-la e a publicá-la, passa a ser uma avaliação sua e não dele — e essa é a definição de avaliação falsa tanto na política do Google como na regra da FTC. Entregue-lhe o código QR e deixe-o fazê-lo.",
+          },
+        ],
+      },
+      {
+        title: "O que está realmente em jogo",
+        blurb:
+          "As consequências vão do invisível ao grave, e algumas chegam meses depois dos factos.",
+        items: [
+          {
+            q: "Qual é o pior que pode acontecer?",
+            a: "Grosso modo, por ordem de gravidade: avaliações individuais são filtradas e nunca chegam a aparecer; um conjunto é removido retroativamente, por vezes meses depois; a ficha recebe um alerta ao consumidor a avisar os visitantes de que foi detetada atividade suspeita; ou a ficha é suspensa. Do lado legal, a regra da FTC prevê sanções civis aplicadas por infração — ou seja, por cada avaliação falsa, e não por empresa. E há ainda o simples dano reputacional de ser publicamente apanhado.",
+          },
+          {
+            q: "O que é que a regra da FTC proíbe, afinal?",
+            a: "A regra de 2024 visa as avaliações falsas e fabricadas por IA de pessoas que nunca tiveram uma experiência genuína, as avaliações incentivadas não divulgadas, as pessoas ligadas ao negócio que se fazem passar por clientes e a supressão ou ocultação de avaliações negativas. O que não proíbe é ajudar um cliente genuíno a pôr em palavras a sua própria opinião honesta — que é exatamente a conceção da Reviewslip.",
+          },
+          {
+            q: "Se as avaliações forem removidas, a culpa é da Reviewslip ou minha?",
+            a: "Sua, na prática. A Reviewslip limita o que a IA pode dizer e nunca publica em nome de ninguém, mas não pode controlar a quem entrega o código QR, com que insistência pressiona, nem se oferece incentivos. São as práticas descritas nesta página que determinam o resultado.",
+          },
+          {
+            q: "Isto aplica-se fora dos Estados Unidos?",
+            a: "A regra da FTC é lei norte-americana, mas as políticas das plataformas são globais — as regras do Google sobre avaliações falsas, incentivadas e filtradas seletivamente aplicam-se onde quer que opere. Muitas outras jurisdições têm os seus próprios regimes de defesa do consumidor que abrangem avaliações enganosas, e várias têm vindo a apertá-los. Encare estas orientações como o mínimo, não como o máximo.",
+          },
+        ],
+      },
+      {
+        title: "Gerir bem o programa",
+        blurb:
+          "Como é, na prática, um programa de avaliações saudável e duradouro.",
+        items: [
+          {
+            q: "Como é um padrão de avaliações saudável?",
+            a: "Um fluxo constante, em vez de rajadas. Uma mistura de classificações, em vez de uma parede de cincos. Avaliações de extensão variável — umas com uma linha, outras detalhadas. Datas e horas distribuídas, em vez de concentradas. Respostas do proprietário tanto às boas como às más. Esse perfil é o que as plataformas esperam e também o que realmente convence quem lê a sua ficha.",
+          },
+          {
+            q: "Como devo lidar com uma avaliação negativa?",
+            a: "Responda publicamente, sem discutir. Reconheça o que aconteceu, acrescente brevemente algum contexto, se existir, e diga o que vai mudar. Os potenciais clientes leem as respostas com tanta atenção como as avaliações. Não peça a remoção a não ser que a avaliação viole realmente a política da plataforma, e nunca tente enterrá-la sob uma enxurrada de novas avaliações positivas — isso é outra vez o padrão de pico, desta vez com um motivo evidente.",
+          },
+          {
+            q: "Com que rapidez verei resultados?",
+            a: "Mais devagar do que gostaria, e isso é precisamente o objetivo. Um programa que acrescenta um punhado de avaliações genuínas por semana traduz-se numa ficha materialmente mais forte ao longo de meses, e nunca parece anómalo em nenhum momento. As tentativas de comprimir isso em quinze dias são o que despoleta tudo o que foi descrito acima.",
+          },
+          {
+            q: "Posso usar a Reviewslip em plataformas para além do Google?",
+            a: "Ainda não — apenas avaliações do Google, para já. Tenha presente que outras plataformas têm as suas próprias regras, e algumas são ainda mais rigorosas: várias proíbem explicitamente qualquer solicitação de avaliações. Verifique a política de qualquer plataforma antes de encaminhar clientes para ela.",
+          },
+        ],
+      },
+    ],
+
+    ctaTitle: "Comece bem desde o primeiro dia.",
+    ctaLede:
+      "Conte-nos sobre o seu negócio e ajudamo-lo a começar com o pé direito.",
+
+    disclaimer:
+      "Estas são orientações práticas baseadas nas políticas publicadas das plataformas e na regra da FTC — não constituem aconselhamento jurídico. As regras das plataformas mudam e os requisitos onde opera podem ser diferentes. Consulte as orientações atuais da sua jurisdição e procure aconselhamento profissional se tiver dúvidas.",
   },
 
   demo: {

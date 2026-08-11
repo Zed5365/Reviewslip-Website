@@ -179,6 +179,11 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             <h2 className={styles.h2}>{h.faqTitle}</h2>
           </div>
           <Faq items={h.faq} />
+          <p className={styles.pricingLink}>
+            <Link href={localizedPath(lang, "/faq")} className={styles.textLink}>
+              {h.faqMore}
+            </Link>
+          </p>
         </div>
       </section>
 

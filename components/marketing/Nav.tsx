@@ -24,6 +24,7 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
     { route: "/pricing", label: nav.pricing },
     { route: "/compliance", label: nav.trust },
     { route: "/demo", label: nav.demo },
+    { route: "/faq", label: nav.faq },
     { route: "/contact", label: nav.contact },
   ].map((l) => ({
     ...l,
