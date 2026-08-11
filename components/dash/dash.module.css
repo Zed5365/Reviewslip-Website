@@ -7,13 +7,17 @@
   flex-direction: column;
 }
 
-.bar {
+.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem clamp(1rem, 4vw, 2.5rem);
+  padding: 0.9rem clamp(1rem, 4vw, 2.5rem);
+  background: var(--shade-deep);
   border-bottom: 1px solid var(--jade-line);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .brand {
@@ -213,16 +217,53 @@
   margin-top: 0.75rem;
 }
 
-.bar {
-  flex: 1;
+/* Not `.bar` — that name already belongs to the header, and CSS Modules maps
+   one class name to one rule set, so the two would merge into each other. */
+.chartBar {
+  flex: 1 1 0;
+  /* Without this a flex item refuses to shrink below its content width, and
+     thirty of them push the card past its column. */
+  min-width: 0;
   min-height: 2px;
   border-radius: 2px 2px 0 0;
   background: var(--jade);
   opacity: 0.85;
 }
 
-.barEmpty {
+.chartBarEmpty {
   background: rgba(27, 42, 35, 0.12);
+}
+
+.cardSub {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin: 1.4rem 0 0.5rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.listRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.92rem;
+}
+
+.listCount {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.cardHint {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
 }
 
 /* ------------------------------------------------------------------ forms */

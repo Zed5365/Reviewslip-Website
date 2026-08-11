@@ -70,7 +70,7 @@ export default async function VenuePage({
             {stats.daily.map((day) => (
               <div
                 key={day.day}
-                className={`${styles.bar} ${day.reviews === 0 ? styles.barEmpty : ""}`}
+                className={`${styles.chartBar} ${day.reviews === 0 ? styles.chartBarEmpty : ""}`}
                 style={{ height: `${Math.max((day.reviews / peak) * 100, 2)}%` }}
                 title={`${day.day}: ${day.reviews} review${day.reviews === 1 ? "" : "s"}`}
               />
@@ -88,14 +88,17 @@ export default async function VenuePage({
             />
           </div>
 
-          <h3 className={styles.meterLabel}>What guests pick</h3>
+          <h3 className={styles.cardSub}>What guests pick</h3>
           {stats.byCategory.length === 0 ? (
-            <p className={styles.hint}>Nothing yet this month.</p>
+            <p className={styles.cardHint}>Nothing yet this month.</p>
           ) : (
-            <ul>
+            <ul className={styles.list}>
               {stats.byCategory.map((row) => (
-                <li key={row.category}>
-                  {row.category} — {row.reviews.toLocaleString()}
+                <li key={row.category} className={styles.listRow}>
+                  <span>{row.category}</span>
+                  <span className={styles.listCount}>
+                    {row.reviews.toLocaleString()}
+                  </span>
                 </li>
               ))}
             </ul>

@@ -10,13 +10,15 @@ export default function Nav() {
   const [open, setOpen] = useState(false);
   const { t } = useLocale();
 
+  // Four, deliberately. Features was an anchor into the page How it works
+  // already explains, and Contact is in the footer as well as being the Agency
+  // plan's call to action — neither earned a slot next to Sign in and Get
+  // started. Trust stays: the compliance position is the differentiator.
   const links = [
     { href: "/how-it-works", label: t.nav.howItWorks },
-    { href: "/#features", label: t.nav.features },
     { href: "/pricing", label: t.nav.pricing },
-    { href: "/compliance", label: t.nav.trust },
     { href: "/demo", label: t.nav.demo },
-    { href: "/contact", label: t.nav.contact },
+    { href: "/compliance", label: t.nav.trust },
   ];
 
   return (
@@ -35,7 +37,9 @@ export default function Nav() {
         </nav>
 
         <div className={styles.actions}>
-          <LocaleControls />
+          {/* Compact here too. Currency and language are settings, not
+              navigation, and at full size they read as loudly as the links. */}
+          <LocaleControls compact />
           {/* Signing in is a server-side fact and this is a client component,
               so the link is always "Sign in" — /login sends anyone who already
               has a session straight on to their dashboard. */}

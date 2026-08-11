@@ -26,7 +26,7 @@ export default async function DashboardLayout({
 
   return (
     <div className={styles.shell}>
-      <header className={styles.bar}>
+      <header className={styles.topbar}>
         <Link href="/dashboard" className={styles.brand}>
           Reviewslip
         </Link>
