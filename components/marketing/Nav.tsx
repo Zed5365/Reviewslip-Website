@@ -37,13 +37,14 @@ export default function Nav() {
         </nav>
 
         <div className={styles.actions}>
-          {/* Compact here too. Currency and language are settings, not
-              navigation, and at full size they read as loudly as the links. */}
-          <LocaleControls compact />
           {/* Signing in is a server-side fact and this is a client component,
               so the link is always "Sign in" — /login sends anyone who already
               has a session straight on to their dashboard. */}
-          <Link href="/login" className={styles.link}>
+          <Link
+            href="/login"
+            className={styles.link}
+            style={{ whiteSpace: "nowrap" }}
+          >
             Sign in
           </Link>
           <Link href="/signup" className="btn btn-go">

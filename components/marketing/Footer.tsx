@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import styles from "./Footer.module.css";
 
+import LocaleControls from "./LocaleControls";
+
 export default function Footer() {
   const { t } = useLocale();
 
@@ -59,6 +61,10 @@ export default function Footer() {
 
       <div className={`wrap ${styles.legal}`}>
         <span>{t.footer.rights.replace("{year}", String(year))}</span>
+        {/* Currency and language are preferences, not navigation. They belong
+            down here with the other settings-shaped things, not competing with
+            the links and the call to action at the top of every page. */}
+        <LocaleControls compact />
         <span className={styles.note}>{t.common.brandNote}</span>
       </div>
     </footer>

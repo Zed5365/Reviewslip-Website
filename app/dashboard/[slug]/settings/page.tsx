@@ -30,10 +30,14 @@ export default async function VenueSettingsPage({
 
   return (
     <>
+      <Link className={styles.back} href={`/dashboard/${slug}`}>
+        <span aria-hidden="true">←</span> {data.venue.name}
+      </Link>
+
       <div className={styles.head}>
         <h1 className={styles.title}>Settings</h1>
         <p className={styles.sub}>
-          {data.venue.name} · <Link href={`/dashboard/${slug}`}>back to stats</Link>
+          Everything a review about this venue is allowed to say.
         </p>
       </div>
 

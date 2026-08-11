@@ -73,8 +73,11 @@ export default async function DashboardPage() {
                 <Link className="btn btn-go" href={`/dashboard/${venue.slug}`}>
                   Open
                 </Link>
+                {/* -ink, not -quiet: the card is cream, and the plain quiet
+                    button is outlined for the dark canvas — it renders as an
+                    empty box here. */}
                 <Link
-                  className="btn btn-quiet"
+                  className="btn btn-quiet-ink"
                   href={`/dashboard/${venue.slug}/settings`}
                 >
                   Settings

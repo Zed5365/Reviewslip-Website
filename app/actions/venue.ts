@@ -50,16 +50,13 @@ export async function saveVenue(
     googleUrl: text(formData, "googleUrl"),
     tripadvisorUrl: text(formData, "tripadvisorUrl"),
     websiteUrl: text(formData, "websiteUrl"),
-    model: text(formData, "model"),
     kind: text(formData, "kind"),
     place: text(formData, "place"),
     safeDetails: list(formData, "safeDetails"),
   };
 
-  // A blank key field means "keep the one you have", not "delete it" — there is
-  // no other way to leave a stored key alone while editing anything else.
-  const apiKey = text(formData, "apiKey");
-  if (apiKey) patch.apiKey = apiKey;
+  // No apiKey, no model: the platform key and the fixed model are not a
+  // customer's to change, and the API ignores them even if they are sent.
 
   try {
     const result = await call<{ warning?: string }>(`/venues/${slug}`, {

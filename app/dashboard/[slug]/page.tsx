@@ -31,6 +31,10 @@ export default async function VenuePage({
 
   return (
     <>
+      <Link className={styles.back} href="/dashboard">
+        <span aria-hidden="true">←</span> All venues
+      </Link>
+
       <div className={styles.head}>
         <h1 className={styles.title}>{venue.name}</h1>
         <p className={styles.sub}>
@@ -107,11 +111,8 @@ export default async function VenuePage({
       </div>
 
       <p className={styles.actions} style={{ marginTop: "2rem" }}>
-        <Link className="btn btn-quiet" href={`/dashboard/${venue.slug}/settings`}>
+        <Link className="btn btn-go" href={`/dashboard/${venue.slug}/settings`}>
           Settings
-        </Link>
-        <Link className="btn btn-quiet" href="/dashboard">
-          All venues
         </Link>
       </p>
     </>

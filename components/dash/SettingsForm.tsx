@@ -184,45 +184,6 @@ export function SettingsForm({
         <span className={styles.hint}>Guests never see it.</span>
       </div>
 
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="model">
-          Model
-          <Origin source={settings.model.source} />
-        </label>
-        <input
-          className={styles.input}
-          id="model"
-          name="model"
-          defaultValue={settings.model.value}
-          placeholder="anthropic/claude-haiku-4.5"
-          spellCheck={false}
-        />
-        <span className={styles.hint}>
-          Any slug from openrouter.ai/models. Checked before it saves.
-        </span>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="apiKey">
-          OpenRouter key
-          <Origin source={settings.apiKey.source} />
-        </label>
-        <input
-          className={styles.input}
-          id="apiKey"
-          name="apiKey"
-          type="password"
-          autoComplete="off"
-          spellCheck={false}
-          placeholder={settings.apiKey.set ? "Unchanged" : "sk-or-v1-…"}
-        />
-        <span className={styles.hint}>
-          {settings.apiKey.set
-            ? `Currently ${settings.apiKey.hint}. Leave blank to keep it.`
-            : "Not set — this venue uses the platform key."}
-        </span>
-      </div>
-
       <p
         className={`${styles.notice} ${
           state.error ? styles.noticeError : styles.noticeOk
