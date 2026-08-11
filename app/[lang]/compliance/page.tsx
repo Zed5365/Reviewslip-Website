@@ -1,11 +1,31 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { notFound } from "next/navigation";
+import { isLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { buildPageMetadata } from "@/lib/i18n/metadata";
+import { localizedPath } from "@/lib/i18n/routing";
 import inner from "../inner.module.css";
 
-export default function CompliancePage() {
-  const { t } = useLocale();
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/compliance">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+  return buildPageMetadata(
+    lang,
+    "/compliance",
+    getDictionary(lang).seo.compliance
+  );
+}
+
+export default async function CompliancePage({
+  params,
+}: PageProps<"/[lang]/compliance">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const t = getDictionary(lang);
   const c = t.compliance;
 
   return (
@@ -40,7 +60,7 @@ export default function CompliancePage() {
           <h2>{c.h4}</h2>
           <p>
             {c.p4Lead}
-            <Link href="/legal/terms">{c.p4Link}</Link>
+            <Link href={localizedPath(lang, "/legal/terms")}>{c.p4Link}</Link>
             {c.p4End}
           </p>
 

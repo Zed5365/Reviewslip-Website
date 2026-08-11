@@ -2,14 +2,26 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { PLANS, PLACEHOLDER_PRICING, PLAN_CTA_HREF } from "@/lib/plans";
+import { PLANS, PLACEHOLDER_PRICING } from "@/lib/plans";
 import type { PlanId, BillingCycle } from "@/lib/plans";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizedPath } from "@/lib/i18n/routing";
+import { useCurrency } from "@/lib/CurrencyProvider";
 import styles from "./PricingCards.module.css";
 
-export default function PricingCards() {
-  const { t, money } = useLocale();
+interface Props {
+  lang: Locale;
+  t: {
+    pricing: Dictionary["pricing"];
+    plans: Dictionary["plans"];
+  };
+}
+
+export default function PricingCards({ lang, t }: Props) {
+  const { money } = useCurrency();
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
+  const ctaHref = localizedPath(lang, "/contact");
 
   const f = t.plans.features;
   const meta: Record<
@@ -97,7 +109,7 @@ export default function PricingCards() {
               </p>
 
               <Link
-                href={PLAN_CTA_HREF}
+                href={ctaHref}
                 className={`btn ${plan.recommended ? "btn-go" : "btn-quiet"} ${
                   styles.cta
                 }`}

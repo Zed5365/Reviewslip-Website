@@ -12,6 +12,49 @@ const pt: Dictionary = {
     country: "País",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — Mais avaliações 5 estrelas no Google",
+      description:
+        "A Reviewslip ajuda os seus clientes satisfeitos a escrever e publicar uma avaliação genuína no Google em segundos. Leia o QR code, edite e publique.",
+    },
+    pricing: {
+      title: "Preços",
+      description:
+        "Planos Reviewslip simples para um ou vários locais. Compare Starter, Pro e Business — todos os planos incluem as mesmas funcionalidades.",
+    },
+    howItWorks: {
+      title: "Como funciona",
+      description:
+        "Do QR code à avaliação publicada no Google em três toques. Veja como a Reviewslip ajuda clientes genuínos a avaliar em segundos.",
+    },
+    compliance: {
+      title: "Conformidade e confiança",
+      description:
+        "Como a Reviewslip cumpre a regra da FTC sobre avaliações falsas e as políticas das plataformas — ajudando apenas clientes genuínos.",
+    },
+    demo: {
+      title: "Demonstração ao vivo",
+      description:
+        "Experimente a Reviewslip. Escolha o que se destacou e veja surgir uma avaliação genuína de 5 estrelas — sem necessidade de registo.",
+    },
+    contact: {
+      title: "Contacto",
+      description:
+        "Fale connosco sobre a Reviewslip para o seu negócio. Diga-nos quantos locais tem e ajudamos a conquistar mais avaliações genuínas no Google.",
+    },
+    privacy: {
+      title: "Política de Privacidade",
+      description:
+        "Como a Reviewslip recolhe, utiliza e protege os dados das empresas e dos seus clientes.",
+    },
+    terms: {
+      title: "Termos de Serviço",
+      description:
+        "Os termos que regem a utilização da Reviewslip, incluindo o uso aceitável e as condutas proibidas.",
+    },
+  },
+
   nav: {
     howItWorks: "Como funciona",
     features: "Funcionalidades",
@@ -266,6 +309,27 @@ const pt: Dictionary = {
       "A Reviewslip apenas ajuda clientes genuínos a escrever as suas próprias avaliações. Não fazemos avaliações falsas, em massa ou automáticas — consulte a nossa página de Conformidade e Confiança.",
     demoNote: "Este é o formulário que os seus clientes veriam. Experimente.",
     demoVenue: "O seu negócio",
+    form: {
+      heading: "Envie-nos uma mensagem",
+      name: "O seu nome",
+      namePlaceholder: "Maria Silva",
+      email: "Email",
+      emailPlaceholder: "maria@seunegocio.com",
+      business: "Nome do negócio",
+      businessPlaceholder: "O Café Ribeirinho",
+      locations: "Número de locais",
+      message: "Mensagem",
+      messagePlaceholder: "Conte-nos um pouco sobre o seu negócio e o que espera alcançar…",
+      submit: "Enviar mensagem",
+      sending: "A enviar…",
+      successTitle: "Obrigado — a sua mensagem está a caminho!",
+      successBody: "Entraremos em contacto em breve.",
+      errorTitle: "Algo correu mal",
+      errorBody: "Tente novamente ou envie-nos um email diretamente.",
+      orEmail: "Prefere email? Escreva-nos para",
+      errRequired: "Este campo é obrigatório.",
+      errEmail: "Introduza um endereço de email válido.",
+    },
   },
 
   slip: {

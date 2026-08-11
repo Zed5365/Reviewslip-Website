@@ -12,6 +12,49 @@ const it: Dictionary = {
     country: "Paese",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — Più recensioni Google a 5 stelle",
+      description:
+        "Reviewslip aiuta i clienti soddisfatti a scrivere e pubblicare una recensione Google autentica in pochi secondi. Scansiona il QR, modifica e pubblica.",
+    },
+    pricing: {
+      title: "Prezzi",
+      description:
+        "Piani Reviewslip semplici per una o più sedi. Confronta Starter, Pro e Business — tutti i piani includono le stesse funzionalità.",
+    },
+    howItWorks: {
+      title: "Come funziona",
+      description:
+        "Dalla scansione del QR alla recensione Google pubblicata in tre tocchi. Scopri come Reviewslip fa recensire i clienti reali in pochi secondi.",
+    },
+    compliance: {
+      title: "Conformità e affidabilità",
+      description:
+        "Come Reviewslip rispetta la norma FTC sulle recensioni false e le policy delle piattaforme — assistendo sempre e solo i clienti reali.",
+    },
+    demo: {
+      title: "Demo dal vivo",
+      description:
+        "Prova Reviewslip. Scegli cosa ti ha colpito e guarda apparire una bozza di recensione autentica a 5 stelle — senza registrazione.",
+    },
+    contact: {
+      title: "Contatti",
+      description:
+        "Parlaci di Reviewslip per la tua attività. Raccontaci delle tue sedi e ti aiuteremo a ottenere più recensioni Google autentiche.",
+    },
+    privacy: {
+      title: "Informativa sulla privacy",
+      description:
+        "Come Reviewslip raccoglie, utilizza e protegge i dati delle aziende e dei loro clienti.",
+    },
+    terms: {
+      title: "Termini di servizio",
+      description:
+        "I termini che regolano l'uso di Reviewslip, inclusi l'uso consentito e le condotte vietate.",
+    },
+  },
+
   nav: {
     howItWorks: "Come funziona",
     features: "Funzionalità",
@@ -266,6 +309,27 @@ const it: Dictionary = {
       "Reviewslip aiuta sempre e solo i clienti autentici a scrivere le proprie recensioni. Non facciamo recensioni false, in massa o automatiche — vedi la nostra pagina Conformità e affidabilità.",
     demoNote: "Questa è la scheda che vedrebbero i tuoi clienti. Provala.",
     demoVenue: "La tua attività",
+    form: {
+      heading: "Inviaci un messaggio",
+      name: "Il tuo nome",
+      namePlaceholder: "Giulia Rossi",
+      email: "Email",
+      emailPlaceholder: "giulia@tuaattivita.com",
+      business: "Nome dell'attività",
+      businessPlaceholder: "Caffè del Lungofiume",
+      locations: "Numero di sedi",
+      message: "Messaggio",
+      messagePlaceholder: "Raccontaci qualcosa della tua attività e di ciò che speri di ottenere…",
+      submit: "Invia messaggio",
+      sending: "Invio in corso…",
+      successTitle: "Grazie — il tuo messaggio è in viaggio!",
+      successBody: "Ti risponderemo a breve.",
+      errorTitle: "Qualcosa è andato storto",
+      errorBody: "Riprova, oppure scrivici direttamente via email.",
+      orEmail: "Preferisci l'email? Scrivici a",
+      errRequired: "Questo campo è obbligatorio.",
+      errEmail: "Inserisci un indirizzo email valido.",
+    },
   },
 
   slip: {

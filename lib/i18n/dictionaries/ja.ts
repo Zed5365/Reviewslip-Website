@@ -12,6 +12,49 @@ const ja: Dictionary = {
     country: "国",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — Googleの5つ星レビューを増やす",
+      description:
+        "Reviewslipは、満足したお客様が数秒で本物のGoogleレビューを書いて投稿できるようお手伝いします。QRコードをスキャンし、下書きを編集して投稿するだけ。",
+    },
+    pricing: {
+      title: "料金プラン",
+      description:
+        "1店舗から多店舗まで対応するシンプルなReviewslipの料金プラン。Starter・Pro・Businessを比較。すべてのプランで同じ機能をご利用いただけます。",
+    },
+    howItWorks: {
+      title: "使い方",
+      description:
+        "QRコードのスキャンからGoogleレビュー投稿まで、わずか3タップ。実際のお客様が数秒でレビューを残せる仕組みをご紹介します。",
+    },
+    compliance: {
+      title: "コンプライアンスと信頼性",
+      description:
+        "Reviewslipは実際のお客様だけをお手伝いすることで、FTCの偽レビュー規制や各プラットフォームのポリシーを遵守しています。",
+    },
+    demo: {
+      title: "ライブデモ",
+      description:
+        "Reviewslipを実際にお試しください。良かった点を選ぶだけで、本物の5つ星レビューの下書きが表示されます。登録は不要です。",
+    },
+    contact: {
+      title: "お問い合わせ",
+      description:
+        "ビジネスでのReviewslip導入についてお気軽にご相談ください。店舗情報をお知らせいただければ、本物のGoogleレビュー獲得をお手伝いします。",
+    },
+    privacy: {
+      title: "プライバシーポリシー",
+      description:
+        "Reviewslipが事業者およびそのお客様のデータをどのように収集・利用・保護しているかをご説明します。",
+    },
+    terms: {
+      title: "利用規約",
+      description:
+        "許容される利用範囲や禁止事項を含む、Reviewslipのご利用に関する規約です。",
+    },
+  },
+
   nav: {
     howItWorks: "使い方",
     features: "機能",
@@ -266,6 +309,27 @@ const ja: Dictionary = {
       "Reviewslipは、本物のお客様がご自身のレビューを書くお手伝いのみを行います。偽のレビュー、大量のレビュー、自動化されたレビューは行いません。詳しくはコンプライアンスと信頼性のページをご覧ください。",
     demoNote: "これはあなたのお客様が目にするスリップです。ぜひお試しください。",
     demoVenue: "あなたのビジネス",
+    form: {
+      heading: "メッセージを送る",
+      name: "お名前",
+      namePlaceholder: "山田 花子",
+      email: "メールアドレス",
+      emailPlaceholder: "hanako@yourbusiness.com",
+      business: "ビジネス名",
+      businessPlaceholder: "リバーサイド・カフェ",
+      locations: "店舗数",
+      message: "メッセージ",
+      messagePlaceholder: "あなたのビジネスや、ご希望の内容について少しお聞かせください…",
+      submit: "メッセージを送信",
+      sending: "送信中…",
+      successTitle: "ありがとうございます — メッセージを送信しました！",
+      successBody: "折り返しご連絡いたします。",
+      errorTitle: "問題が発生しました",
+      errorBody: "もう一度お試しいただくか、直接メールでご連絡ください。",
+      orEmail: "メールをご希望ですか？こちらまでご連絡ください：",
+      errRequired: "この項目は必須です。",
+      errEmail: "有効なメールアドレスを入力してください。",
+    },
   },
 
   slip: {

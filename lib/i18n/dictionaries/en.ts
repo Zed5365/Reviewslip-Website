@@ -14,6 +14,51 @@ const en = {
     country: "Country",
   },
 
+  // Per-page <title> and meta description. Titles are kept short (~60 chars)
+  // and descriptions under ~155 chars so search engines don't truncate them.
+  seo: {
+    home: {
+      title: "Reviewslip — Get more 5-star Google reviews",
+      description:
+        "Reviewslip helps your happy customers write and post a genuine Google review in seconds. Scan a QR code, get a tailored draft, edit, and post.",
+    },
+    pricing: {
+      title: "Pricing",
+      description:
+        "Simple Reviewslip plans for one location or many. Compare Starter, Pro and Business — every plan includes the same features.",
+    },
+    howItWorks: {
+      title: "How it works",
+      description:
+        "From QR scan to posted Google review in three taps. See exactly how Reviewslip helps genuine customers leave a review in seconds.",
+    },
+    compliance: {
+      title: "Compliance & trust",
+      description:
+        "How Reviewslip stays on the right side of the FTC fake review rule and platform policies — by only ever helping genuine customers.",
+    },
+    demo: {
+      title: "Live demo",
+      description:
+        "Try Reviewslip yourself. Pick what stood out and watch a genuine 5-star review draft appear — no signup needed.",
+    },
+    contact: {
+      title: "Contact",
+      description:
+        "Get in touch about Reviewslip for your business. Tell us about your locations and we'll help you earn more genuine Google reviews.",
+    },
+    privacy: {
+      title: "Privacy Policy",
+      description:
+        "How Reviewslip collects, uses and protects data for businesses and their customers.",
+    },
+    terms: {
+      title: "Terms of Service",
+      description:
+        "The terms governing use of Reviewslip, including acceptable use and prohibited conduct.",
+    },
+  },
+
   nav: {
     howItWorks: "How it works",
     features: "Features",
@@ -268,6 +313,27 @@ const en = {
       "Reviewslip only ever helps genuine customers write their own reviews. We don't do fake, bulk, or automated reviews — see our Compliance & Trust page.",
     demoNote: "This is the slip your customers would see. Try it out.",
     demoVenue: "Your business",
+    form: {
+      heading: "Send us a message",
+      name: "Your name",
+      namePlaceholder: "Jane Smith",
+      email: "Email",
+      emailPlaceholder: "jane@yourbusiness.com",
+      business: "Business name",
+      businessPlaceholder: "The Riverside Café",
+      locations: "Number of locations",
+      message: "Message",
+      messagePlaceholder: "Tell us a little about your business and what you're hoping for…",
+      submit: "Send message",
+      sending: "Sending…",
+      successTitle: "Thanks — your message is on its way!",
+      successBody: "We'll get back to you shortly.",
+      errorTitle: "Something went wrong",
+      errorBody: "Please try again, or email us directly.",
+      orEmail: "Prefer email? Write to us at",
+      errRequired: "This field is required.",
+      errEmail: "Please enter a valid email address.",
+    },
   },
 
   slip: {

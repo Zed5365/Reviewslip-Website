@@ -12,6 +12,49 @@ const de: Dictionary = {
     country: "Land",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — Mehr 5-Sterne-Bewertungen bei Google",
+      description:
+        "Reviewslip hilft zufriedenen Kunden, in Sekunden eine echte Google-Bewertung zu schreiben und zu posten: QR-Code scannen, Entwurf anpassen, fertig.",
+    },
+    pricing: {
+      title: "Preise",
+      description:
+        "Einfache Reviewslip-Tarife für einen oder viele Standorte. Starter, Pro und Business im Vergleich — mit identischem Funktionsumfang.",
+    },
+    howItWorks: {
+      title: "So funktioniert's",
+      description:
+        "Vom QR-Scan zur veröffentlichten Google-Bewertung in drei Taps. So hilft Reviewslip echten Kunden, in Sekunden eine Bewertung abzugeben.",
+    },
+    compliance: {
+      title: "Compliance & Vertrauen",
+      description:
+        "Wie Reviewslip die FTC-Regeln zu Fake-Bewertungen und Plattformrichtlinien einhält — indem ausschließlich echte Kunden unterstützt werden.",
+    },
+    demo: {
+      title: "Live-Demo",
+      description:
+        "Testen Sie Reviewslip selbst. Wählen Sie aus, was Ihnen gefallen hat, und sehen Sie den 5-Sterne-Entwurf entstehen — ohne Anmeldung.",
+    },
+    contact: {
+      title: "Kontakt",
+      description:
+        "Sprechen Sie mit uns über Reviewslip für Ihr Unternehmen. Erzählen Sie uns von Ihren Standorten — wir helfen Ihnen zu mehr echten Bewertungen.",
+    },
+    privacy: {
+      title: "Datenschutzerklärung",
+      description:
+        "Wie Reviewslip Daten von Unternehmen und deren Kunden erhebt, nutzt und schützt.",
+    },
+    terms: {
+      title: "Nutzungsbedingungen",
+      description:
+        "Die Bedingungen für die Nutzung von Reviewslip, einschließlich zulässiger Nutzung und verbotener Handlungen.",
+    },
+  },
+
   nav: {
     howItWorks: "So funktioniert's",
     features: "Funktionen",
@@ -266,6 +309,27 @@ const de: Dictionary = {
       "Reviewslip hilft immer nur echten Kunden, ihre eigenen Bewertungen zu schreiben. Wir machen keine gefälschten, massenhaften oder automatisierten Bewertungen – siehe unsere Seite Compliance & Vertrauen.",
     demoNote: "Dies ist das Formular, das Ihre Kunden sehen würden. Probieren Sie es aus.",
     demoVenue: "Ihr Unternehmen",
+    form: {
+      heading: "Schreiben Sie uns eine Nachricht",
+      name: "Ihr Name",
+      namePlaceholder: "Anna Schmidt",
+      email: "E-Mail",
+      emailPlaceholder: "anna@ihrunternehmen.de",
+      business: "Unternehmensname",
+      businessPlaceholder: "Café am Fluss",
+      locations: "Anzahl der Standorte",
+      message: "Nachricht",
+      messagePlaceholder: "Erzählen Sie uns kurz von Ihrem Unternehmen und was Sie sich erhoffen…",
+      submit: "Nachricht senden",
+      sending: "Wird gesendet…",
+      successTitle: "Danke – Ihre Nachricht ist unterwegs!",
+      successBody: "Wir melden uns in Kürze bei Ihnen.",
+      errorTitle: "Etwas ist schiefgelaufen",
+      errorBody: "Bitte versuchen Sie es erneut oder schreiben Sie uns direkt eine E-Mail.",
+      orEmail: "Lieber per E-Mail? Schreiben Sie uns an",
+      errRequired: "Dieses Feld ist erforderlich.",
+      errEmail: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    },
   },
 
   slip: {

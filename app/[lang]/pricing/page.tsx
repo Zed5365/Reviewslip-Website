@@ -1,15 +1,34 @@
-"use client";
-
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import PricingCards from "@/components/marketing/PricingCards";
 import Faq from "@/components/marketing/Faq";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import JsonLd from "@/components/JsonLd";
+import { isLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { buildPageMetadata } from "@/lib/i18n/metadata";
+import { faqJsonLd } from "@/lib/seo/jsonLd";
 import inner from "../inner.module.css";
 
-export default function PricingPage() {
-  const { t } = useLocale();
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/pricing">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+  return buildPageMetadata(lang, "/pricing", getDictionary(lang).seo.pricing);
+}
+
+export default async function PricingPage({
+  params,
+}: PageProps<"/[lang]/pricing">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const t = getDictionary(lang);
 
   return (
     <>
+      <JsonLd data={faqJsonLd(t.pricing.faq)} />
+
       <header className={inner.header}>
         <div className={`wrap ${inner.headerInner}`}>
           <span className="eyebrow">{t.pricing.eyebrow}</span>
@@ -20,7 +39,10 @@ export default function PricingPage() {
 
       <section className="section">
         <div className="wrap">
-          <PricingCards />
+          <PricingCards
+            lang={lang}
+            t={{ pricing: t.pricing, plans: t.plans }}
+          />
         </div>
       </section>
 

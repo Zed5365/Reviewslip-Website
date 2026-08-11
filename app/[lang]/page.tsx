@@ -1,18 +1,48 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import DemoSlip from "@/components/marketing/DemoSlip";
 import PricingCards from "@/components/marketing/PricingCards";
 import Faq from "@/components/marketing/Faq";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import JsonLd from "@/components/JsonLd";
+import { isLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { buildPageMetadata } from "@/lib/i18n/metadata";
+import { localizedPath } from "@/lib/i18n/routing";
+import {
+  organizationJsonLd,
+  webSiteJsonLd,
+  softwareAppJsonLd,
+  faqJsonLd,
+} from "@/lib/seo/jsonLd";
 import styles from "./home.module.css";
 
-export default function HomePage() {
-  const { t } = useLocale();
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+  return buildPageMetadata(lang, "/", getDictionary(lang).seo.home);
+}
+
+export default async function HomePage({ params }: PageProps<"/[lang]">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const t = getDictionary(lang);
   const h = t.home;
 
   return (
     <>
+      <JsonLd
+        data={[
+          organizationJsonLd(lang, t),
+          webSiteJsonLd(lang, t),
+          softwareAppJsonLd(lang, t),
+          faqJsonLd(h.faq),
+        ]}
+      />
+
       {/* Hero */}
       <section className={styles.hero}>
         <div className={`wrap ${styles.heroGrid}`}>
@@ -23,10 +53,10 @@ export default function HomePage() {
             </h1>
             <p className="lede">{h.heroLede}</p>
             <div className={styles.heroActions}>
-              <Link href="/contact" className="btn btn-go">
+              <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
                 {t.common.getInTouch}
               </Link>
-              <Link href="/demo" className="btn btn-quiet">
+              <Link href={localizedPath(lang, "/demo")} className="btn btn-quiet">
                 {t.common.tryDemo}
               </Link>
             </div>
@@ -34,7 +64,10 @@ export default function HomePage() {
           </div>
 
           <div className={styles.heroSlip}>
-            <DemoSlip autoStart />
+            <DemoSlip
+              t={{ slip: t.slip, demoReviews: t.demoReviews }}
+              autoStart
+            />
           </div>
         </div>
       </section>
@@ -108,9 +141,15 @@ export default function HomePage() {
             <span className="eyebrow">{h.pricingEyebrow}</span>
             <h2 className={styles.h2}>{h.pricingTitle}</h2>
           </div>
-          <PricingCards />
+          <PricingCards
+            lang={lang}
+            t={{ pricing: t.pricing, plans: t.plans }}
+          />
           <p className={styles.pricingLink}>
-            <Link href="/pricing" className={styles.textLink}>
+            <Link
+              href={localizedPath(lang, "/pricing")}
+              className={styles.textLink}
+            >
               {h.pricingCompare}
             </Link>
           </p>
@@ -123,7 +162,10 @@ export default function HomePage() {
           <span className="eyebrow">{h.trustEyebrow}</span>
           <h2 className={styles.h2}>{h.trustTitle}</h2>
           <p className="lede">{h.trustLede}</p>
-          <Link href="/compliance" className="btn btn-quiet">
+          <Link
+            href={localizedPath(lang, "/compliance")}
+            className="btn btn-quiet"
+          >
             {h.trustCta}
           </Link>
         </div>
@@ -145,7 +187,7 @@ export default function HomePage() {
         <div className={`wrap ${styles.ctaInner}`}>
           <h2 className={styles.ctaTitle}>{h.ctaTitle}</h2>
           <p className="lede">{h.ctaLede}</p>
-          <Link href="/contact" className="btn btn-go">
+          <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
             {t.common.getInTouch}
           </Link>
         </div>

@@ -1,29 +1,27 @@
-"use client";
-
 import Link from "next/link";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizedPath } from "@/lib/i18n/routing";
 import styles from "./Footer.module.css";
 
-export default function Footer() {
-  const { t } = useLocale();
-
+/** Server component — no interactivity, so it ships zero client JavaScript. */
+export default function Footer({ lang, t }: { lang: Locale; t: Dictionary }) {
   const columns = [
     {
       title: t.footer.colProduct,
       links: [
-        { href: "/how-it-works", label: t.nav.howItWorks },
-        { href: "/#features", label: t.nav.features },
-        { href: "/pricing", label: t.nav.pricing },
-        { href: "/demo", label: t.nav.demo },
+        { route: "/how-it-works", label: t.nav.howItWorks },
+        { route: "/pricing", label: t.nav.pricing },
+        { route: "/demo", label: t.nav.demo },
       ],
     },
     {
       title: t.footer.colCompany,
       links: [
-        { href: "/compliance", label: t.footer.complianceTrust },
-        { href: "/contact", label: t.nav.contact },
-        { href: "/legal/privacy", label: t.footer.privacy },
-        { href: "/legal/terms", label: t.footer.terms },
+        { route: "/compliance", label: t.footer.complianceTrust },
+        { route: "/contact", label: t.nav.contact },
+        { route: "/legal/privacy", label: t.footer.privacy },
+        { route: "/legal/terms", label: t.footer.terms },
       ],
     },
   ];
@@ -42,7 +40,11 @@ export default function Footer() {
           <div key={col.title} className={styles.col}>
             <h4 className={styles.colTitle}>{col.title}</h4>
             {col.links.map((l) => (
-              <Link key={l.href} href={l.href} className={styles.link}>
+              <Link
+                key={l.route}
+                href={localizedPath(lang, l.route)}
+                className={styles.link}
+              >
                 {l.label}
               </Link>
             ))}
@@ -51,7 +53,7 @@ export default function Footer() {
 
         <div className={styles.col}>
           <h4 className={styles.colTitle}>{t.footer.colGetStarted}</h4>
-          <Link href="/contact" className="btn btn-go">
+          <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
             {t.common.getInTouch}
           </Link>
         </div>

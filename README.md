@@ -27,21 +27,34 @@ npm run start   # serve the production build
 ## Project structure
 
 ```
+proxy.ts                # locale routing (Next 16's renamed middleware)
 app/
-  layout.tsx            # root layout: fonts, metadata, viewport
   globals.css           # design system (tokens + component classes)
-  (marketing)/          # public marketing site (Nav + Footer layout)
+  sitemap.ts            # every page × every language, with hreflang alternates
+  robots.ts             # robots.txt + sitemap pointer
+  [lang]/               # every page is server-rendered per language
+    layout.tsx          # root layout: <html lang>, fonts, Nav/Footer, base metadata
     page.tsx            # landing page
     pricing/            # pricing + FAQ
     how-it-works/       # step-by-step walkthrough
     compliance/         # FTC / platform compliance stance
     demo/               # public interactive slip demo
+    contact/            # contact form
     legal/              # privacy + terms (template stubs)
-  dashboard/            # placeholder — real dashboard is Phase 3
-components/marketing/    # Nav, Footer, DemoSlip, PricingCards, Faq
+components/
+  JsonLd.tsx            # schema.org structured-data block
+  marketing/            # Nav, Footer, DemoSlip, PricingCards, Faq, ContactForm
 lib/
+  site.ts               # SITE_URL, contact email, form endpoint
   plans.ts              # plan/pricing config (PLACEHOLDER prices)
-  demoReviews.ts        # canned demo drafts (no AI key needed on marketing site)
+  currency.ts           # countries + PLACEHOLDER exchange rates
+  CurrencyProvider.tsx  # client currency state (language is URL-driven)
+  i18n/
+    config.ts           # supported locales
+    routing.ts          # URL scheme, canonical + hreflang helpers
+    metadata.ts         # per-page metadata builder
+    dictionaries/       # en.ts is the source of truth; 9 translations
+  seo/jsonLd.ts         # Organization / WebSite / SoftwareApplication / FAQ / HowTo
 ```
 
 ## Status
@@ -67,17 +80,43 @@ See [PLAN.md](PLAN.md) for the full context.
 - **Country selector → currency** — converts all pricing via `Intl.NumberFormat`.
   Countries/currencies and **placeholder** exchange rates live in `lib/currency.ts`
   (base currency is USD; swap the rates for real ones before launch).
-- Both preferences are held in a client `LocaleProvider` (`lib/i18n/LocaleProvider.tsx`)
-  and persisted to `localStorage`. Access copy via `useLocale().t` and format prices via
-  `useLocale().money(usd)`.
-- **Tradeoff:** this is client-side i18n (no per-language URLs), so language isn't in the
-  URL and pages aren't server-rendered per locale — simpler, but weaker SEO than routed
-  i18n (`/[lang]/…`). Revisit if multilingual SEO becomes a priority.
+- **Language lives in the URL**, currency does not:
+  - Language is a route segment (`app/[lang]/…`), so every translation is server-rendered
+    and independently indexable. Server components read it via `getDictionary(lang)`;
+    client components receive only the dictionary slices they need as props.
+  - Currency is client state (`lib/CurrencyProvider.tsx`, persisted to `localStorage`)
+    because it has no SEO impact. Read it with `useCurrency().money(usd)`.
+
+## SEO
+
+- **URL scheme** — English at the root (`/pricing`), other languages prefixed
+  (`/es/pricing`). `proxy.ts` rewrites unprefixed paths onto `[lang]` internally and
+  308-redirects the `/en/…` form back to the clean one, so each page has exactly one
+  canonical URL per language. Only the bare `/` negotiates `Accept-Language` (honouring an
+  `rs_lang` cookie first) — every explicit locale URL is served directly so crawlers reach
+  all translations without redirects.
+- **Per-page metadata** — titles and descriptions are translated (`seo` block in each
+  dictionary) and applied via `generateMetadata`. Each page emits a self-referencing
+  canonical plus the full hreflang set (10 languages + `x-default`).
+- **Sitemap & robots** — `app/sitemap.ts` lists every page with `xhtml:link` alternates;
+  `app/robots.ts` allows all and points to it.
+- **Structured data** — Organization, WebSite, SoftwareApplication and FAQPage on the home
+  page, FAQPage on pricing, HowTo on how-it-works. Offer/price markup is deliberately
+  omitted while pricing is placeholder.
+- **Set the real domain** in `SITE_URL` (`lib/site.ts`) or via `NEXT_PUBLIC_SITE_URL` —
+  it drives every canonical, alternate and sitemap URL. It is currently a placeholder.
+- Fonts load the `thai` subset so Thai renders in the brand typeface; CJK intentionally
+  falls back to the system UI font.
 
 ## Notes
 
-- **Marketing only** — no sign-up. All CTAs link to `/contact` (email).
+- **Marketing only** — no sign-up. All CTAs link to `/contact` (contact form).
 - **Contact email** is a placeholder in `lib/site.ts` (`hello@reviewslip.app`) — swap it.
+- **Contact form** (`components/marketing/ContactForm.tsx`) posts to
+  `CONTACT_FORM_ENDPOINT` in `lib/site.ts`. Left empty, it falls back to opening the
+  visitor's email client with the message pre-filled (works with no backend). Set it to a
+  Formspree endpoint or your own handler (accepts JSON `{ name, email, business, locations,
+  message }`) to collect submissions server-side. Form labels are translated in all locales.
 - **Pricing is placeholder** (`lib/plans.ts`) until finalised.
 - **Platform**: Google reviews only for v1.
 - The demo uses canned drafts and never calls an AI model.

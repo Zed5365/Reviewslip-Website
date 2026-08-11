@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 import styles from "./DemoSlip.module.css";
 
 type Phase = "idle" | "generating" | "ready";
@@ -17,14 +17,18 @@ const CATEGORY_IDS: CategoryId[] = [
 ];
 
 interface Props {
+  /** Only the slices this component needs, so the RSC payload stays small. */
+  t: {
+    slip: Dictionary["slip"];
+    demoReviews: Dictionary["demoReviews"];
+  };
   /** Business name shown on the slip. */
   venue?: string;
   /** Pre-select a couple of categories and auto-generate once on mount. */
   autoStart?: boolean;
 }
 
-export default function DemoSlip({ venue, autoStart = false }: Props) {
-  const { t } = useLocale();
+export default function DemoSlip({ t, venue, autoStart = false }: Props) {
   const [selected, setSelected] = useState<CategoryId[]>(
     autoStart ? ["service", "food"] : []
   );

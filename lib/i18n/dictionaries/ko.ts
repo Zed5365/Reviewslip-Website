@@ -12,6 +12,47 @@ const ko: Dictionary = {
     country: "국가",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — Google 5성 리뷰 더 많이 받기",
+      description:
+        "Reviewslip은 만족한 고객이 몇 초 만에 진정성 있는 Google 리뷰를 작성·게시하도록 돕습니다. QR 코드를 스캔해 맞춤 초안을 받고, 수정 후 게시하세요.",
+    },
+    pricing: {
+      title: "요금제",
+      description:
+        "매장 한 곳부터 여러 곳까지, 간단한 Reviewslip 요금제. Starter, Pro, Business를 비교해 보세요 — 모든 플랜의 기능은 동일합니다.",
+    },
+    howItWorks: {
+      title: "이용 방법",
+      description:
+        "QR 스캔부터 Google 리뷰 게시까지 단 세 번의 탭. 실제 고객이 몇 초 만에 리뷰를 남기는 과정을 확인해 보세요.",
+    },
+    compliance: {
+      title: "규정 준수 및 신뢰",
+      description:
+        "Reviewslip은 오직 실제 고객만 지원하여 FTC 가짜 리뷰 규정과 각 플랫폼 정책을 준수합니다.",
+    },
+    demo: {
+      title: "실시간 데모",
+      description:
+        "Reviewslip을 직접 체험해 보세요. 좋았던 점을 고르면 진정성 있는 5성 리뷰 초안이 나타납니다 — 가입은 필요 없습니다.",
+    },
+    contact: {
+      title: "문의",
+      description:
+        "비즈니스에 맞는 Reviewslip 도입을 문의하세요. 매장 정보를 알려주시면 진정성 있는 Google 리뷰를 더 많이 받도록 돕겠습니다.",
+    },
+    privacy: {
+      title: "개인정보 처리방침",
+      description: "Reviewslip이 비즈니스와 고객의 데이터를 수집·이용하고 보호하는 방식을 안내합니다.",
+    },
+    terms: {
+      title: "이용약관",
+      description: "Reviewslip 이용에 적용되는 약관으로, 허용되는 사용 범위와 금지 행위를 포함합니다.",
+    },
+  },
+
   nav: {
     howItWorks: "이용 방법",
     features: "기능",
@@ -266,6 +307,27 @@ const ko: Dictionary = {
       "Reviewslip은 언제나 진정한 고객이 자신의 리뷰를 작성하도록만 돕습니다. 저희는 가짜, 대량, 자동 리뷰를 하지 않습니다 — 규정 준수 및 신뢰 페이지를 참고하세요.",
     demoNote: "이것은 고객이 보게 될 슬립입니다. 사용해 보세요.",
     demoVenue: "당신의 비즈니스",
+    form: {
+      heading: "메시지 보내기",
+      name: "이름",
+      namePlaceholder: "홍길동",
+      email: "이메일",
+      emailPlaceholder: "jane@yourbusiness.com",
+      business: "상호명",
+      businessPlaceholder: "리버사이드 카페",
+      locations: "지점 수",
+      message: "메시지",
+      messagePlaceholder: "비즈니스와 원하시는 바에 대해 간단히 알려주세요…",
+      submit: "메시지 보내기",
+      sending: "보내는 중…",
+      successTitle: "감사합니다 — 메시지가 전송되었습니다!",
+      successBody: "곧 답변드리겠습니다.",
+      errorTitle: "문제가 발생했습니다",
+      errorBody: "다시 시도하시거나, 저희에게 직접 이메일을 보내주세요.",
+      orEmail: "이메일이 더 편하신가요? 다음 주소로 연락 주세요",
+      errRequired: "이 항목은 필수입니다.",
+      errEmail: "유효한 이메일 주소를 입력하세요.",
+    },
   },
 
   slip: {

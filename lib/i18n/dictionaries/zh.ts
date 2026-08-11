@@ -12,6 +12,47 @@ const zh: Dictionary = {
     country: "国家/地区",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — 获取更多 Google 五星好评",
+      description:
+        "Reviewslip 帮助满意的顾客在几秒内写好并发布真实的 Google 评价。扫码即可获得专属草稿，稍作修改便可发布。",
+    },
+    pricing: {
+      title: "价格方案",
+      description:
+        "无论单门店还是多门店，Reviewslip 方案都简单透明。对比 Starter、Pro 与 Business，各方案功能完全一致。",
+    },
+    howItWorks: {
+      title: "运作方式",
+      description:
+        "从扫码到发布 Google 评价，只需三次点击。了解 Reviewslip 如何帮助真实顾客在几秒内留下评价。",
+    },
+    compliance: {
+      title: "合规与信任",
+      description:
+        "Reviewslip 只协助真实顾客撰写评价，全面符合 FTC 虚假评论规定与各平台政策要求。",
+    },
+    demo: {
+      title: "在线演示",
+      description:
+        "亲自体验 Reviewslip。选出让您印象深刻之处，即可看到真实的五星评价草稿，无需注册。",
+    },
+    contact: {
+      title: "联系我们",
+      description:
+        "为您的业务咨询 Reviewslip。告诉我们您的门店情况，我们将助您赢得更多真实的 Google 评价。",
+    },
+    privacy: {
+      title: "隐私政策",
+      description: "了解 Reviewslip 如何为商家及其顾客收集、使用并保护数据。",
+    },
+    terms: {
+      title: "服务条款",
+      description: "使用 Reviewslip 所适用的条款，包括可接受的使用方式与禁止行为。",
+    },
+  },
+
   nav: {
     howItWorks: "运作方式",
     features: "功能特色",
@@ -266,6 +307,27 @@ const zh: Dictionary = {
       "Reviewslip 始终只协助真实顾客撰写属于自己的评价。我们不做虚假、批量或自动化的评价——请参阅我们的合规与信任页面。",
     demoNote: "这是您的顾客将会看到的评价卡。来试试吧。",
     demoVenue: "您的业务",
+    form: {
+      heading: "给我们发送消息",
+      name: "您的姓名",
+      namePlaceholder: "张小美",
+      email: "电子邮箱",
+      emailPlaceholder: "jane@yourbusiness.com",
+      business: "商家名称",
+      businessPlaceholder: "河畔咖啡馆",
+      locations: "门店数量",
+      message: "留言",
+      messagePlaceholder: "简单介绍一下您的业务，以及您期望达成的目标……",
+      submit: "发送消息",
+      sending: "发送中……",
+      successTitle: "谢谢——您的消息正在发送中！",
+      successBody: "我们会尽快与您联系。",
+      errorTitle: "出了点问题",
+      errorBody: "请重试，或直接给我们发送电子邮件。",
+      orEmail: "更喜欢用电子邮件？请写信至",
+      errRequired: "此字段为必填项。",
+      errEmail: "请输入有效的电子邮箱地址。",
+    },
   },
 
   slip: {

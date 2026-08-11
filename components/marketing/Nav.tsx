@@ -2,42 +2,60 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { localizedPath } from "@/lib/i18n/routing";
 import LocaleControls from "./LocaleControls";
 import styles from "./Nav.module.css";
 
-export default function Nav() {
+interface Props {
+  lang: Locale;
+  nav: Dictionary["nav"];
+  ctaLabel: string;
+  selectors: Dictionary["selectors"];
+}
+
+export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
   const [open, setOpen] = useState(false);
-  const { t } = useLocale();
 
   const links = [
-    { href: "/how-it-works", label: t.nav.howItWorks },
-    { href: "/#features", label: t.nav.features },
-    { href: "/pricing", label: t.nav.pricing },
-    { href: "/compliance", label: t.nav.trust },
-    { href: "/demo", label: t.nav.demo },
-    { href: "/contact", label: t.nav.contact },
-  ];
+    { route: "/how-it-works", label: nav.howItWorks },
+    { route: "/#features", label: nav.features },
+    { route: "/pricing", label: nav.pricing },
+    { route: "/compliance", label: nav.trust },
+    { route: "/demo", label: nav.demo },
+    { route: "/contact", label: nav.contact },
+  ].map((l) => ({
+    ...l,
+    // "/#features" is an anchor on the home page — localize the page part only.
+    href: l.route.startsWith("/#")
+      ? `${localizedPath(lang, "/")}${l.route.slice(1)}`.replace("//", "/")
+      : localizedPath(lang, l.route),
+  }));
 
   return (
     <header className={styles.header}>
       <div className={`wrap ${styles.bar}`}>
-        <Link href="/" className={styles.brand} onClick={() => setOpen(false)}>
+        <Link
+          href={localizedPath(lang, "/")}
+          className={styles.brand}
+          onClick={() => setOpen(false)}
+        >
           Reviewslip
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Primary">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className={styles.link}>
+            <Link key={l.route} href={l.href} className={styles.link}>
               {l.label}
             </Link>
           ))}
         </nav>
 
         <div className={styles.actions}>
-          <LocaleControls />
-          <Link href="/contact" className="btn btn-go">
-            {t.common.getInTouch}
+          <LocaleControls lang={lang} selectors={selectors} />
+          <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
+            {ctaLabel}
           </Link>
         </div>
 
@@ -55,7 +73,7 @@ export default function Nav() {
         <nav className={styles.mobileNav} aria-label="Mobile">
           {links.map((l) => (
             <Link
-              key={l.href}
+              key={l.route}
               href={l.href}
               className={styles.mobileLink}
               onClick={() => setOpen(false)}
@@ -64,14 +82,14 @@ export default function Nav() {
             </Link>
           ))}
           <div className={styles.mobileControls}>
-            <LocaleControls compact />
+            <LocaleControls lang={lang} selectors={selectors} compact />
           </div>
           <Link
-            href="/contact"
+            href={localizedPath(lang, "/contact")}
             className="btn btn-go"
             onClick={() => setOpen(false)}
           >
-            {t.common.getInTouch}
+            {ctaLabel}
           </Link>
         </nav>
       )}

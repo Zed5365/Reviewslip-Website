@@ -1,10 +1,29 @@
-"use client";
-
-import { useLocale } from "@/lib/i18n/LocaleProvider";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { isLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { buildPageMetadata } from "@/lib/i18n/metadata";
 import inner from "../../inner.module.css";
 
-export default function PrivacyPage() {
-  const { t } = useLocale();
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/legal/privacy">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+  return buildPageMetadata(
+    lang,
+    "/legal/privacy",
+    getDictionary(lang).seo.privacy
+  );
+}
+
+export default async function PrivacyPage({
+  params,
+}: PageProps<"/[lang]/legal/privacy">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const t = getDictionary(lang);
   const p = t.legal.privacy;
 
   return (

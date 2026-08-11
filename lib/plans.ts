@@ -37,9 +37,6 @@ export interface Plan {
 
 export const PLACEHOLDER_PRICING = true;
 
-/** Every plan CTA leads to the contact page — the site has no self-serve sign-up. */
-export const PLAN_CTA_HREF = "/contact";
-
 export const PLANS: Plan[] = [
   {
     id: "starter",
@@ -113,19 +110,9 @@ export const PLANS: Plan[] = [
   },
 ];
 
-/** Fraction of the annual bill saved by paying yearly (e.g. 2 months free ≈ 0.17). */
-export const YEARLY_SAVINGS_LABEL = "2 months free";
-
 /**
- * Price for a plan under the chosen billing cycle. Returns the display amount
- * and its suffix ("/mo", "/yr", or none for Free/Custom).
+ * Display strings for prices (currency symbol, "/mo" vs "/yr", "Free",
+ * "Custom", the savings label) all come from the active dictionary so they are
+ * translated, and the amount is converted by `useCurrency().money()`. See
+ * `components/marketing/PricingCards.tsx`.
  */
-export function priceFor(
-  plan: Plan,
-  cycle: BillingCycle
-): { amount: string; suffix: string } {
-  const value = cycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-  if (value === null) return { amount: "Custom", suffix: "" };
-  if (value === 0) return { amount: "Free", suffix: "" };
-  return { amount: `$${value}`, suffix: cycle === "yearly" ? "/yr" : "/mo" };
-}

@@ -12,6 +12,49 @@ const es: Dictionary = {
     country: "País",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — Más reseñas de 5 estrellas en Google",
+      description:
+        "Reviewslip ayuda a tus clientes satisfechos a escribir y publicar una reseña genuina en Google en segundos. Escanea un QR, edita el borrador y publica.",
+    },
+    pricing: {
+      title: "Precios",
+      description:
+        "Planes sencillos de Reviewslip para uno o varios locales. Compara Starter, Pro y Business — todos incluyen las mismas funciones.",
+    },
+    howItWorks: {
+      title: "Cómo funciona",
+      description:
+        "Del escaneo del QR a la reseña publicada en Google en tres toques. Descubre cómo Reviewslip ayuda a dejar una reseña en segundos.",
+    },
+    compliance: {
+      title: "Cumplimiento y confianza",
+      description:
+        "Cómo Reviewslip cumple la norma de la FTC sobre reseñas falsas y las políticas de las plataformas — ayudando solo a clientes reales.",
+    },
+    demo: {
+      title: "Demo en vivo",
+      description:
+        "Prueba Reviewslip tú mismo. Elige lo que más te gustó y mira aparecer un borrador de reseña de 5 estrellas — sin registro.",
+    },
+    contact: {
+      title: "Contacto",
+      description:
+        "Habla con nosotros sobre Reviewslip para tu negocio. Cuéntanos cuántos locales tienes y te ayudamos a lograr más reseñas genuinas.",
+    },
+    privacy: {
+      title: "Política de privacidad",
+      description:
+        "Cómo Reviewslip recopila, usa y protege los datos de las empresas y de sus clientes.",
+    },
+    terms: {
+      title: "Términos del servicio",
+      description:
+        "Los términos que rigen el uso de Reviewslip, incluidos el uso aceptable y las conductas prohibidas.",
+    },
+  },
+
   nav: {
     howItWorks: "Cómo funciona",
     features: "Funciones",
@@ -266,6 +309,27 @@ const es: Dictionary = {
       "Reviewslip solo ayuda a clientes genuinos a escribir sus propias reseñas. No hacemos reseñas falsas, masivas ni automatizadas — consulta nuestra página de Cumplimiento y confianza.",
     demoNote: "Esta es la ficha que verían tus clientes. Pruébala.",
     demoVenue: "Tu negocio",
+    form: {
+      heading: "Envíanos un mensaje",
+      name: "Tu nombre",
+      namePlaceholder: "Lucía Martínez",
+      email: "Correo electrónico",
+      emailPlaceholder: "lucia@tunegocio.com",
+      business: "Nombre del negocio",
+      businessPlaceholder: "El Café del Río",
+      locations: "Número de ubicaciones",
+      message: "Mensaje",
+      messagePlaceholder: "Cuéntanos un poco sobre tu negocio y qué esperas conseguir…",
+      submit: "Enviar mensaje",
+      sending: "Enviando…",
+      successTitle: "¡Gracias! Tu mensaje está en camino.",
+      successBody: "Te responderemos en breve.",
+      errorTitle: "Algo salió mal",
+      errorBody: "Vuelve a intentarlo o escríbenos directamente por correo.",
+      orEmail: "¿Prefieres el correo? Escríbenos a",
+      errRequired: "Este campo es obligatorio.",
+      errEmail: "Introduce una dirección de correo válida.",
+    },
   },
 
   slip: {

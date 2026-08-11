@@ -12,6 +12,49 @@ const fr: Dictionary = {
     country: "Pays",
   },
 
+  seo: {
+    home: {
+      title: "Reviewslip — Plus d'avis Google 5 étoiles",
+      description:
+        "Reviewslip aide vos clients satisfaits à rédiger un véritable avis Google en quelques secondes. Scannez un QR code, ajustez le brouillon et publiez.",
+    },
+    pricing: {
+      title: "Tarifs",
+      description:
+        "Des formules Reviewslip simples, pour un ou plusieurs établissements. Comparez Starter, Pro et Business — toutes incluent les mêmes fonctionnalités.",
+    },
+    howItWorks: {
+      title: "Comment ça marche",
+      description:
+        "Du scan du QR code à l'avis Google publié en trois clics. Découvrez comment Reviewslip aide vos vrais clients à laisser un avis en quelques secondes.",
+    },
+    compliance: {
+      title: "Conformité et confiance",
+      description:
+        "Comment Reviewslip respecte la règle FTC sur les faux avis et les politiques des plateformes — en n'aidant que de vrais clients.",
+    },
+    demo: {
+      title: "Démo en direct",
+      description:
+        "Essayez Reviewslip vous-même. Choisissez ce qui vous a marqué et voyez apparaître un vrai brouillon d'avis 5 étoiles — sans inscription.",
+    },
+    contact: {
+      title: "Contact",
+      description:
+        "Contactez-nous au sujet de Reviewslip pour votre entreprise. Parlez-nous de vos établissements : nous vous aiderons à obtenir plus d'avis Google.",
+    },
+    privacy: {
+      title: "Politique de confidentialité",
+      description:
+        "Comment Reviewslip collecte, utilise et protège les données des entreprises et de leurs clients.",
+    },
+    terms: {
+      title: "Conditions d'utilisation",
+      description:
+        "Les conditions régissant l'utilisation de Reviewslip, y compris l'usage acceptable et les comportements interdits.",
+    },
+  },
+
   nav: {
     howItWorks: "Comment ça marche",
     features: "Fonctionnalités",
@@ -266,6 +309,27 @@ const fr: Dictionary = {
       "Reviewslip aide uniquement les vrais clients à rédiger leurs propres avis. Nous ne faisons pas d'avis faux, en masse ou automatisés — consultez notre page Conformité et confiance.",
     demoNote: "Voici la fiche que vos clients verraient. Essayez-la.",
     demoVenue: "Votre établissement",
+    form: {
+      heading: "Envoyez-nous un message",
+      name: "Votre nom",
+      namePlaceholder: "Marie Dupont",
+      email: "E-mail",
+      emailPlaceholder: "marie@votreentreprise.com",
+      business: "Nom de l'établissement",
+      businessPlaceholder: "Le Café des Berges",
+      locations: "Nombre d'emplacements",
+      message: "Message",
+      messagePlaceholder: "Parlez-nous un peu de votre établissement et de ce que vous espérez…",
+      submit: "Envoyer le message",
+      sending: "Envoi…",
+      successTitle: "Merci — votre message est en route !",
+      successBody: "Nous vous répondrons sous peu.",
+      errorTitle: "Une erreur est survenue",
+      errorBody: "Veuillez réessayer, ou écrivez-nous directement.",
+      orEmail: "Vous préférez l'e-mail ? Écrivez-nous à",
+      errRequired: "Ce champ est obligatoire.",
+      errEmail: "Veuillez saisir une adresse e-mail valide.",
+    },
   },
 
   slip: {
