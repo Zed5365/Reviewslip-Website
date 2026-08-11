@@ -29,9 +29,9 @@
   font-size: 1.4rem;
   letter-spacing: -0.01em;
   color: var(--cream);
-  /* Pairs with .actions' margin-left below: two auto margins split the free
-     space evenly, so the nav sits centred with equal gaps either side. On
-     mobile (where .actions is hidden) this alone pushes the burger right. */
+  /* Wordmark stays on the left; this pushes everything after it (nav links +
+     locale selects + CTA) over to the right edge, so the menu is right-
+     justified. On mobile (where .actions is hidden) it pushes the burger right. */
   margin-right: auto;
 }
 
@@ -59,8 +59,6 @@
   display: none;
   align-items: center;
   gap: 0.6rem;
-  /* Second auto margin — see .brand. */
-  margin-left: auto;
   flex-shrink: 0;
 }
 
