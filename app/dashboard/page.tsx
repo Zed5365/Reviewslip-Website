@@ -23,6 +23,17 @@ export default async function DashboardPage() {
         </p>
       </div>
 
+      <div className={styles.actions} style={{ marginBottom: "1.75rem" }}>
+        {/* At the cap this still goes to the same page — which explains the
+            limit and offers plans, rather than a button that does nothing. */}
+        <Link className="btn btn-go" href="/dashboard/venues/new">
+          Add a venue
+        </Link>
+        <Link className="btn btn-quiet" href="/dashboard/billing">
+          Billing &amp; plan
+        </Link>
+      </div>
+
       {me.venues.length === 0 ? (
         <div className={styles.empty}>
           <p>No venues yet.</p>

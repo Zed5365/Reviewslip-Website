@@ -31,9 +31,9 @@ export default async function DashboardLayout({
           Reviewslip
         </Link>
         <div className={styles.who}>
-          <span>
+          <Link href="/dashboard/billing">
             {me.account.username} · {me.plan.name}
-          </span>
+          </Link>
           <form action={logout}>
             <button className="btn btn-quiet" type="submit">
               Sign out

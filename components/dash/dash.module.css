@@ -79,6 +79,61 @@
   margin: 0;
 }
 
+.sectionTitle {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--paper);
+  margin: 0 0 1rem;
+}
+
+.banner {
+  border: 1px solid var(--jade-line);
+  border-left: 3px solid var(--marigold);
+  border-radius: 0;
+  background: rgba(233, 160, 59, 0.08);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.75rem;
+  font-size: 0.92rem;
+}
+
+.planGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 700px) {
+  .planGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1080px) {
+  .planGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.cardCurrent {
+  outline: 2px solid var(--jade);
+  outline-offset: 2px;
+}
+
+.planPrice {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.9rem;
+  margin: 0.4rem 0 1rem;
+}
+
+.planPer {
+  font-family: var(--ui);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-left: 0.2rem;
+}
+
 /* ------------------------------------------------------------------ cards */
 
 .grid {
@@ -329,6 +384,49 @@
   font-size: 0.72rem;
   color: var(--ink-soft);
   margin-left: 0.4rem;
+}
+
+/* ------------------------------------------------------------ slug picker */
+
+.slugRow {
+  display: flex;
+  align-items: stretch;
+}
+
+.slugInput {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+  text-align: right;
+  font-variant-ligatures: none;
+}
+
+.slugSuffix {
+  display: flex;
+  align-items: center;
+  padding: 0 0.8rem;
+  border: 1px solid var(--jade-line);
+  border-left: none;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: rgba(243, 236, 220, 0.03);
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.slugStatus {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  min-height: 1.2rem;
+}
+
+.slugOk {
+  color: var(--jade);
+}
+
+.slugBad {
+  color: #e98b7b;
 }
 
 .rows {
