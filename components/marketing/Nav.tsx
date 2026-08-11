@@ -36,8 +36,14 @@ export default function Nav() {
 
         <div className={styles.actions}>
           <LocaleControls />
-          <Link href="/contact" className="btn btn-go">
-            {t.common.getInTouch}
+          {/* Signing in is a server-side fact and this is a client component,
+              so the link is always "Sign in" — /login sends anyone who already
+              has a session straight on to their dashboard. */}
+          <Link href="/login" className={styles.link}>
+            Sign in
+          </Link>
+          <Link href="/signup" className="btn btn-go">
+            Get started
           </Link>
         </div>
 
@@ -63,15 +69,22 @@ export default function Nav() {
               {l.label}
             </Link>
           ))}
+          <Link
+            href="/login"
+            className={styles.mobileLink}
+            onClick={() => setOpen(false)}
+          >
+            Sign in
+          </Link>
           <div className={styles.mobileControls}>
             <LocaleControls compact />
           </div>
           <Link
-            href="/contact"
+            href="/signup"
             className="btn btn-go"
             onClick={() => setOpen(false)}
           >
-            {t.common.getInTouch}
+            Get started
           </Link>
         </nav>
       )}
