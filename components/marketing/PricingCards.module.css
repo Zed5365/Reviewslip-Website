@@ -160,8 +160,16 @@
   flex-shrink: 0;
 }
 
-@media (min-width: 860px) {
+/* Four tiers: two-up before they would get too narrow to read, four-up only
+   once there is room for it. Three across would strand the fourth alone. */
+@media (min-width: 700px) {
   .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1120px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
