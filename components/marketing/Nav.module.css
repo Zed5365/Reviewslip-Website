@@ -10,8 +10,17 @@
 .bar {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
   height: 4.25rem;
+}
+
+/* The bar carries more than any content row does — brand, seven links, two
+   locale selects and the CTA — and translated labels run much longer than the
+   English (German is ~25% wider). Give it a wider track than .wrap's 68rem so
+   nothing overflows. Two-class selector so it beats .wrap regardless of
+   stylesheet order. */
+.header .bar {
+  max-width: 76rem;
 }
 
 .brand {
@@ -20,19 +29,26 @@
   font-size: 1.4rem;
   letter-spacing: -0.01em;
   color: var(--cream);
+  /* Pairs with .actions' margin-left below: two auto margins split the free
+     space evenly, so the nav sits centred with equal gaps either side. On
+     mobile (where .actions is hidden) this alone pushes the burger right. */
   margin-right: auto;
 }
 
 .desktopNav {
   display: none;
   align-items: center;
-  gap: 1.5rem;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
 .link {
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   color: var(--cream-soft);
   transition: color 0.18s var(--ease);
+  /* Labels are much longer in some languages (German especially) — never let
+     one break across two lines and blow out the bar height. */
+  white-space: nowrap;
 }
 
 .link:hover {
@@ -43,6 +59,16 @@
   display: none;
   align-items: center;
   gap: 0.6rem;
+  /* Second auto margin — see .brand. */
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* The in-nav CTA sits tighter than a standalone button so the bar still fits
+   long translated labels. */
+.actions :global(.btn) {
+  padding: 0.72rem 1.05rem;
+  font-size: 0.9rem;
 }
 
 .signin {
@@ -127,7 +153,11 @@
   margin-top: 0.75rem;
 }
 
-@media (min-width: 820px) {
+/* Seven nav links plus two locale selects and the CTA need real room, and the
+   longest translations (Portuguese, German) set the floor. Below this the bar
+   would overflow, so fall back to the burger menu — which is the better
+   experience at that width anyway. */
+@media (min-width: 1200px) {
   .desktopNav,
   .actions {
     display: flex;
