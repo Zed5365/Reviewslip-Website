@@ -21,7 +21,7 @@ const de: Dictionary = {
     pricing: {
       title: "Preise",
       description:
-        "Einfache Reviewslip-Tarife für einen oder viele Standorte. Starter, Pro und Business im Vergleich — mit identischem Funktionsumfang.",
+        "Einfache Reviewslip-Tarife für einen oder viele Standorte. Starter, Pro und Enterprise im Vergleich — mit identischem Funktionsumfang.",
     },
     howItWorks: {
       title: "So funktioniert's",
@@ -216,7 +216,7 @@ const de: Dictionary = {
       },
       {
         q: "Was ist der Unterschied zwischen den Tarifen?",
-        a: "Nur die Anzahl der Standorte, die Sie betreiben können – 1 bei Starter, bis zu 3 bei Pro und bis zu 10 bei Business. Jeder Tarif enthält dieselben Funktionen; Sie zahlen nur mehr, wenn Sie Standorte hinzufügen.",
+        a: "Nur die Anzahl der Standorte, die Sie betreiben können – 1 bei Starter, bis zu 3 bei Pro und bis zu 10 bei Enterprise. Jeder Tarif enthält dieselben Funktionen; Sie zahlen nur mehr, wenn Sie Standorte hinzufügen.",
       },
     ],
   },
@@ -226,7 +226,7 @@ const de: Dictionary = {
     starterTagline: "Für einen einzelnen Standort zum Einstieg.",
     proName: "Pro",
     proTagline: "Für wachsende Unternehmen mit einigen Standorten.",
-    businessName: "Business",
+    businessName: "Enterprise",
     businessTagline: "Für Unternehmen mit mehreren Standorten.",
     cta: "Kontakt aufnehmen",
     features: {

@@ -21,7 +21,7 @@ const fr: Dictionary = {
     pricing: {
       title: "Tarifs",
       description:
-        "Des formules Reviewslip simples, pour un ou plusieurs établissements. Comparez Starter, Pro et Business — toutes incluent les mêmes fonctionnalités.",
+        "Des formules Reviewslip simples, pour un ou plusieurs établissements. Comparez Starter, Pro et Enterprise — toutes incluent les mêmes fonctionnalités.",
     },
     howItWorks: {
       title: "Comment ça marche",
@@ -216,7 +216,7 @@ const fr: Dictionary = {
       },
       {
         q: "Quelle est la différence entre les offres ?",
-        a: "Uniquement le nombre d'établissements que vous pouvez gérer — 1 avec Starter, jusqu'à 3 avec Pro et jusqu'à 10 avec Business. Chaque offre inclut les mêmes fonctionnalités ; vous ne payez plus qu'en ajoutant des emplacements.",
+        a: "Uniquement le nombre d'établissements que vous pouvez gérer — 1 avec Starter, jusqu'à 3 avec Pro et jusqu'à 10 avec Enterprise. Chaque offre inclut les mêmes fonctionnalités ; vous ne payez plus qu'en ajoutant des emplacements.",
       },
     ],
   },
@@ -226,7 +226,7 @@ const fr: Dictionary = {
     starterTagline: "Pour un établissement unique qui débute.",
     proName: "Pro",
     proTagline: "Pour les entreprises en croissance avec quelques établissements.",
-    businessName: "Business",
+    businessName: "Enterprise",
     businessTagline: "Pour les entreprises multi-établissements.",
     cta: "Contactez-nous",
     features: {

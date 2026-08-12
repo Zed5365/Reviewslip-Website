@@ -21,7 +21,7 @@ const ja: Dictionary = {
     pricing: {
       title: "料金プラン",
       description:
-        "1店舗から多店舗まで対応するシンプルなReviewslipの料金プラン。Starter・Pro・Businessを比較。すべてのプランで同じ機能をご利用いただけます。",
+        "1店舗から多店舗まで対応するシンプルなReviewslipの料金プラン。Starter・Pro・Enterpriseを比較。すべてのプランで同じ機能をご利用いただけます。",
     },
     howItWorks: {
       title: "使い方",
@@ -216,7 +216,7 @@ const ja: Dictionary = {
       },
       {
         q: "各プランの違いは何ですか？",
-        a: "運用できる店舗数だけが異なります。Starterは1店舗、Proは最大3店舗、Businessは最大10店舗です。すべてのプランに同じ機能が含まれ、店舗を追加した分だけ料金が上がります。",
+        a: "運用できる店舗数だけが異なります。Starterは1店舗、Proは最大3店舗、Enterpriseは最大10店舗です。すべてのプランに同じ機能が含まれ、店舗を追加した分だけ料金が上がります。",
       },
     ],
   },
@@ -226,7 +226,7 @@ const ja: Dictionary = {
     starterTagline: "はじめての1店舗向け。",
     proName: "Pro",
     proTagline: "複数店舗を持つ成長中のビジネス向け。",
-    businessName: "Business",
+    businessName: "Enterprise",
     businessTagline: "多店舗展開のビジネス向け。",
     cta: "お問い合わせ",
     features: {

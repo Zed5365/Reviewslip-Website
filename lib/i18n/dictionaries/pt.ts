@@ -21,7 +21,7 @@ const pt: Dictionary = {
     pricing: {
       title: "Preços",
       description:
-        "Planos Reviewslip simples para um ou vários locais. Compare Starter, Pro e Business — todos os planos incluem as mesmas funcionalidades.",
+        "Planos Reviewslip simples para um ou vários locais. Compare Starter, Pro e Enterprise — todos os planos incluem as mesmas funcionalidades.",
     },
     howItWorks: {
       title: "Como funciona",
@@ -216,7 +216,7 @@ const pt: Dictionary = {
       },
       {
         q: "Qual é a diferença entre os planos?",
-        a: "Apenas o número de espaços que pode gerir — 1 no Starter, até 3 no Pro e até 10 no Business. Todos os planos incluem as mesmas funcionalidades; só paga mais à medida que adiciona locais.",
+        a: "Apenas o número de espaços que pode gerir — 1 no Starter, até 3 no Pro e até 10 no Enterprise. Todos os planos incluem as mesmas funcionalidades; só paga mais à medida que adiciona locais.",
       },
     ],
   },
@@ -226,7 +226,7 @@ const pt: Dictionary = {
     starterTagline: "Para um único local a começar.",
     proName: "Pro",
     proTagline: "Para negócios em crescimento com alguns locais.",
-    businessName: "Business",
+    businessName: "Enterprise",
     businessTagline: "Para negócios com múltiplos locais.",
     cta: "Fale connosco",
     features: {

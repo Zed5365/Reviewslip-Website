@@ -21,7 +21,7 @@ const ko: Dictionary = {
     pricing: {
       title: "요금제",
       description:
-        "매장 한 곳부터 여러 곳까지, 간단한 Reviewslip 요금제. Starter, Pro, Business를 비교해 보세요 — 모든 플랜의 기능은 동일합니다.",
+        "매장 한 곳부터 여러 곳까지, 간단한 Reviewslip 요금제. Starter, Pro, Enterprise를 비교해 보세요 — 모든 플랜의 기능은 동일합니다.",
     },
     howItWorks: {
       title: "이용 방법",
@@ -214,7 +214,7 @@ const ko: Dictionary = {
       },
       {
         q: "요금제 간의 차이는 무엇인가요?",
-        a: "운영할 수 있는 매장 수만 다릅니다 — Starter는 1개, Pro는 최대 3개, Business는 최대 10개입니다. 모든 요금제는 동일한 기능을 포함하며, 지점을 추가할 때만 더 지불하시면 됩니다.",
+        a: "운영할 수 있는 매장 수만 다릅니다 — Starter는 1개, Pro는 최대 3개, Enterprise는 최대 10개입니다. 모든 요금제는 동일한 기능을 포함하며, 지점을 추가할 때만 더 지불하시면 됩니다.",
       },
     ],
   },
@@ -224,7 +224,7 @@ const ko: Dictionary = {
     starterTagline: "이제 막 시작하는 단일 지점을 위해.",
     proName: "Pro",
     proTagline: "여러 지점을 둔 성장하는 비즈니스를 위해.",
-    businessName: "Business",
+    businessName: "Enterprise",
     businessTagline: "다지점 비즈니스를 위해.",
     cta: "문의하기",
     features: {

@@ -21,7 +21,7 @@ const zh: Dictionary = {
     pricing: {
       title: "价格方案",
       description:
-        "无论单门店还是多门店，Reviewslip 方案都简单透明。对比 Starter、Pro 与 Business，各方案功能完全一致。",
+        "无论单门店还是多门店，Reviewslip 方案都简单透明。对比 Starter、Pro 与 Enterprise，各方案功能完全一致。",
     },
     howItWorks: {
       title: "运作方式",
@@ -214,7 +214,7 @@ const zh: Dictionary = {
       },
       {
         q: "各方案之间有什么区别？",
-        a: "仅在于您可运营的场所数量——入门版为 1 个，专业版最多 3 个，商业版最多 10 个。每个方案都包含相同的功能；您只需在增加门店时支付更多费用。",
+        a: "仅在于您可运营的场所数量——入门版为 1 个，专业版最多 3 个，企业版最多 10 个。每个方案都包含相同的功能；您只需在增加门店时支付更多费用。",
       },
     ],
   },
@@ -224,7 +224,7 @@ const zh: Dictionary = {
     starterTagline: "适合刚起步的单个门店。",
     proName: "专业版",
     proTagline: "适合拥有数个门店、正在成长的业务。",
-    businessName: "商业版",
+    businessName: "企业版",
     businessTagline: "适合多门店业务。",
     cta: "联系我们",
     features: {

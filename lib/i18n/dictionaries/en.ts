@@ -25,7 +25,7 @@ const en = {
     pricing: {
       title: "Pricing",
       description:
-        "Simple Reviewslip plans for one location or many. Compare Starter, Pro and Business — every plan includes the same features.",
+        "Simple Reviewslip plans for one location or many. Compare Starter, Pro and Enterprise — every plan includes the same features.",
     },
     howItWorks: {
       title: "How it works",
@@ -220,7 +220,7 @@ const en = {
       },
       {
         q: "What's the difference between the plans?",
-        a: "Just the number of venues you can run — 1 on Starter, up to 3 on Pro, and up to 10 on Business. Every plan includes the same features; you only pay more as you add locations.",
+        a: "Just the number of venues you can run — 1 on Starter, up to 3 on Pro, and up to 10 on Enterprise. Every plan includes the same features; you only pay more as you add locations.",
       },
     ],
   },
@@ -230,7 +230,7 @@ const en = {
     starterTagline: "For a single location getting started.",
     proName: "Pro",
     proTagline: "For growing businesses with a few locations.",
-    businessName: "Business",
+    businessName: "Enterprise",
     businessTagline: "For multi-location businesses.",
     cta: "Get in touch",
     features: {
