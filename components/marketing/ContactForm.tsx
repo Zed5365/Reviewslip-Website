@@ -27,10 +27,18 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ContactForm({
   f,
+  compact = false,
+  heading,
+  submitLabel,
 }: {
   f: Dictionary["contact"]["form"];
+  /** Sign-up variant: name + email + business only, no locations or message. */
+  compact?: boolean;
+  /** Override the form heading (defaults to f.heading). */
+  heading?: string;
+  /** Override the submit button label (defaults to f.submit). */
+  submitLabel?: string;
 }) {
-
   const [fields, setFields] = useState<Fields>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>(
     {}
@@ -47,7 +55,7 @@ export default function ContactForm({
     if (!fields.name.trim()) next.name = f.errRequired;
     if (!fields.email.trim()) next.email = f.errRequired;
     else if (!EMAIL_RE.test(fields.email.trim())) next.email = f.errEmail;
-    if (!fields.message.trim()) next.message = f.errRequired;
+    if (!compact && !fields.message.trim()) next.message = f.errRequired;
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -110,7 +118,7 @@ export default function ContactForm({
 
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
-      <h3 className={styles.heading}>{f.heading}</h3>
+      <h3 className={styles.heading}>{heading ?? f.heading}</h3>
 
       {status === "error" && (
         <div className={styles.errorBanner} role="alert">
@@ -143,7 +151,7 @@ export default function ContactForm({
         />
       </div>
 
-      <div className={styles.row}>
+      {compact ? (
         <Field
           id="cf-business"
           label={f.business}
@@ -152,43 +160,56 @@ export default function ContactForm({
           placeholder={f.businessPlaceholder}
           autoComplete="organization"
         />
-        <Field
-          id="cf-locations"
-          label={f.locations}
-          value={fields.locations}
-          onChange={(v) => update("locations", v)}
-          type="number"
-          inputMode="numeric"
-          min={1}
-        />
-      </div>
+      ) : (
+        <div className={styles.row}>
+          <Field
+            id="cf-business"
+            label={f.business}
+            value={fields.business}
+            onChange={(v) => update("business", v)}
+            placeholder={f.businessPlaceholder}
+            autoComplete="organization"
+          />
+          <Field
+            id="cf-locations"
+            label={f.locations}
+            value={fields.locations}
+            onChange={(v) => update("locations", v)}
+            type="number"
+            inputMode="numeric"
+            min={1}
+          />
+        </div>
+      )}
 
-      <div className={styles.field}>
-        <label htmlFor="cf-message" className={styles.label}>
-          {f.message}
-        </label>
-        <textarea
-          id="cf-message"
-          className={`${styles.input} ${styles.textarea} ${
-            errors.message ? styles.invalid : ""
-          }`}
-          value={fields.message}
-          onChange={(e) => update("message", e.target.value)}
-          placeholder={f.messagePlaceholder}
-          rows={5}
-          aria-invalid={!!errors.message}
-        />
-        {errors.message && (
-          <span className={styles.errorText}>{errors.message}</span>
-        )}
-      </div>
+      {!compact && (
+        <div className={styles.field}>
+          <label htmlFor="cf-message" className={styles.label}>
+            {f.message}
+          </label>
+          <textarea
+            id="cf-message"
+            className={`${styles.input} ${styles.textarea} ${
+              errors.message ? styles.invalid : ""
+            }`}
+            value={fields.message}
+            onChange={(e) => update("message", e.target.value)}
+            placeholder={f.messagePlaceholder}
+            rows={5}
+            aria-invalid={!!errors.message}
+          />
+          {errors.message && (
+            <span className={styles.errorText}>{errors.message}</span>
+          )}
+        </div>
+      )}
 
       <button
         type="submit"
         className={`btn btn-go ${styles.submit}`}
         disabled={status === "sending"}
       >
-        {status === "sending" ? f.sending : f.submit}
+        {status === "sending" ? f.sending : submitLabel ?? f.submit}
       </button>
 
       <p className={styles.orEmail}>

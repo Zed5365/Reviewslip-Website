@@ -38,6 +38,7 @@ app/
     pricing/            # pricing + FAQ
     how-it-works/       # step-by-step walkthrough
     compliance/         # FTC / platform compliance stance
+    get-started/        # brief, search-findable sign-up landing page
     demo/               # public interactive slip demo
     faq/                # guide: correct setup, risks, red flags to avoid
     contact/            # contact form

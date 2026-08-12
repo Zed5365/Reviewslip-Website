@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 import { localizedPath } from "@/lib/i18n/routing";
+import { getLanding } from "@/lib/landing";
 import styles from "./Footer.module.css";
 
 /** Server component — no interactivity, so it ships zero client JavaScript. */
@@ -10,6 +11,7 @@ export default function Footer({ lang, t }: { lang: Locale; t: Dictionary }) {
     {
       title: t.footer.colProduct,
       links: [
+        { route: "/get-started", label: getLanding(lang).eyebrow },
         { route: "/how-it-works", label: t.nav.howItWorks },
         { route: "/pricing", label: t.nav.pricing },
         { route: "/demo", label: t.nav.demo },

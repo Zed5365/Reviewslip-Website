@@ -12,6 +12,7 @@ import { SITE_URL } from "../site";
 /** Every indexable route, as an unprefixed path. Drives the sitemap + hreflang. */
 export const ROUTES = [
   "/",
+  "/get-started",
   "/how-it-works",
   "/pricing",
   "/demo",
