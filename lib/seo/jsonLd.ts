@@ -23,7 +23,7 @@ export function organizationJsonLd(lang: Locale, t: Dictionary) {
       "@type": "ContactPoint",
       email: CONTACT_EMAIL,
       contactType: "customer support",
-      availableLanguage: ["en", "es", "fr", "de", "pt", "it", "th", "zh", "ja", "ko"],
+      availableLanguage: ["en", "es", "fr", "de", "pt", "it", "nl", "th", "zh", "ja", "ko"],
     },
   };
 }

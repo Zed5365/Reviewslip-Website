@@ -35,7 +35,7 @@ const en = {
     compliance: {
       title: "Compliance & trust",
       description:
-        "How Reviewslip stays on the right side of the FTC fake review rule and platform policies — by only ever helping genuine customers.",
+        "How Reviewslip stays on the right side of fake-review laws (US, EU, UK, Asia) and platform policies — by only ever helping genuine customers.",
     },
     demo: {
       title: "Live demo",
@@ -62,6 +62,16 @@ const en = {
       description:
         "The terms governing use of Reviewslip, including acceptable use and prohibited conduct.",
     },
+    login: {
+      title: "Log in",
+      description:
+        "Log in to your Reviewslip account to manage your venues, QR codes and review slips.",
+    },
+    signup: {
+      title: "Sign up",
+      description:
+        "Create your Reviewslip account and start turning genuine customers into honest reviews.",
+    },
   },
 
   nav: {
@@ -72,6 +82,8 @@ const en = {
     demo: "Live demo",
     faq: "Guide & FAQ",
     contact: "Contact",
+    login: "Log in",
+    signup: "Sign up",
   },
 
   footer: {
@@ -157,7 +169,7 @@ const en = {
     trustEyebrow: "Compliance & trust",
     trustTitle: "Honest by design.",
     trustLede:
-      "The FTC and every major platform ban fake and AI-fabricated reviews. Reviewslip is built the opposite way: it only ever helps a real customer express a real opinion. No bots, no bulk, no fabricated details.",
+      "Regulators from the US to Europe and Asia — and every major platform — ban fake and AI-fabricated reviews. Reviewslip is built the opposite way: it only ever helps a real customer express a real opinion. No bots, no bulk, no fabricated details.",
     trustCta: "Read our compliance approach",
 
     faqEyebrow: "Questions",
@@ -169,8 +181,8 @@ const en = {
         a: "No — and that's the whole point. Reviewslip only helps a real customer who just had a real experience put their own thoughts into words. There's no bulk generation and no posting on anyone's behalf. The customer reviews, edits, and posts it themselves.",
       },
       {
-        q: "Is this allowed under Google's policies and the FTC rules?",
-        a: "Assisting a genuine customer to write their own honest review is permitted. Fabricating reviews, incentivising them, or posting fake ones is not — and Reviewslip is designed specifically to avoid all of that. See our Compliance & Trust page for details.",
+        q: "Is this allowed under Google's policies and the law?",
+        a: "Assisting a genuine customer to write their own honest review is permitted. Fabricating reviews, incentivising them, or posting fake ones is not — under the US FTC rule, the EU and UK review laws, Asian rules such as Japan's stealth-marketing ban, and platform policies alike. Reviewslip is designed specifically to avoid all of that. See our Compliance & Trust page for details.",
       },
       {
         q: "Which review platforms are supported?",
@@ -281,7 +293,7 @@ const en = {
     callout:
       "Reviewslip never writes fake reviews, never posts on a customer's behalf, and never generates reviews in bulk. A genuine customer, after a genuine visit, gets help wording their own honest review — and posts it themselves.",
     h1: "The rules we design around",
-    p1: "In 2024 the U.S. Federal Trade Commission finalised a rule banning fake and AI-fabricated reviews, undisclosed incentivised reviews, and other deceptive practices, with penalties per violation. Google, Yelp, Trustpilot and others have long prohibited the same. These rules exist for good reason, and we take them seriously.",
+    p1: "Fake reviews are unlawful in a growing number of places, not just one. In the United States, the FTC's 2024 rule bans fake and AI-fabricated reviews, undisclosed incentivised reviews, and other deceptive practices, with penalties per violation. In the European Union, the Unfair Commercial Practices Directive — updated by the Omnibus Directive — requires reviews to be genuine and verifiable, and the Digital Services Act adds platform-level duties; the United Kingdom's Digital Markets, Competition and Consumers Act 2024 bans fake and misleading reviews outright. Across Asia, Japan's 2023 stealth-marketing rules and China's anti-unfair-competition law target fabricated or undisclosed reviews. Google, TripAdvisor, Trustpilot and the other platforms prohibit the same worldwide. These rules exist for good reason, and we take them seriously.",
     h2: "How Reviewslip stays compliant",
     list: [
       "Real customer, real experience. The tool is meant to be used at your location by someone who actually visited.",
@@ -297,7 +309,7 @@ const en = {
     p4Link: "Terms of Service",
     p4End: ".",
     disclaimer:
-      "This page is a plain-language summary, not legal advice. Review the current FTC guidance and each platform's policies for your jurisdiction.",
+      "This page is a plain-language summary, not legal advice. Review the current FTC, EU, UK and local guidance — and each platform's policies — for every market where you operate.",
   },
 
   faqPage: {
@@ -307,7 +319,7 @@ const en = {
 
     warningLead: "The single biggest mistake:",
     warning:
-      "Handing the QR code only to customers you think are happy. That is review gating — Google prohibits it and the FTC's 2024 rule specifically targets it. Offer the same review path to everyone, and let honest opinions land where they land.",
+      "Handing the QR code only to customers you think are happy. That is review gating — Google prohibits it, and so do consumer-protection rules from the US FTC to the EU, the UK and Asia. Offer the same review path to everyone, and let honest opinions land where they land.",
 
     sections: [
       {
@@ -325,11 +337,11 @@ const en = {
           },
           {
             q: "Should I ask every customer, or only the happy ones?",
-            a: "Every customer. Selectively asking only the people you expect to be positive is review gating, and it is prohibited by Google's policies and by the FTC's 2024 rule. It is also self-defeating: a listing where every single review is five stars reads as less trustworthy to shoppers than one with a realistic spread. Make the QR available to everyone.",
+            a: "Every customer. Selectively asking only the people you expect to be positive is review gating, and it is prohibited by Google's policies and by consumer-protection rules from the US FTC to the EU, the UK and Asia. It is also self-defeating: a listing where every single review is five stars reads as less trustworthy to shoppers than one with a realistic spread. Make the QR available to everyone.",
           },
           {
             q: "What if someone had a bad experience?",
-            a: "Let them say so — or better, fix it before they leave. Reviewslip drafts from what the customer selects, so the honest path for an unhappy visitor is to write their own words or to raise it with you directly. What you must never do is hide or withhold the review path from someone because you expect criticism. Suppressing negative reviews is exactly what the FTC rule was written to stop.",
+            a: "Let them say so — or better, fix it before they leave. Reviewslip drafts from what the customer selects, so the honest path for an unhappy visitor is to write their own words or to raise it with you directly. What you must never do is hide or withhold the review path from someone because you expect criticism. Suppressing negative reviews is exactly what the FTC rule — and its EU, UK and Asian counterparts — were written to stop.",
           },
         ],
       },
@@ -367,7 +379,7 @@ const en = {
         items: [
           {
             q: "Can I offer a discount or a free item for a review?",
-            a: "No. Incentivised reviews are prohibited by Google, and the FTC rule covers undisclosed incentives as well. This holds even if you would happily accept a negative review in exchange — the payment is the problem, not the sentiment. You can thank people. You cannot pay them.",
+            a: "No. Incentivised reviews are prohibited by Google, and covered by the FTC rule and its EU, UK and Asian equivalents as well. This holds even if you would happily accept a negative review in exchange — the payment is the problem, not the sentiment. You can thank people. You cannot pay them.",
           },
           {
             q: "Can staff, friends or family leave reviews?",
@@ -379,7 +391,7 @@ const en = {
           },
           {
             q: "Can I write the review for a customer who says they are happy?",
-            a: "No. Even with verbal permission, you writing and posting it makes it a review from you, not from them — and that is the definition of a fake review under both Google's policy and the FTC rule. Hand them the QR code and let them do it.",
+            a: "No. Even with verbal permission, you writing and posting it makes it a review from you, not from them — and that is the definition of a fake review under Google's policy, the US FTC rule, and the EU, UK and Asian review laws alike. Hand them the QR code and let them do it.",
           },
         ],
       },
@@ -390,11 +402,11 @@ const en = {
         items: [
           {
             q: "What is the worst that can happen?",
-            a: "Roughly in order of severity: individual reviews get filtered and never appear; a batch is removed retroactively, sometimes months later; the listing receives a consumer alert warning visitors that suspicious activity was detected; or the listing is suspended. On the legal side, the FTC rule carries civil penalties assessed per violation — meaning per fake review, not per business. And there is the plain reputational damage of being publicly caught.",
+            a: "Roughly in order of severity: individual reviews get filtered and never appear; a batch is removed retroactively, sometimes months later; the listing receives a consumer alert warning visitors that suspicious activity was detected; or the listing is suspended. On the legal side, the US FTC rule carries civil penalties assessed per violation — per fake review, not per business — and the EU, UK and Asian regimes carry their own fines and enforcement. And there is the plain reputational damage of being publicly caught.",
           },
           {
-            q: "What does the FTC rule actually ban?",
-            a: "The 2024 rule targets fake and AI-fabricated reviews from people who never had a genuine experience, undisclosed incentivised reviews, insiders posing as customers, and the suppression or concealment of negative reviews. What it does not ban is helping a genuine customer put their own honest opinion into words — which is the whole design of Reviewslip.",
+            q: "What do these rules actually ban?",
+            a: "Across the US FTC rule, the EU and UK review laws and their Asian equivalents, the common targets are the same: fake or AI-fabricated reviews from people who never had a genuine experience, undisclosed incentivised or sponsored reviews, insiders posing as customers, and the suppression or concealment of negative reviews. What none of them ban is helping a genuine customer put their own honest opinion into words — which is the whole design of Reviewslip.",
           },
           {
             q: "If reviews get removed, is that Reviewslip's fault or mine?",
@@ -402,7 +414,7 @@ const en = {
           },
           {
             q: "Does this apply outside the United States?",
-            a: "The FTC rule is US law, but the platform policies are global — Google's rules on fake, incentivised and gated reviews apply wherever you operate. Many other jurisdictions have their own consumer-protection regimes covering misleading reviews, and several have been tightening them. Treat the guidance here as the floor, not the ceiling.",
+            a: "Yes — the FTC rule is US law, but most markets now have their own. The EU's Unfair Commercial Practices Directive (updated by the Omnibus Directive) and Digital Services Act, the UK's Digital Markets, Competition and Consumers Act 2024, Japan's 2023 stealth-marketing regulation, and China's anti-unfair-competition rules on fabricated reviews all target the same conduct — and several have been tightening. Platform policies (Google, TripAdvisor, Facebook, LINE, Xiaohongshu, Wongnai) apply everywhere regardless. Treat the guidance here as the floor, not the ceiling, and check the rules for the markets you operate in.",
           },
         ],
       },
@@ -436,7 +448,7 @@ const en = {
       "Tell us about your business and we will help you start on the right footing.",
 
     disclaimer:
-      "This is practical guidance drawn from published platform policies and the FTC's rule — it is not legal advice. Platform rules change, and the requirements where you operate may differ. Check the current guidance for your jurisdiction, and take professional advice if you are unsure.",
+      "This is practical guidance drawn from published platform policies and from consumer-protection rules in the US (FTC), the EU and UK, and Asia — it is not legal advice. Rules change and differ by market. Check the current guidance where you operate, and take professional advice if you are unsure.",
   },
 
   demo: {
@@ -480,6 +492,62 @@ const en = {
       errRequired: "This field is required.",
       errEmail: "Please enter a valid email address.",
     },
+  },
+
+  // Login / sign-up. Field labels for name, email and business are reused from
+  // contact.form so the two forms stay worded identically.
+  auth: {
+    login: {
+      eyebrow: "Welcome back",
+      title: "Log in to Reviewslip.",
+      lede: "Manage your venues, QR codes and review slips.",
+      submit: "Log in",
+      sending: "Logging in…",
+      remember: "Keep me logged in",
+      forgot: "Forgot your password?",
+      altLead: "New to Reviewslip?",
+      altLink: "Create an account",
+    },
+    signup: {
+      eyebrow: "Create your account",
+      title: "Start collecting honest reviews.",
+      lede: "Set up your first venue in minutes. No card needed while we finalise plans.",
+      submit: "Create account",
+      sending: "Creating account…",
+      altLead: "Already have an account?",
+      altLink: "Log in",
+      points: [
+        "A branded QR code for every location",
+        "AI-assisted drafts your customers edit and post themselves",
+        "Built to keep you on the right side of platform rules",
+      ],
+    },
+    fields: {
+      password: "Password",
+      passwordPlaceholder: "At least 10 characters",
+      passwordHint: "Use at least 10 characters. A short phrase works well.",
+      confirm: "Confirm password",
+      confirmPlaceholder: "Type it once more",
+      show: "Show password",
+      hide: "Hide password",
+    },
+    terms: {
+      lead: "I agree to the ",
+      termsLink: "Terms of Service",
+      mid: " and the ",
+      privacyLink: "Privacy Policy",
+      end: ".",
+    },
+    errors: {
+      passwordShort: "Please use at least 10 characters.",
+      passwordMatch: "The two passwords don't match.",
+      termsRequired: "Please accept the terms to continue.",
+    },
+    // Shown when no auth backend is configured — see AUTH_ENDPOINT in lib/site.
+    pendingTitle: "Accounts aren't open yet",
+    pendingBody:
+      "Reviewslip is still pre-launch, so there's nothing to log in to yet. Tell us about your business and we'll let you know the moment sign-up opens. Nothing you typed here was sent or stored.",
+    pendingCta: "Get in touch",
   },
 
   slip: {
@@ -534,7 +602,7 @@ const en = {
       title: "Terms of Service",
       s1: "Acceptable use",
       p1Lead:
-        "You agree to use Reviewslip only to invite genuine customers who have had a real experience with your business to write their own honest reviews. You will comply with the FTC rules on reviews and the policies of any platform you direct customers to. See our ",
+        "You agree to use Reviewslip only to invite genuine customers who have had a real experience with your business to write their own honest reviews. You will comply with the applicable law on reviews — including the FTC rules in the US, the EU's Unfair Commercial Practices and Omnibus Directives, the UK's Digital Markets, Competition and Consumers Act 2024, Asian rules such as Japan's stealth-marketing regulation and China's anti-unfair-competition law, and local law wherever else you operate — and with the policies of any platform you direct customers to. See our ",
       p1Link: "Compliance & Trust",
       p1End: " page.",
       s2: "Prohibited conduct",

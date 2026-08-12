@@ -31,7 +31,7 @@ const es: Dictionary = {
     compliance: {
       title: "Cumplimiento y confianza",
       description:
-        "Cómo Reviewslip cumple la norma de la FTC sobre reseñas falsas y las políticas de las plataformas — ayudando solo a clientes reales.",
+        "Cómo Reviewslip se mantiene del lado correcto de las leyes sobre reseñas falsas (EE. UU., EU, UK, Asia) y las políticas de las plataformas — ayudando solo a clientes reales.",
     },
     demo: {
       title: "Demo en vivo",
@@ -58,6 +58,16 @@ const es: Dictionary = {
       description:
         "Los términos que rigen el uso de Reviewslip, incluidos el uso aceptable y las conductas prohibidas.",
     },
+    login: {
+      title: "Iniciar sesión",
+      description:
+        "Inicia sesión en tu cuenta de Reviewslip para gestionar tus locales, códigos QR y slips de reseña.",
+    },
+    signup: {
+      title: "Crear cuenta",
+      description:
+        "Crea tu cuenta de Reviewslip y empieza a convertir clientes reales en reseñas honestas.",
+    },
   },
 
   nav: {
@@ -68,6 +78,8 @@ const es: Dictionary = {
     demo: "Demo en vivo",
     faq: "Guía y FAQ",
     contact: "Contacto",
+    login: "Iniciar sesión",
+    signup: "Crear cuenta",
   },
 
   footer: {
@@ -153,7 +165,7 @@ const es: Dictionary = {
     trustEyebrow: "Cumplimiento y confianza",
     trustTitle: "Honesto por diseño.",
     trustLede:
-      "La FTC y todas las plataformas importantes prohíben las reseñas falsas y fabricadas con AI. Reviewslip está creado de la manera opuesta: solo ayuda a un cliente real a expresar una opinión real. Sin bots, sin generación masiva, sin detalles inventados.",
+      "Los reguladores desde EE. UU. hasta Europa y Asia — y todas las plataformas importantes — prohíben las reseñas falsas y fabricadas con AI. Reviewslip está creado de la manera opuesta: solo ayuda a un cliente real a expresar una opinión real. Sin bots, sin generación masiva, sin detalles inventados.",
     trustCta: "Lee nuestro enfoque de cumplimiento",
 
     faqEyebrow: "Preguntas",
@@ -165,8 +177,8 @@ const es: Dictionary = {
         a: "No — y ese es justamente el objetivo. Reviewslip solo ayuda a un cliente real que acaba de tener una experiencia real a poner sus propias ideas en palabras. No hay generación masiva ni se publica en nombre de nadie. El cliente reseña, edita y publica por sí mismo.",
       },
       {
-        q: "¿Está permitido según las políticas de Google y las reglas de la FTC?",
-        a: "Ayudar a un cliente genuino a escribir su propia reseña honesta está permitido. Fabricar reseñas, incentivarlas o publicar reseñas falsas no lo está — y Reviewslip está diseñado específicamente para evitar todo eso. Consulta nuestra página de Cumplimiento y confianza para más detalles.",
+        q: "¿Está permitido según las políticas de Google y la ley?",
+        a: "Ayudar a un cliente genuino a escribir su propia reseña honesta está permitido. Fabricar reseñas, incentivarlas o publicar reseñas falsas no lo está — ni según la norma de la FTC en EE. UU., ni según las leyes sobre reseñas de la EU y el UK, ni según normas asiáticas como la prohibición del marketing encubierto de Japón, ni según las políticas de las plataformas. Reviewslip está diseñado específicamente para evitar todo eso. Consulta nuestra página de Cumplimiento y confianza para más detalles.",
       },
       {
         q: "¿Qué plataformas de reseñas son compatibles?",
@@ -277,7 +289,7 @@ const es: Dictionary = {
     callout:
       "Reviewslip nunca escribe reseñas falsas, nunca publica en nombre de un cliente y nunca genera reseñas de forma masiva. Un cliente genuino, tras una visita genuina, recibe ayuda para redactar su propia reseña honesta — y la publica él mismo.",
     h1: "Las reglas en torno a las que diseñamos",
-    p1: "En 2024, la Comisión Federal de Comercio de EE. UU. finalizó una norma que prohíbe las reseñas falsas y fabricadas con AI, las reseñas incentivadas no divulgadas y otras prácticas engañosas, con sanciones por infracción. Google, Yelp, Trustpilot y otros han prohibido lo mismo desde hace tiempo. Estas reglas existen por buenas razones, y nos las tomamos en serio.",
+    p1: "Las reseñas falsas son ilegales en un número creciente de lugares, no solo en uno. En Estados Unidos, la norma de 2024 de la FTC prohíbe las reseñas falsas y fabricadas con AI, las reseñas incentivadas no divulgadas y otras prácticas engañosas, con sanciones por infracción. En la Unión Europea (EU), la Directiva sobre prácticas comerciales desleales (Unfair Commercial Practices Directive) — actualizada por la Directiva Ómnibus (Omnibus Directive) — exige que las reseñas sean genuinas y verificables, y la Ley de Servicios Digitales (Digital Services Act) añade obligaciones a nivel de plataforma; la Digital Markets, Competition and Consumers Act 2024 del Reino Unido (UK) prohíbe de forma tajante las reseñas falsas y engañosas. En Asia, las normas de 2023 de Japón sobre marketing encubierto y la ley china contra la competencia desleal se dirigen a las reseñas fabricadas o no divulgadas. Google, TripAdvisor, Trustpilot y las demás plataformas prohíben lo mismo en todo el mundo. Estas reglas existen por buenas razones, y nos las tomamos en serio.",
     h2: "Cómo Reviewslip cumple las normas",
     list: [
       "Cliente real, experiencia real. La herramienta está pensada para usarse en tu local por alguien que realmente visitó.",
@@ -293,7 +305,7 @@ const es: Dictionary = {
     p4Link: "Términos del servicio",
     p4End: ".",
     disclaimer:
-      "Esta página es un resumen en lenguaje sencillo, no asesoramiento legal. Revisa la guía vigente de la FTC y las políticas de cada plataforma para tu jurisdicción.",
+      "Esta página es un resumen en lenguaje sencillo, no asesoramiento legal. Revisa la guía vigente de la FTC, la EU, el UK y la normativa local — y las políticas de cada plataforma — para cada mercado en el que operes.",
   },
 
   faqPage: {
@@ -303,7 +315,7 @@ const es: Dictionary = {
 
     warningLead: "El mayor error de todos:",
     warning:
-      "Entregar el código QR solo a los clientes que crees que están contentos. Eso es filtrado selectivo de reseñas (review gating) — Google lo prohíbe y la norma de 2024 de la FTC lo aborda específicamente. Ofrece a todo el mundo el mismo camino hacia la reseña y deja que las opiniones honestas caigan donde caigan.",
+      "Entregar el código QR solo a los clientes que crees que están contentos. Eso es filtrado selectivo de reseñas (review gating) — Google lo prohíbe, y también lo prohíben las normas de protección al consumidor, desde la FTC en EE. UU. hasta la EU, el UK y Asia. Ofrece a todo el mundo el mismo camino hacia la reseña y deja que las opiniones honestas caigan donde caigan.",
 
     sections: [
       {
@@ -321,11 +333,11 @@ const es: Dictionary = {
           },
           {
             q: "¿Debo pedírsela a todos los clientes o solo a los satisfechos?",
-            a: "A todos los clientes. Pedírsela de forma selectiva solo a quienes esperas que sean positivos es filtrado selectivo de reseñas (review gating), y está prohibido por las políticas de Google y por la norma de 2024 de la FTC. Además es contraproducente: una ficha en la que absolutamente todas las reseñas son de cinco estrellas resulta menos fiable para los compradores que una con una variedad realista. Pon el QR a disposición de todo el mundo.",
+            a: "A todos los clientes. Pedírsela de forma selectiva solo a quienes esperas que sean positivos es filtrado selectivo de reseñas (review gating), y está prohibido por las políticas de Google y por las normas de protección al consumidor, desde la FTC en EE. UU. hasta la EU, el UK y Asia. Además es contraproducente: una ficha en la que absolutamente todas las reseñas son de cinco estrellas resulta menos fiable para los compradores que una con una variedad realista. Pon el QR a disposición de todo el mundo.",
           },
           {
             q: "¿Y si alguien tuvo una mala experiencia?",
-            a: "Déjale decirlo — o, mejor, resuélvelo antes de que se marche. Reviewslip redacta a partir de lo que el cliente selecciona, así que el camino honesto para un visitante descontento es escribir sus propias palabras o planteártelo a ti directamente. Lo que nunca debes hacer es ocultar o negar el camino hacia la reseña a alguien porque esperas críticas. Suprimir reseñas negativas es exactamente lo que la norma de la FTC se escribió para impedir.",
+            a: "Déjale decirlo — o, mejor, resuélvelo antes de que se marche. Reviewslip redacta a partir de lo que el cliente selecciona, así que el camino honesto para un visitante descontento es escribir sus propias palabras o planteártelo a ti directamente. Lo que nunca debes hacer es ocultar o negar el camino hacia la reseña a alguien porque esperas críticas. Suprimir reseñas negativas es exactamente lo que la norma de la FTC — y sus equivalentes en la EU, el UK y Asia — se escribieron para impedir.",
           },
         ],
       },
@@ -363,7 +375,7 @@ const es: Dictionary = {
         items: [
           {
             q: "¿Puedo ofrecer un descuento o un producto gratis a cambio de una reseña?",
-            a: "No. Las reseñas incentivadas están prohibidas por Google, y la norma de la FTC cubre también los incentivos no divulgados. Esto se mantiene incluso si aceptarías de buen grado una reseña negativa a cambio — el problema es el pago, no la opinión. Puedes dar las gracias a la gente. No puedes pagarle.",
+            a: "No. Las reseñas incentivadas están prohibidas por Google, y también quedan cubiertas por la norma de la FTC y sus equivalentes en la EU, el UK y Asia. Esto se mantiene incluso si aceptarías de buen grado una reseña negativa a cambio — el problema es el pago, no la opinión. Puedes dar las gracias a la gente. No puedes pagarle.",
           },
           {
             q: "¿Pueden dejar reseñas los empleados, los amigos o la familia?",
@@ -375,7 +387,7 @@ const es: Dictionary = {
           },
           {
             q: "¿Puedo escribir la reseña por un cliente que dice estar satisfecho?",
-            a: "No. Incluso con permiso verbal, si tú la escribes y la publicas se convierte en una reseña tuya, no suya — y esa es la definición de reseña falsa tanto en la política de Google como en la norma de la FTC. Entrégale el código QR y deja que lo haga él.",
+            a: "No. Incluso con permiso verbal, si tú la escribes y la publicas se convierte en una reseña tuya, no suya — y esa es la definición de reseña falsa en la política de Google, en la norma de la FTC de EE. UU. y en las leyes sobre reseñas de la EU, el UK y Asia por igual. Entrégale el código QR y deja que lo haga él.",
           },
         ],
       },
@@ -386,11 +398,11 @@ const es: Dictionary = {
         items: [
           {
             q: "¿Qué es lo peor que puede pasar?",
-            a: "Aproximadamente en orden de gravedad: reseñas individuales se filtran y nunca aparecen; un lote se elimina de forma retroactiva, a veces meses después; la ficha recibe una alerta al consumidor que avisa a los visitantes de que se detectó actividad sospechosa; o la ficha queda suspendida. En el plano legal, la norma de la FTC conlleva sanciones civiles que se calculan por infracción — es decir, por cada reseña falsa, no por negocio. Y está el simple daño reputacional de que te pillen públicamente.",
+            a: "Aproximadamente en orden de gravedad: reseñas individuales se filtran y nunca aparecen; un lote se elimina de forma retroactiva, a veces meses después; la ficha recibe una alerta al consumidor que avisa a los visitantes de que se detectó actividad sospechosa; o la ficha queda suspendida. En el plano legal, la norma de la FTC en EE. UU. conlleva sanciones civiles que se calculan por infracción — por cada reseña falsa, no por negocio — y los regímenes de la EU, el UK y Asia tienen sus propias multas y mecanismos de aplicación. Y está el simple daño reputacional de que te pillen públicamente.",
           },
           {
-            q: "¿Qué prohíbe realmente la norma de la FTC?",
-            a: "La norma de 2024 apunta a las reseñas falsas y fabricadas con AI de personas que nunca tuvieron una experiencia genuina, a las reseñas incentivadas no divulgadas, a personas de dentro del negocio que se hacen pasar por clientes y a la supresión u ocultación de reseñas negativas. Lo que no prohíbe es ayudar a un cliente genuino a poner en palabras su propia opinión honesta — que es justo el diseño completo de Reviewslip.",
+            q: "¿Qué prohíben realmente estas normas?",
+            a: "A través de la norma de la FTC en EE. UU., las leyes sobre reseñas de la EU y el UK y sus equivalentes asiáticos, los objetivos comunes son los mismos: reseñas falsas o fabricadas con AI de personas que nunca tuvieron una experiencia genuina, reseñas incentivadas o patrocinadas no divulgadas, personas de dentro del negocio que se hacen pasar por clientes, y la supresión u ocultación de reseñas negativas. Lo que ninguna de ellas prohíbe es ayudar a un cliente genuino a poner en palabras su propia opinión honesta — que es justo el diseño completo de Reviewslip.",
           },
           {
             q: "Si eliminan reseñas, ¿es culpa de Reviewslip o mía?",
@@ -398,7 +410,7 @@ const es: Dictionary = {
           },
           {
             q: "¿Esto se aplica fuera de Estados Unidos?",
-            a: "La norma de la FTC es legislación estadounidense, pero las políticas de las plataformas son globales — las reglas de Google sobre reseñas falsas, incentivadas y filtradas selectivamente se aplican allá donde operes. Muchas otras jurisdicciones tienen sus propios regímenes de protección al consumidor que cubren las reseñas engañosas, y varias los han ido endureciendo. Toma esta guía como el mínimo, no como el máximo.",
+            a: "Sí — la norma de la FTC es legislación estadounidense, pero la mayoría de los mercados ya tienen la suya propia. La Directiva sobre prácticas comerciales desleales (Unfair Commercial Practices Directive) de la EU (actualizada por la Directiva Ómnibus / Omnibus Directive) y la Ley de Servicios Digitales (Digital Services Act), la Digital Markets, Competition and Consumers Act 2024 del UK, la normativa de 2023 de Japón sobre marketing encubierto y las reglas chinas contra la competencia desleal en materia de reseñas fabricadas apuntan todas a la misma conducta — y varias se han ido endureciendo. Las políticas de las plataformas (Google, TripAdvisor, Facebook, LINE, Xiaohongshu, Wongnai) se aplican en todas partes en cualquier caso. Toma esta guía como el mínimo, no como el máximo, y consulta las reglas de los mercados en los que operes.",
           },
         ],
       },
@@ -432,7 +444,7 @@ const es: Dictionary = {
       "Cuéntanos sobre tu negocio y te ayudaremos a empezar con buen pie.",
 
     disclaimer:
-      "Esta es una guía práctica basada en las políticas publicadas de las plataformas y en la norma de la FTC — no es asesoramiento legal. Las reglas de las plataformas cambian, y los requisitos donde operas pueden ser distintos. Consulta la guía vigente de tu jurisdicción y busca asesoramiento profesional si tienes dudas.",
+      "Esta es una guía práctica basada en las políticas publicadas de las plataformas y en las normas de protección al consumidor de EE. UU. (FTC), la EU y el UK, y Asia — no es asesoramiento legal. Las reglas cambian y difieren según el mercado. Consulta la guía vigente donde operes y busca asesoramiento profesional si tienes dudas.",
   },
 
   demo: {
@@ -476,6 +488,59 @@ const es: Dictionary = {
       errRequired: "Este campo es obligatorio.",
       errEmail: "Introduce una dirección de correo válida.",
     },
+  },
+
+  auth: {
+    login: {
+      eyebrow: "Bienvenido de nuevo",
+      title: "Inicia sesión en Reviewslip.",
+      lede: "Gestiona tus locales, códigos QR y slips de reseña.",
+      submit: "Iniciar sesión",
+      sending: "Iniciando sesión…",
+      remember: "Mantener la sesión iniciada",
+      forgot: "¿Olvidaste tu contraseña?",
+      altLead: "¿Nuevo en Reviewslip?",
+      altLink: "Crea una cuenta",
+    },
+    signup: {
+      eyebrow: "Crea tu cuenta",
+      title: "Empieza a reunir reseñas honestas.",
+      lede: "Configura tu primer local en minutos. No hace falta tarjeta mientras ultimamos los planes.",
+      submit: "Crear cuenta",
+      sending: "Creando cuenta…",
+      altLead: "¿Ya tienes una cuenta?",
+      altLink: "Inicia sesión",
+      points: [
+        "Un código QR personalizado para cada local",
+        "Borradores asistidos por AI que tus clientes editan y publican ellos mismos",
+        "Diseñado para mantenerte del lado correcto de las reglas de las plataformas",
+      ],
+    },
+    fields: {
+      password: "Contraseña",
+      passwordPlaceholder: "Al menos 10 caracteres",
+      passwordHint: "Usa al menos 10 caracteres. Una frase corta funciona bien.",
+      confirm: "Confirmar contraseña",
+      confirmPlaceholder: "Escríbela una vez más",
+      show: "Mostrar contraseña",
+      hide: "Ocultar contraseña",
+    },
+    terms: {
+      lead: "Acepto los ",
+      termsLink: "Términos del servicio",
+      mid: " y la ",
+      privacyLink: "Política de privacidad",
+      end: ".",
+    },
+    errors: {
+      passwordShort: "Usa al menos 10 caracteres.",
+      passwordMatch: "Las dos contraseñas no coinciden.",
+      termsRequired: "Acepta los términos para continuar.",
+    },
+    pendingTitle: "Las cuentas aún no están abiertas",
+    pendingBody:
+      "Reviewslip todavía no se ha lanzado, así que aún no hay nada donde iniciar sesión. Cuéntanos sobre tu negocio y te avisaremos en cuanto se abra el registro. Nada de lo que escribiste aquí se ha enviado ni guardado.",
+    pendingCta: "Ponte en contacto",
   },
 
   slip: {
@@ -530,7 +595,7 @@ const es: Dictionary = {
       title: "Términos del servicio",
       s1: "Uso aceptable",
       p1Lead:
-        "Aceptas usar Reviewslip solo para invitar a clientes genuinos que hayan tenido una experiencia real con tu negocio a escribir sus propias reseñas honestas. Cumplirás las reglas de la FTC sobre reseñas y las políticas de cualquier plataforma a la que dirijas a los clientes. Consulta nuestra página de ",
+        "Aceptas usar Reviewslip solo para invitar a clientes genuinos que hayan tenido una experiencia real con tu negocio a escribir sus propias reseñas honestas. Cumplirás la ley aplicable en materia de reseñas — incluidas las reglas de la FTC en EE. UU., la Directiva sobre prácticas comerciales desleales y la Directiva Ómnibus de la EU, la Digital Markets, Competition and Consumers Act 2024 del UK, normas asiáticas como la regulación japonesa sobre marketing encubierto y la ley china contra la competencia desleal, y la legislación local en cualquier otro lugar donde operes — y las políticas de cualquier plataforma a la que dirijas a los clientes. Consulta nuestra página de ",
       p1Link: "Cumplimiento y confianza",
       p1End: ".",
       s2: "Conducta prohibida",

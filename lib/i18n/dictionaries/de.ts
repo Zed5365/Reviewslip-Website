@@ -31,7 +31,7 @@ const de: Dictionary = {
     compliance: {
       title: "Compliance & Vertrauen",
       description:
-        "Wie Reviewslip die FTC-Regeln zu Fake-Bewertungen und Plattformrichtlinien einhält — indem ausschließlich echte Kunden unterstützt werden.",
+        "Wie Reviewslip die Gesetze gegen Fake-Bewertungen (USA, EU, UK, Asien) und die Plattformrichtlinien einhält — indem ausschließlich echte Kunden unterstützt werden.",
     },
     demo: {
       title: "Live-Demo",
@@ -58,6 +58,16 @@ const de: Dictionary = {
       description:
         "Die Bedingungen für die Nutzung von Reviewslip, einschließlich zulässiger Nutzung und verbotener Handlungen.",
     },
+    login: {
+      title: "Anmelden",
+      description:
+        "Melden Sie sich bei Ihrem Reviewslip-Konto an, um Ihre Standorte, QR-Codes und Bewertungsslips zu verwalten.",
+    },
+    signup: {
+      title: "Konto erstellen",
+      description:
+        "Erstellen Sie Ihr Reviewslip-Konto und machen Sie aus echten Kunden ehrliche Bewertungen.",
+    },
   },
 
   nav: {
@@ -68,6 +78,8 @@ const de: Dictionary = {
     demo: "Live-Demo",
     faq: "Leitfaden & FAQ",
     contact: "Kontakt",
+    login: "Anmelden",
+    signup: "Konto erstellen",
   },
 
   footer: {
@@ -153,7 +165,7 @@ const de: Dictionary = {
     trustEyebrow: "Compliance & Vertrauen",
     trustTitle: "Ehrlich von Grund auf.",
     trustLede:
-      "Die FTC und jede große Plattform verbieten gefälschte und KI-erfundene Bewertungen. Reviewslip ist genau andersherum aufgebaut: Es hilft immer nur einem echten Kunden, eine echte Meinung auszudrücken. Keine Bots, keine Massen, keine erfundenen Details.",
+      "Aufsichtsbehörden von den USA über Europa bis Asien — und jede große Plattform — verbieten gefälschte und KI-erfundene Bewertungen. Reviewslip ist genau andersherum aufgebaut: Es hilft immer nur einem echten Kunden, eine echte Meinung auszudrücken. Keine Bots, keine Massen, keine erfundenen Details.",
     trustCta: "Unseren Compliance-Ansatz lesen",
 
     faqEyebrow: "Fragen",
@@ -165,8 +177,8 @@ const de: Dictionary = {
         a: "Nein – und genau darum geht es. Reviewslip hilft nur einem echten Kunden, der gerade eine echte Erfahrung gemacht hat, seine eigenen Gedanken in Worte zu fassen. Es gibt keine Massengenerierung und kein Veröffentlichen im Namen anderer. Der Kunde bewertet, bearbeitet und veröffentlicht selbst.",
       },
       {
-        q: "Ist das nach Googles Richtlinien und den FTC-Regeln erlaubt?",
-        a: "Einem echten Kunden zu helfen, seine eigene ehrliche Bewertung zu schreiben, ist erlaubt. Bewertungen zu erfinden, sie zu incentivieren oder gefälschte zu veröffentlichen ist es nicht – und Reviewslip ist gezielt so gestaltet, dass all das vermieden wird. Details finden Sie auf unserer Seite Compliance & Vertrauen.",
+        q: "Ist das nach Googles Richtlinien und dem Gesetz erlaubt?",
+        a: "Einem echten Kunden zu helfen, seine eigene ehrliche Bewertung zu schreiben, ist erlaubt. Bewertungen zu erfinden, sie zu incentivieren oder gefälschte zu veröffentlichen ist es nicht — weder nach der US-FTC-Regel noch nach den Bewertungsgesetzen der EU und des UK, den asiatischen Vorschriften wie Japans Verbot der Schleichwerbung oder den Plattformrichtlinien. Reviewslip ist gezielt so gestaltet, dass all das vermieden wird. Details finden Sie auf unserer Seite Compliance & Vertrauen.",
       },
       {
         q: "Welche Bewertungsplattformen werden unterstützt?",
@@ -277,7 +289,7 @@ const de: Dictionary = {
     callout:
       "Reviewslip schreibt niemals gefälschte Bewertungen, veröffentlicht niemals im Namen eines Kunden und generiert niemals Bewertungen in Masse. Ein echter Kunde erhält nach einem echten Besuch Hilfe beim Formulieren seiner eigenen ehrlichen Bewertung – und veröffentlicht sie selbst.",
     h1: "Die Regeln, um die herum wir gestalten",
-    p1: "2024 hat die US-Handelsaufsichtsbehörde FTC eine Regel finalisiert, die gefälschte und KI-erfundene Bewertungen, nicht offengelegte incentivierte Bewertungen und andere irreführende Praktiken verbietet, mit Strafen pro Verstoß. Google, Yelp, Trustpilot und andere untersagen dasselbe schon lange. Diese Regeln existieren aus gutem Grund, und wir nehmen sie ernst.",
+    p1: "Gefälschte Bewertungen sind in immer mehr Rechtsordnungen rechtswidrig, nicht nur in einer. In den Vereinigten Staaten verbietet die FTC-Regel von 2024 gefälschte und KI-erfundene Bewertungen, nicht offengelegte anreizbasierte Bewertungen und andere irreführende Praktiken, mit Strafen pro Verstoß. In der Europäischen Union verlangt die Richtlinie über unlautere Geschäftspraktiken (Unfair Commercial Practices Directive) — geändert durch die Omnibus-Richtlinie (Omnibus Directive) —, dass Bewertungen echt und überprüfbar sind, und das Gesetz über digitale Dienste (Digital Services Act) fügt Pflichten auf Plattformebene hinzu; das britische Digital Markets, Competition and Consumers Act 2024 verbietet gefälschte und irreführende Bewertungen ausdrücklich. In Asien richten sich Japans Vorschriften zur Schleichwerbung von 2023 und Chinas Gesetz gegen unlauteren Wettbewerb gegen erfundene oder nicht offengelegte Bewertungen. Google, TripAdvisor, Trustpilot und die anderen Plattformen untersagen dasselbe weltweit. Diese Regeln existieren aus gutem Grund, und wir nehmen sie ernst.",
     h2: "Wie Reviewslip regelkonform bleibt",
     list: [
       "Echter Kunde, echte Erfahrung. Das Tool ist dafür gedacht, an Ihrem Standort von jemandem genutzt zu werden, der tatsächlich dort war.",
@@ -293,7 +305,7 @@ const de: Dictionary = {
     p4Link: "Nutzungsbedingungen",
     p4End: ".",
     disclaimer:
-      "Diese Seite ist eine allgemeinverständliche Zusammenfassung, keine Rechtsberatung. Prüfen Sie die aktuellen FTC-Leitlinien und die Richtlinien jeder Plattform für Ihre Rechtsordnung.",
+      "Diese Seite ist eine allgemeinverständliche Zusammenfassung, keine Rechtsberatung. Prüfen Sie die aktuellen Vorgaben der FTC, der EU, des UK und die lokalen Vorgaben — sowie die Richtlinien jeder Plattform — für jeden Markt, in dem Sie tätig sind.",
   },
 
   faqPage: {
@@ -303,7 +315,7 @@ const de: Dictionary = {
 
     warningLead: "Der mit Abstand größte Fehler:",
     warning:
-      "Den QR-Code nur an Kunden zu geben, von denen Sie glauben, dass sie zufrieden sind. Das ist Bewertungsselektion (review gating) — Google verbietet sie, und die FTC-Regel von 2024 zielt gezielt darauf ab. Bieten Sie allen denselben Weg zur Bewertung an und lassen Sie ehrliche Meinungen dort landen, wo sie landen.",
+      "Den QR-Code nur an Kunden zu geben, von denen Sie glauben, dass sie zufrieden sind. Das ist Bewertungsselektion (review gating) — Google verbietet sie, und ebenso die Verbraucherschutzvorschriften von der US-FTC über die EU und das UK bis Asien. Bieten Sie allen denselben Weg zur Bewertung an und lassen Sie ehrliche Meinungen dort landen, wo sie landen.",
 
     sections: [
       {
@@ -321,11 +333,11 @@ const de: Dictionary = {
           },
           {
             q: "Soll ich jeden Kunden fragen oder nur die zufriedenen?",
-            a: "Jeden Kunden. Gezielt nur die Personen zu fragen, von denen Sie eine positive Rückmeldung erwarten, ist Bewertungsselektion und nach den Richtlinien von Google sowie nach der FTC-Regel von 2024 verboten. Es ist außerdem kontraproduktiv: Ein Eintrag, bei dem jede einzelne Bewertung fünf Sterne hat, wirkt auf Interessenten weniger vertrauenswürdig als einer mit einer realistischen Streuung. Machen Sie den QR-Code für alle zugänglich.",
+            a: "Jeden Kunden. Gezielt nur die Personen zu fragen, von denen Sie eine positive Rückmeldung erwarten, ist Bewertungsselektion und nach den Richtlinien von Google sowie nach den Verbraucherschutzvorschriften von der US-FTC über die EU und das UK bis Asien verboten. Es ist außerdem kontraproduktiv: Ein Eintrag, bei dem jede einzelne Bewertung fünf Sterne hat, wirkt auf Interessenten weniger vertrauenswürdig als einer mit einer realistischen Streuung. Machen Sie den QR-Code für alle zugänglich.",
           },
           {
             q: "Was, wenn jemand eine schlechte Erfahrung gemacht hat?",
-            a: "Lassen Sie ihn das sagen — oder besser: Lösen Sie das Problem, bevor er geht. Reviewslip erstellt den Entwurf aus dem, was der Kunde auswählt; der ehrliche Weg für einen unzufriedenen Gast besteht also darin, eigene Worte zu schreiben oder Sie direkt anzusprechen. Was Sie niemals tun dürfen: jemandem den Weg zur Bewertung verbergen oder vorenthalten, weil Sie Kritik erwarten. Genau das Unterdrücken negativer Bewertungen soll die FTC-Regel verhindern.",
+            a: "Lassen Sie ihn das sagen — oder besser: Lösen Sie das Problem, bevor er geht. Reviewslip erstellt den Entwurf aus dem, was der Kunde auswählt; der ehrliche Weg für einen unzufriedenen Gast besteht also darin, eigene Worte zu schreiben oder Sie direkt anzusprechen. Was Sie niemals tun dürfen: jemandem den Weg zur Bewertung verbergen oder vorenthalten, weil Sie Kritik erwarten. Genau das Unterdrücken negativer Bewertungen sollen die FTC-Regel und ihre Entsprechungen in der EU, im UK und in Asien verhindern.",
           },
         ],
       },
@@ -363,7 +375,7 @@ const de: Dictionary = {
         items: [
           {
             q: "Kann ich einen Rabatt oder eine Gratisleistung für eine Bewertung anbieten?",
-            a: "Nein. Anreizbasierte Bewertungen sind von Google verboten, und die FTC-Regel erfasst auch nicht offengelegte Anreize. Das gilt selbst dann, wenn Sie im Gegenzug bereitwillig eine negative Bewertung akzeptieren würden — das Problem ist die Bezahlung, nicht die Bewertungstendenz. Sie dürfen sich bedanken. Sie dürfen nicht bezahlen.",
+            a: "Nein. Anreizbasierte Bewertungen sind von Google verboten und werden auch von der FTC-Regel sowie ihren Entsprechungen in der EU, im UK und in Asien erfasst. Das gilt selbst dann, wenn Sie im Gegenzug bereitwillig eine negative Bewertung akzeptieren würden — das Problem ist die Bezahlung, nicht die Bewertungstendenz. Sie dürfen sich bedanken. Sie dürfen nicht bezahlen.",
           },
           {
             q: "Dürfen Mitarbeitende, Freunde oder Familie Bewertungen abgeben?",
@@ -375,7 +387,7 @@ const de: Dictionary = {
           },
           {
             q: "Kann ich die Bewertung für einen Kunden schreiben, der sagt, er sei zufrieden?",
-            a: "Nein. Selbst mit mündlicher Erlaubnis wird sie dadurch, dass Sie sie schreiben und veröffentlichen, zu einer Bewertung von Ihnen und nicht von ihm — und genau das ist die Definition einer gefälschten Bewertung, sowohl nach Googles Richtlinie als auch nach der FTC-Regel. Geben Sie ihm den QR-Code und lassen Sie ihn es selbst tun.",
+            a: "Nein. Selbst mit mündlicher Erlaubnis wird sie dadurch, dass Sie sie schreiben und veröffentlichen, zu einer Bewertung von Ihnen und nicht von ihm — und genau das ist die Definition einer gefälschten Bewertung — nach Googles Richtlinie, nach der US-FTC-Regel und nach den Bewertungsgesetzen der EU, des UK und Asiens gleichermaßen. Geben Sie ihm den QR-Code und lassen Sie ihn es selbst tun.",
           },
         ],
       },
@@ -386,11 +398,11 @@ const de: Dictionary = {
         items: [
           {
             q: "Was ist das Schlimmste, das passieren kann?",
-            a: "Grob nach Schweregrad: Einzelne Bewertungen werden gefiltert und erscheinen nie; ein ganzer Schwung wird nachträglich entfernt, manchmal Monate später; der Eintrag erhält einen Verbraucherhinweis, der Besucher warnt, dass verdächtige Aktivitäten festgestellt wurden; oder der Eintrag wird gesperrt. Rechtlich sieht die FTC-Regel zivilrechtliche Bußgelder vor, die pro Verstoß bemessen werden — also pro gefälschter Bewertung, nicht pro Unternehmen. Hinzu kommt der schlichte Reputationsschaden, öffentlich ertappt worden zu sein.",
+            a: "Grob nach Schweregrad: Einzelne Bewertungen werden gefiltert und erscheinen nie; ein ganzer Schwung wird nachträglich entfernt, manchmal Monate später; der Eintrag erhält einen Verbraucherhinweis, der Besucher warnt, dass verdächtige Aktivitäten festgestellt wurden; oder der Eintrag wird gesperrt. Rechtlich sieht die US-FTC-Regel zivilrechtliche Bußgelder vor, die pro Verstoß bemessen werden — pro gefälschter Bewertung, nicht pro Unternehmen —, und die Regelwerke der EU, des UK und Asiens haben ihre eigenen Bußgelder und Durchsetzungsmechanismen. Hinzu kommt der schlichte Reputationsschaden, öffentlich ertappt worden zu sein.",
           },
           {
-            q: "Was verbietet die FTC-Regel eigentlich?",
-            a: "Die Regel von 2024 richtet sich gegen gefälschte und KI-erfundene Bewertungen von Personen, die nie eine echte Erfahrung gemacht haben, gegen nicht offengelegte anreizbasierte Bewertungen, gegen Insider, die sich als Kunden ausgeben, und gegen das Unterdrücken oder Verbergen negativer Bewertungen. Nicht verboten ist, einem echten Kunden dabei zu helfen, seine eigene ehrliche Meinung in Worte zu fassen — und genau darauf ist Reviewslip ausgelegt.",
+            q: "Was verbieten diese Regeln eigentlich?",
+            a: "Über die US-FTC-Regel, die Bewertungsgesetze der EU und des UK und ihre asiatischen Entsprechungen hinweg sind die gemeinsamen Zielscheiben dieselben: gefälschte oder KI-erfundene Bewertungen von Personen, die nie eine echte Erfahrung gemacht haben, nicht offengelegte anreizbasierte oder gesponserte Bewertungen, Insider, die sich als Kunden ausgeben, und das Unterdrücken oder Verbergen negativer Bewertungen. Keine von ihnen verbietet, einem echten Kunden dabei zu helfen, seine eigene ehrliche Meinung in Worte zu fassen — und genau darauf ist Reviewslip ausgelegt.",
           },
           {
             q: "Wenn Bewertungen entfernt werden, ist das die Schuld von Reviewslip oder meine?",
@@ -398,7 +410,7 @@ const de: Dictionary = {
           },
           {
             q: "Gilt das auch außerhalb der Vereinigten Staaten?",
-            a: "Die FTC-Regel ist US-Recht, die Plattformrichtlinien gelten jedoch weltweit — Googles Regeln zu gefälschten, anreizbasierten und selektiv eingeholten Bewertungen gelten überall, wo Sie tätig sind. Viele andere Rechtsordnungen haben eigene Verbraucherschutzvorschriften zu irreführenden Bewertungen, und mehrere verschärfen sie derzeit. Betrachten Sie die Hinweise hier als Mindeststandard, nicht als Obergrenze.",
+            a: "Ja — die FTC-Regel ist US-Recht, aber die meisten Märkte haben inzwischen eigene Vorschriften. Die Richtlinie über unlautere Geschäftspraktiken der EU (geändert durch die Omnibus-Richtlinie) und das Gesetz über digitale Dienste, das britische Digital Markets, Competition and Consumers Act 2024, Japans Regulierung zur Schleichwerbung von 2023 und Chinas Vorschriften gegen unlauteren Wettbewerb bei erfundenen Bewertungen zielen alle auf dasselbe Verhalten — und mehrere davon werden derzeit verschärft. Die Plattformrichtlinien (Google, TripAdvisor, Facebook, LINE, Xiaohongshu, Wongnai) gelten ohnehin überall. Betrachten Sie die Hinweise hier als Mindeststandard, nicht als Obergrenze, und prüfen Sie die Regeln der Märkte, in denen Sie tätig sind.",
           },
         ],
       },
@@ -432,7 +444,7 @@ const de: Dictionary = {
       "Erzählen Sie uns von Ihrem Unternehmen, und wir helfen Ihnen, richtig zu starten.",
 
     disclaimer:
-      "Dies sind praktische Hinweise auf Grundlage veröffentlichter Plattformrichtlinien und der FTC-Regel — keine Rechtsberatung. Plattformregeln ändern sich, und die Anforderungen an Ihrem Standort können abweichen. Prüfen Sie die aktuellen Vorgaben für Ihre Rechtsordnung und holen Sie professionellen Rat ein, wenn Sie unsicher sind.",
+      "Dies sind praktische Hinweise auf Grundlage veröffentlichter Plattformrichtlinien und der Verbraucherschutzvorschriften in den USA (FTC), in der EU und im UK sowie in Asien — keine Rechtsberatung. Die Regeln ändern sich und unterscheiden sich je nach Markt. Prüfen Sie die aktuellen Vorgaben dort, wo Sie tätig sind, und holen Sie professionellen Rat ein, wenn Sie unsicher sind.",
   },
 
   demo: {
@@ -476,6 +488,59 @@ const de: Dictionary = {
       errRequired: "Dieses Feld ist erforderlich.",
       errEmail: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
     },
+  },
+
+  auth: {
+    login: {
+      eyebrow: "Willkommen zurück",
+      title: "Bei Reviewslip anmelden.",
+      lede: "Verwalten Sie Ihre Standorte, QR-Codes und Bewertungsslips.",
+      submit: "Anmelden",
+      sending: "Anmeldung läuft…",
+      remember: "Angemeldet bleiben",
+      forgot: "Passwort vergessen?",
+      altLead: "Neu bei Reviewslip?",
+      altLink: "Konto erstellen",
+    },
+    signup: {
+      eyebrow: "Konto erstellen",
+      title: "Sammeln Sie ehrliche Bewertungen.",
+      lede: "Richten Sie Ihren ersten Standort in wenigen Minuten ein. Keine Karte nötig, solange wir die Tarife finalisieren.",
+      submit: "Konto erstellen",
+      sending: "Konto wird erstellt…",
+      altLead: "Sie haben bereits ein Konto?",
+      altLink: "Anmelden",
+      points: [
+        "Ein individueller QR-Code für jeden Standort",
+        "KI-gestützte Entwürfe, die Ihre Kunden selbst bearbeiten und posten",
+        "So gebaut, dass Sie auf der richtigen Seite der Plattformregeln bleiben",
+      ],
+    },
+    fields: {
+      password: "Passwort",
+      passwordPlaceholder: "Mindestens 10 Zeichen",
+      passwordHint: "Verwenden Sie mindestens 10 Zeichen. Ein kurzer Satz eignet sich gut.",
+      confirm: "Passwort bestätigen",
+      confirmPlaceholder: "Noch einmal eingeben",
+      show: "Passwort anzeigen",
+      hide: "Passwort verbergen",
+    },
+    terms: {
+      lead: "Ich stimme den ",
+      termsLink: "Nutzungsbedingungen",
+      mid: " und der ",
+      privacyLink: "Datenschutzerklärung",
+      end: " zu.",
+    },
+    errors: {
+      passwordShort: "Bitte verwenden Sie mindestens 10 Zeichen.",
+      passwordMatch: "Die beiden Passwörter stimmen nicht überein.",
+      termsRequired: "Bitte akzeptieren Sie die Bedingungen, um fortzufahren.",
+    },
+    pendingTitle: "Konten sind noch nicht freigeschaltet",
+    pendingBody:
+      "Reviewslip ist noch vor dem Start, es gibt also noch nichts, wo Sie sich anmelden könnten. Erzählen Sie uns von Ihrem Unternehmen, und wir melden uns, sobald die Registrierung öffnet. Nichts von dem, was Sie hier eingegeben haben, wurde gesendet oder gespeichert.",
+    pendingCta: "Kontakt aufnehmen",
   },
 
   slip: {
@@ -530,7 +595,7 @@ const de: Dictionary = {
       title: "Nutzungsbedingungen",
       s1: "Zulässige Nutzung",
       p1Lead:
-        "Sie stimmen zu, Reviewslip nur zu nutzen, um echte Kunden, die eine echte Erfahrung mit Ihrem Unternehmen gemacht haben, einzuladen, ihre eigenen ehrlichen Bewertungen zu schreiben. Sie halten die FTC-Regeln zu Bewertungen und die Richtlinien jeder Plattform ein, zu der Sie Kunden leiten. Siehe unsere Seite ",
+        "Sie stimmen zu, Reviewslip nur zu nutzen, um echte Kunden, die eine echte Erfahrung mit Ihrem Unternehmen gemacht haben, einzuladen, ihre eigenen ehrlichen Bewertungen zu schreiben. Sie halten das anwendbare Bewertungsrecht ein — darunter die FTC-Regeln in den USA, die Richtlinie über unlautere Geschäftspraktiken und die Omnibus-Richtlinie der EU, das britische Digital Markets, Competition and Consumers Act 2024, asiatische Vorschriften wie Japans Regulierung zur Schleichwerbung und Chinas Gesetz gegen unlauteren Wettbewerb sowie das lokale Recht überall sonst, wo Sie tätig sind — und die Richtlinien jeder Plattform, zu der Sie Kunden leiten. Siehe unsere Seite ",
       p1Link: "Compliance & Vertrauen",
       p1End: ".",
       s2: "Verbotenes Verhalten",

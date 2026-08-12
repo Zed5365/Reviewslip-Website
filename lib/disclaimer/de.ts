@@ -9,7 +9,7 @@ const de: Disclaimer = {
   risks: [
     "Mit Reviewslip erstellte Bewertungen können von Google jederzeit gefiltert, ausgeblendet oder entfernt werden — auch rückwirkend, Monate später.",
     "Missbrauch — nur zufriedene Kunden zu fragen, Anreize zu bieten, von gemeinsam genutzten Geräten oder Ihrem eigenen Netzwerk aus zu veröffentlichen oder ein plötzliches Ansteigen des Bewertungsvolumens zu verursachen — kann dazu führen, dass Ihr Eintrag gekennzeichnet, mit einer öffentlichen Verbraucherwarnung versehen oder gesperrt wird.",
-    "Gefälschte, durch Anreize erlangte, gefilterte oder erfundene Bewertungen verstoßen gegen die Richtlinien von Google und, in den Vereinigten Staaten, gegen die Regeln der FTC, die Zivilstrafen pro Verstoß nach sich ziehen.",
+    "Gefälschte, durch Anreize erlangte, gefilterte oder erfundene Bewertungen verstoßen gegen die Richtlinien von Google und gegen das Recht in immer mehr Märkten — gegen die Regeln der FTC in den Vereinigten Staaten, die Richtlinie über unlautere Geschäftspraktiken und die Omnibus-Richtlinie der EU, das britische Digital Markets, Competition and Consumers Act 2024 sowie asiatische Vorschriften wie Japans Regeln zur Schleichwerbung und Chinas Gesetz gegen unlauteren Wettbewerb —, von denen mehrere Strafen pro Verstoß vorsehen.",
     "Sie sind allein dafür verantwortlich, alle geltenden Gesetze sowie die Richtlinien von Google und jeder anderen von Ihnen genutzten Plattform einzuhalten, wo auch immer Sie tätig sind.",
     "Ergebnisse werden nicht garantiert. Reviewslip hat keinen Einfluss darauf, ob Bewertungen akzeptiert, beibehalten oder entfernt werden.",
   ],

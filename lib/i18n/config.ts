@@ -10,6 +10,7 @@ export const LOCALES = [
   { code: "de", label: "Deutsch" },
   { code: "pt", label: "Português" },
   { code: "it", label: "Italiano" },
+  { code: "nl", label: "Nederlands" },
   { code: "th", label: "ไทย" },
   { code: "zh", label: "中文" },
   { code: "ja", label: "日本語" },

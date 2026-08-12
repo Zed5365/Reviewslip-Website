@@ -54,6 +54,11 @@
   color: var(--cream);
 }
 
+/* Sits under the primary Sign up button in the last column. */
+.secondaryCta {
+  margin-top: -0.1rem;
+}
+
 .legal {
   display: flex;
   flex-wrap: wrap;

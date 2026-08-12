@@ -55,6 +55,15 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
 
         <div className={styles.actions}>
           <LanguageSelect lang={lang} label={selectors.language} />
+          <Link href={localizedPath(lang, "/login")} className={styles.signin}>
+            {nav.login}
+          </Link>
+          <Link
+            href={localizedPath(lang, "/signup")}
+            className="btn btn-quiet"
+          >
+            {nav.signup}
+          </Link>
           <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
             {ctaLabel}
           </Link>
@@ -82,9 +91,23 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
               {l.label}
             </Link>
           ))}
+          <Link
+            href={localizedPath(lang, "/login")}
+            className={styles.mobileLink}
+            onClick={() => setOpen(false)}
+          >
+            {nav.login}
+          </Link>
           <div className={styles.mobileControls}>
             <LanguageSelect lang={lang} label={selectors.language} />
           </div>
+          <Link
+            href={localizedPath(lang, "/signup")}
+            className="btn btn-quiet"
+            onClick={() => setOpen(false)}
+          >
+            {nav.signup}
+          </Link>
           <Link
             href={localizedPath(lang, "/contact")}
             className="btn btn-go"

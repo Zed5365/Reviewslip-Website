@@ -5,6 +5,7 @@ import fr from "./fr";
 import de from "./de";
 import pt from "./pt";
 import it from "./it";
+import nl from "./nl";
 import th from "./th";
 import zh from "./zh";
 import ja from "./ja";
@@ -17,6 +18,7 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
   de,
   pt,
   it,
+  nl,
   th,
   zh,
   ja,

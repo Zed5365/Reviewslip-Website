@@ -18,7 +18,7 @@ export interface Disclaimer {
 }
 
 const en: Disclaimer = {
-  version: "1",
+  version: "2",
   title: "Please read before continuing",
   intro:
     "Reviewslip is a tool that helps your genuine customers write and post their own reviews. How you use it is entirely your responsibility, and there are real risks you should understand before you begin.",
@@ -26,7 +26,7 @@ const en: Disclaimer = {
   risks: [
     "Reviews created with Reviewslip may be filtered, hidden, or removed by Google at any time — including retroactively, months later.",
     "Misuse — asking only happy customers, offering incentives, posting from shared devices or your own network, or driving sudden spikes in review volume — can cause your listing to be flagged, given a public consumer alert, or suspended.",
-    "Fake, incentivised, gated, or fabricated reviews violate Google's policies and, in the United States, the FTC's rules, which carry civil penalties assessed per violation.",
+    "Fake, incentivised, gated, or fabricated reviews violate Google's policies and the law in a growing number of markets — the FTC's rules in the United States, the EU's Unfair Commercial Practices and Omnibus Directives, the UK's Digital Markets, Competition and Consumers Act 2024, and Asian rules such as Japan's stealth-marketing regulation and China's anti-unfair-competition law — several of which carry penalties assessed per violation.",
     "You are solely responsible for complying with all applicable laws and with the policies of Google and any other platform you use, wherever you operate.",
     "Results are not guaranteed. Reviewslip does not control whether reviews are accepted, kept, or removed.",
   ],

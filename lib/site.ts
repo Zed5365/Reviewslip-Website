@@ -34,3 +34,15 @@ export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURICompon
  * that accepts a JSON POST of { name, email, business, locations, message }.
  */
 export const CONTACT_FORM_ENDPOINT = "";
+
+/**
+ * Where the login / sign-up forms POST. Leave empty until there is a real auth
+ * backend: the forms then validate as normal but stop at an "accounts aren't
+ * open yet" notice, and the password never leaves the browser.
+ *
+ * There is deliberately NO mailto fallback here (unlike the contact form) —
+ * credentials must never be handed to an email client. When you do set this,
+ * it must be an HTTPS endpoint that accepts a JSON POST of
+ * { mode: "login" | "signup", email, password, name?, business? }.
+ */
+export const AUTH_ENDPOINT = "";

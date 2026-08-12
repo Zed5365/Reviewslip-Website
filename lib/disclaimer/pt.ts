@@ -9,7 +9,7 @@ const pt: Disclaimer = {
   risks: [
     "As avaliações criadas com o Reviewslip podem ser filtradas, ocultadas ou removidas pela Google a qualquer momento — incluindo retroativamente, meses mais tarde.",
     "A utilização indevida — pedir avaliações apenas a clientes satisfeitos, oferecer incentivos, publicar a partir de dispositivos partilhados ou da sua própria rede, ou provocar picos súbitos no volume de avaliações — pode fazer com que a sua ficha seja sinalizada, receba um alerta público ao consumidor ou seja suspensa.",
-    "Avaliações falsas, incentivadas, condicionadas ou fabricadas violam as políticas da Google e, nos Estados Unidos, as regras da FTC, que preveem sanções civis aplicadas por cada infração.",
+    "Avaliações falsas, incentivadas, condicionadas ou fabricadas violam as políticas da Google e a lei num número crescente de mercados: as regras da FTC nos Estados Unidos, a Diretiva relativa às Práticas Comerciais Desleais e a Diretiva Omnibus da União Europeia, a Digital Markets, Competition and Consumers Act 2024 do Reino Unido e regras asiáticas como a regulamentação japonesa sobre marketing dissimulado e a lei chinesa contra a concorrência desleal; várias delas preveem sanções aplicadas por cada infração.",
     "É o único responsável pelo cumprimento de todas as leis aplicáveis e das políticas da Google e de qualquer outra plataforma que utilize, onde quer que opere.",
     "Os resultados não são garantidos. O Reviewslip não controla se as avaliações são aceites, mantidas ou removidas.",
   ],

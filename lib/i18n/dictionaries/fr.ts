@@ -31,7 +31,7 @@ const fr: Dictionary = {
     compliance: {
       title: "Conformité et confiance",
       description:
-        "Comment Reviewslip respecte la règle FTC sur les faux avis et les politiques des plateformes — en n'aidant que de vrais clients.",
+        "Comment Reviewslip reste du bon côté des lois sur les faux avis (États-Unis, UE, Royaume-Uni, Asie) et des politiques des plateformes — en n'aidant que de vrais clients.",
     },
     demo: {
       title: "Démo en direct",
@@ -58,6 +58,16 @@ const fr: Dictionary = {
       description:
         "Les conditions régissant l'utilisation de Reviewslip, y compris l'usage acceptable et les comportements interdits.",
     },
+    login: {
+      title: "Connexion",
+      description:
+        "Connectez-vous à votre compte Reviewslip pour gérer vos établissements, vos QR codes et vos slips d'avis.",
+    },
+    signup: {
+      title: "Créer un compte",
+      description:
+        "Créez votre compte Reviewslip et commencez à transformer de vrais clients en avis honnêtes.",
+    },
   },
 
   nav: {
@@ -68,6 +78,8 @@ const fr: Dictionary = {
     demo: "Démo en direct",
     faq: "Guide et FAQ",
     contact: "Contact",
+    login: "Connexion",
+    signup: "Créer un compte",
   },
 
   footer: {
@@ -153,7 +165,7 @@ const fr: Dictionary = {
     trustEyebrow: "Conformité et confiance",
     trustTitle: "Honnête par conception.",
     trustLede:
-      "La FTC et toutes les grandes plateformes interdisent les faux avis et les avis fabriqués par IA. Reviewslip est conçu à l'opposé : il aide uniquement un vrai client à exprimer une véritable opinion. Pas de bots, pas de masse, pas de détails inventés.",
+      "Des États-Unis à l'Europe et à l'Asie, les régulateurs — comme toutes les grandes plateformes — interdisent les faux avis et les avis fabriqués par IA. Reviewslip est conçu à l'opposé : il aide uniquement un vrai client à exprimer une véritable opinion. Pas de bots, pas de masse, pas de détails inventés.",
     trustCta: "Découvrir notre approche de la conformité",
 
     faqEyebrow: "Questions",
@@ -165,8 +177,8 @@ const fr: Dictionary = {
         a: "Non — et c'est tout l'intérêt. Reviewslip aide uniquement un vrai client qui vient de vivre une véritable expérience à mettre ses propres pensées en mots. Il n'y a aucune génération en masse ni aucune publication au nom de quiconque. Le client rédige, modifie et publie lui-même.",
       },
       {
-        q: "Est-ce autorisé par les politiques de Google et les règles de la FTC ?",
-        a: "Aider un vrai client à rédiger son propre avis honnête est permis. Fabriquer des avis, les inciter ou en publier de faux ne l'est pas — et Reviewslip est spécialement conçu pour éviter tout cela. Consultez notre page Conformité et confiance pour plus de détails.",
+        q: "Est-ce autorisé par les politiques de Google et par la loi ?",
+        a: "Aider un vrai client à rédiger son propre avis honnête est permis. Fabriquer des avis, les inciter ou en publier de faux ne l'est pas — que ce soit au regard de la règle de la FTC aux États-Unis, des lois sur les avis de l'UE et du Royaume-Uni, des règles asiatiques telles que l'interdiction du marketing furtif au Japon, ou des politiques des plateformes. Reviewslip est spécialement conçu pour éviter tout cela. Consultez notre page Conformité et confiance pour plus de détails.",
       },
       {
         q: "Quelles plateformes d'avis sont prises en charge ?",
@@ -277,7 +289,7 @@ const fr: Dictionary = {
     callout:
       "Reviewslip ne rédige jamais de faux avis, ne publie jamais au nom d'un client et ne génère jamais d'avis en masse. Un vrai client, après une véritable visite, est aidé à formuler son propre avis honnête — et le publie lui-même.",
     h1: "Les règles autour desquelles nous concevons",
-    p1: "En 2024, la Federal Trade Commission des États-Unis a finalisé une règle interdisant les faux avis et les avis fabriqués par IA, les avis incités non divulgués et d'autres pratiques trompeuses, avec des sanctions par infraction. Google, Yelp, Trustpilot et d'autres interdisent depuis longtemps les mêmes pratiques. Ces règles existent pour de bonnes raisons, et nous les prenons au sérieux.",
+    p1: "Les faux avis sont illégaux dans un nombre croissant de pays, et non dans un seul. Aux États-Unis, la règle de 2024 de la FTC interdit les faux avis et les avis fabriqués par IA, les avis incités non divulgués et d'autres pratiques trompeuses, avec des sanctions par infraction. Dans l'Union européenne, la directive sur les pratiques commerciales déloyales (Unfair Commercial Practices Directive) — mise à jour par la directive Omnibus (Omnibus Directive) — exige que les avis soient authentiques et vérifiables, et le règlement sur les services numériques (Digital Services Act) ajoute des obligations au niveau des plateformes ; au Royaume-Uni, le Digital Markets, Competition and Consumers Act 2024 interdit purement et simplement les avis faux et trompeurs. En Asie, les règles japonaises de 2023 sur le marketing furtif et la loi chinoise contre la concurrence déloyale visent les avis fabriqués ou non divulgués. Google, TripAdvisor, Trustpilot et les autres plateformes interdisent les mêmes pratiques dans le monde entier. Ces règles existent pour de bonnes raisons, et nous les prenons au sérieux.",
     h2: "Comment Reviewslip reste conforme",
     list: [
       "Vrai client, véritable expérience. L'outil est destiné à être utilisé dans votre établissement par une personne qui l'a réellement visité.",
@@ -293,7 +305,7 @@ const fr: Dictionary = {
     p4Link: "Conditions d'utilisation",
     p4End: ".",
     disclaimer:
-      "Cette page est un résumé en langage clair, et non un conseil juridique. Consultez les directives actuelles de la FTC et les politiques de chaque plateforme pour votre juridiction.",
+      "Cette page est un résumé en langage clair, et non un conseil juridique. Consultez les directives en vigueur de la FTC, de l'UE, du Royaume-Uni et les directives locales — ainsi que les politiques de chaque plateforme — pour chaque marché où vous exercez.",
   },
 
   faqPage: {
@@ -303,7 +315,7 @@ const fr: Dictionary = {
 
     warningLead: "La plus grosse erreur :",
     warning:
-      "Ne remettre le QR code qu'aux clients que vous pensez satisfaits. C'est de la sollicitation sélective des avis (review gating) — Google l'interdit et la règle de la FTC de 2024 la vise spécifiquement. Proposez le même parcours d'avis à tout le monde, et laissez les opinions honnêtes se déposer où elles se déposent.",
+      "Ne remettre le QR code qu'aux clients que vous pensez satisfaits. C'est de la sollicitation sélective des avis (review gating) — Google l'interdit, tout comme les règles de protection des consommateurs, de la FTC aux États-Unis à l'UE, au Royaume-Uni et à l'Asie. Proposez le même parcours d'avis à tout le monde, et laissez les opinions honnêtes se déposer où elles se déposent.",
 
     sections: [
       {
@@ -321,11 +333,11 @@ const fr: Dictionary = {
           },
           {
             q: "Dois-je demander à tous les clients, ou seulement à ceux qui sont satisfaits ?",
-            a: "À tous les clients. Ne solliciter que les personnes dont vous attendez un avis positif constitue une sollicitation sélective des avis (review gating), interdite par les politiques de Google et par la règle de la FTC de 2024. C'est également contre-productif : une fiche où absolument tous les avis sont de cinq étoiles inspire moins confiance aux acheteurs qu'une fiche présentant une répartition réaliste. Rendez le QR code accessible à tout le monde.",
+            a: "À tous les clients. Ne solliciter que les personnes dont vous attendez un avis positif constitue une sollicitation sélective des avis (review gating), interdite par les politiques de Google et par les règles de protection des consommateurs, de la FTC aux États-Unis à l'UE, au Royaume-Uni et à l'Asie. C'est également contre-productif : une fiche où absolument tous les avis sont de cinq étoiles inspire moins confiance aux acheteurs qu'une fiche présentant une répartition réaliste. Rendez le QR code accessible à tout le monde.",
           },
           {
             q: "Et si quelqu'un a eu une mauvaise expérience ?",
-            a: "Laissez-le le dire — ou mieux, réglez le problème avant son départ. Reviewslip rédige à partir de ce que le client sélectionne ; la voie honnête pour un visiteur mécontent est donc d'écrire ses propres mots ou de vous en parler directement. Ce que vous ne devez jamais faire, c'est masquer le parcours d'avis ou en priver quelqu'un parce que vous vous attendez à une critique. Supprimer les avis négatifs est précisément ce que la règle de la FTC a été écrite pour empêcher.",
+            a: "Laissez-le le dire — ou mieux, réglez le problème avant son départ. Reviewslip rédige à partir de ce que le client sélectionne ; la voie honnête pour un visiteur mécontent est donc d'écrire ses propres mots ou de vous en parler directement. Ce que vous ne devez jamais faire, c'est masquer le parcours d'avis ou en priver quelqu'un parce que vous vous attendez à une critique. Supprimer les avis négatifs est précisément ce que la règle de la FTC — et ses équivalents dans l'UE, au Royaume-Uni et en Asie — ont été écrits pour empêcher.",
           },
         ],
       },
@@ -363,7 +375,7 @@ const fr: Dictionary = {
         items: [
           {
             q: "Puis-je offrir une remise ou un produit gratuit en échange d'un avis ?",
-            a: "Non. Les avis incités sont interdits par Google, et la règle de la FTC couvre également les incitations non divulguées. Cela vaut même si vous accepteriez volontiers un avis négatif en échange — c'est le paiement qui pose problème, pas le sentiment exprimé. Vous pouvez remercier les gens. Vous ne pouvez pas les payer.",
+            a: "Non. Les avis incités sont interdits par Google, et également visés par la règle de la FTC et ses équivalents dans l'UE, au Royaume-Uni et en Asie. Cela vaut même si vous accepteriez volontiers un avis négatif en échange — c'est le paiement qui pose problème, pas le sentiment exprimé. Vous pouvez remercier les gens. Vous ne pouvez pas les payer.",
           },
           {
             q: "Le personnel, les amis ou la famille peuvent-ils laisser des avis ?",
@@ -375,7 +387,7 @@ const fr: Dictionary = {
           },
           {
             q: "Puis-je rédiger l'avis pour un client qui dit être satisfait ?",
-            a: "Non. Même avec son accord verbal, le fait que vous le rédigiez et le publiiez en fait un avis émanant de vous, et non de lui — et c'est la définition même d'un faux avis, tant selon la politique de Google que selon la règle de la FTC. Remettez-lui le QR code et laissez-le faire.",
+            a: "Non. Même avec son accord verbal, le fait que vous le rédigiez et le publiiez en fait un avis émanant de vous, et non de lui — et c'est la définition même d'un faux avis, selon la politique de Google, selon la règle de la FTC aux États-Unis comme selon les lois sur les avis dans l'UE, au Royaume-Uni et en Asie. Remettez-lui le QR code et laissez-le faire.",
           },
         ],
       },
@@ -386,11 +398,11 @@ const fr: Dictionary = {
         items: [
           {
             q: "Quel est le pire qui puisse arriver ?",
-            a: "À peu près par ordre de gravité : des avis individuels sont filtrés et n'apparaissent jamais ; un lot est supprimé rétroactivement, parfois des mois plus tard ; la fiche reçoit une alerte consommateur avertissant les visiteurs qu'une activité suspecte a été détectée ; ou la fiche est suspendue. Sur le plan juridique, la règle de la FTC prévoit des sanctions civiles évaluées par infraction — c'est-à-dire par faux avis, et non par entreprise. Et il y a tout simplement l'atteinte à la réputation lorsqu'on est publiquement pris sur le fait.",
+            a: "À peu près par ordre de gravité : des avis individuels sont filtrés et n'apparaissent jamais ; un lot est supprimé rétroactivement, parfois des mois plus tard ; la fiche reçoit une alerte consommateur avertissant les visiteurs qu'une activité suspecte a été détectée ; ou la fiche est suspendue. Sur le plan juridique, la règle de la FTC aux États-Unis prévoit des sanctions civiles évaluées par infraction — c'est-à-dire par faux avis, et non par entreprise — et les régimes de l'UE, du Royaume-Uni et d'Asie prévoient leurs propres amendes et mesures d'application. Et il y a tout simplement l'atteinte à la réputation lorsqu'on est publiquement pris sur le fait.",
           },
           {
-            q: "Qu'interdit réellement la règle de la FTC ?",
-            a: "La règle de 2024 vise les faux avis et les avis fabriqués par IA émanant de personnes n'ayant jamais vécu de véritable expérience, les avis incités non divulgués, les initiés se faisant passer pour des clients, ainsi que la suppression ou la dissimulation d'avis négatifs. Ce qu'elle n'interdit pas, c'est d'aider un vrai client à mettre en mots sa propre opinion honnête — ce qui est précisément la conception de Reviewslip.",
+            q: "Qu'interdisent réellement ces règles ?",
+            a: "Que ce soit dans la règle de la FTC aux États-Unis, les lois sur les avis de l'UE et du Royaume-Uni ou leurs équivalents asiatiques, les cibles communes sont les mêmes : les faux avis et les avis fabriqués par IA émanant de personnes n'ayant jamais vécu de véritable expérience, les avis incités ou sponsorisés non divulgués, les initiés se faisant passer pour des clients, ainsi que la suppression ou la dissimulation d'avis négatifs. Ce qu'aucune d'elles n'interdit, c'est d'aider un vrai client à mettre en mots sa propre opinion honnête — ce qui est précisément la conception de Reviewslip.",
           },
           {
             q: "Si des avis sont supprimés, est-ce la faute de Reviewslip ou la mienne ?",
@@ -398,7 +410,7 @@ const fr: Dictionary = {
           },
           {
             q: "Cela s'applique-t-il en dehors des États-Unis ?",
-            a: "La règle de la FTC est une loi américaine, mais les politiques des plateformes sont mondiales — les règles de Google sur les avis faux, incités et filtrés en amont s'appliquent partout où vous exercez. De nombreuses autres juridictions disposent de leurs propres régimes de protection des consommateurs couvrant les avis trompeurs, et plusieurs les ont renforcés. Considérez ces recommandations comme un minimum, et non comme un maximum.",
+            a: "Oui — la règle de la FTC est une loi américaine, mais la plupart des marchés disposent désormais des leurs. La directive sur les pratiques commerciales déloyales de l'UE (Unfair Commercial Practices Directive, mise à jour par la directive Omnibus) et le règlement sur les services numériques (Digital Services Act), le Digital Markets, Competition and Consumers Act 2024 du Royaume-Uni, la réglementation japonaise de 2023 sur le marketing furtif et les règles chinoises contre la concurrence déloyale visant les avis fabriqués ciblent tous les mêmes comportements — et plusieurs se sont durcis. Les politiques des plateformes (Google, TripAdvisor, Facebook, LINE, Xiaohongshu, Wongnai) s'appliquent partout quoi qu'il en soit. Considérez ces recommandations comme un plancher, et non comme un plafond, et vérifiez les règles des marchés où vous exercez.",
           },
         ],
       },
@@ -432,7 +444,7 @@ const fr: Dictionary = {
       "Parlez-nous de votre établissement et nous vous aiderons à démarrer du bon pied.",
 
     disclaimer:
-      "Il s'agit de conseils pratiques tirés des politiques publiées des plateformes et de la règle de la FTC — ce n'est pas un conseil juridique. Les règles des plateformes évoluent, et les exigences applicables là où vous exercez peuvent différer. Vérifiez les directives en vigueur dans votre juridiction et faites appel à un professionnel en cas de doute.",
+      "Il s'agit de conseils pratiques tirés des politiques publiées des plateformes et des règles de protection des consommateurs aux États-Unis (FTC), dans l'UE et au Royaume-Uni, et en Asie — ce n'est pas un conseil juridique. Les règles évoluent et diffèrent selon les marchés. Vérifiez les directives en vigueur là où vous exercez et faites appel à un professionnel en cas de doute.",
   },
 
   demo: {
@@ -476,6 +488,59 @@ const fr: Dictionary = {
       errRequired: "Ce champ est obligatoire.",
       errEmail: "Veuillez saisir une adresse e-mail valide.",
     },
+  },
+
+  auth: {
+    login: {
+      eyebrow: "Bon retour",
+      title: "Connectez-vous à Reviewslip.",
+      lede: "Gérez vos établissements, vos QR codes et vos slips d'avis.",
+      submit: "Se connecter",
+      sending: "Connexion…",
+      remember: "Rester connecté",
+      forgot: "Mot de passe oublié ?",
+      altLead: "Nouveau sur Reviewslip ?",
+      altLink: "Créez un compte",
+    },
+    signup: {
+      eyebrow: "Créez votre compte",
+      title: "Commencez à recueillir des avis honnêtes.",
+      lede: "Configurez votre premier établissement en quelques minutes. Aucune carte requise pendant que nous finalisons les offres.",
+      submit: "Créer un compte",
+      sending: "Création du compte…",
+      altLead: "Vous avez déjà un compte ?",
+      altLink: "Connectez-vous",
+      points: [
+        "Un QR code personnalisé pour chaque établissement",
+        "Des brouillons assistés par IA que vos clients modifient et publient eux-mêmes",
+        "Conçu pour vous garder du bon côté des règles des plateformes",
+      ],
+    },
+    fields: {
+      password: "Mot de passe",
+      passwordPlaceholder: "Au moins 10 caractères",
+      passwordHint: "Utilisez au moins 10 caractères. Une courte phrase fonctionne bien.",
+      confirm: "Confirmer le mot de passe",
+      confirmPlaceholder: "Saisissez-le une seconde fois",
+      show: "Afficher le mot de passe",
+      hide: "Masquer le mot de passe",
+    },
+    terms: {
+      lead: "J'accepte les ",
+      termsLink: "Conditions d'utilisation",
+      mid: " et la ",
+      privacyLink: "Politique de confidentialité",
+      end: ".",
+    },
+    errors: {
+      passwordShort: "Utilisez au moins 10 caractères.",
+      passwordMatch: "Les deux mots de passe ne correspondent pas.",
+      termsRequired: "Veuillez accepter les conditions pour continuer.",
+    },
+    pendingTitle: "Les comptes ne sont pas encore ouverts",
+    pendingBody:
+      "Reviewslip n'est pas encore lancé : il n'y a donc pas encore d'espace où se connecter. Parlez-nous de votre établissement et nous vous préviendrons dès l'ouverture des inscriptions. Rien de ce que vous avez saisi ici n'a été envoyé ni conservé.",
+    pendingCta: "Nous contacter",
   },
 
   slip: {
@@ -530,7 +595,7 @@ const fr: Dictionary = {
       title: "Conditions d'utilisation",
       s1: "Utilisation acceptable",
       p1Lead:
-        "Vous vous engagez à utiliser Reviewslip uniquement pour inviter de vrais clients ayant vécu une véritable expérience avec votre établissement à rédiger leurs propres avis honnêtes. Vous respecterez les règles de la FTC sur les avis ainsi que les politiques de toute plateforme vers laquelle vous dirigez les clients. Consultez notre page ",
+        "Vous vous engagez à utiliser Reviewslip uniquement pour inviter de vrais clients ayant vécu une véritable expérience avec votre établissement à rédiger leurs propres avis honnêtes. Vous respecterez la loi applicable en matière d'avis — y compris les règles de la FTC aux États-Unis, la directive sur les pratiques commerciales déloyales et la directive Omnibus de l'UE, le Digital Markets, Competition and Consumers Act 2024 du Royaume-Uni, les règles asiatiques telles que la réglementation japonaise sur le marketing furtif et la loi chinoise contre la concurrence déloyale, et la loi locale partout ailleurs où vous exercez — ainsi que les politiques de toute plateforme vers laquelle vous dirigez les clients. Consultez notre page ",
       p1Link: "Conformité et confiance",
       p1End: ".",
       s2: "Conduite interdite",

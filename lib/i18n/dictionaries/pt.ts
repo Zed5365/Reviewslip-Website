@@ -31,7 +31,7 @@ const pt: Dictionary = {
     compliance: {
       title: "Conformidade e confiança",
       description:
-        "Como a Reviewslip cumpre a regra da FTC sobre avaliações falsas e as políticas das plataformas — ajudando apenas clientes genuínos.",
+        "Como a Reviewslip se mantém do lado certo das leis sobre avaliações falsas (EUA, EU, UK, Ásia) e das políticas das plataformas — ajudando sempre e apenas clientes genuínos.",
     },
     demo: {
       title: "Demonstração ao vivo",
@@ -58,6 +58,16 @@ const pt: Dictionary = {
       description:
         "Os termos que regem a utilização da Reviewslip, incluindo o uso aceitável e as condutas proibidas.",
     },
+    login: {
+      title: "Iniciar sessão",
+      description:
+        "Inicie sessão na sua conta Reviewslip para gerir os seus locais, códigos QR e slips de avaliação.",
+    },
+    signup: {
+      title: "Criar conta",
+      description:
+        "Crie a sua conta Reviewslip e comece a transformar clientes genuínos em avaliações honestas.",
+    },
   },
 
   nav: {
@@ -68,6 +78,8 @@ const pt: Dictionary = {
     demo: "Demonstração ao vivo",
     faq: "Guia e FAQ",
     contact: "Contacto",
+    login: "Iniciar sessão",
+    signup: "Criar conta",
   },
 
   footer: {
@@ -153,7 +165,7 @@ const pt: Dictionary = {
     trustEyebrow: "Conformidade e confiança",
     trustTitle: "Honesto por conceção.",
     trustLede:
-      "A FTC e todas as principais plataformas proíbem avaliações falsas e fabricadas por IA. A Reviewslip foi construída ao contrário: ajuda sempre e apenas um cliente real a exprimir uma opinião real. Sem bots, sem massa, sem detalhes fabricados.",
+      "Os reguladores, dos EUA à Europa e à Ásia — e todas as principais plataformas — proíbem avaliações falsas e fabricadas por IA. A Reviewslip foi construída ao contrário: ajuda sempre e apenas um cliente real a exprimir uma opinião real. Sem bots, sem massa, sem detalhes fabricados.",
     trustCta: "Leia a nossa abordagem de conformidade",
 
     faqEyebrow: "Perguntas",
@@ -165,8 +177,8 @@ const pt: Dictionary = {
         a: "Não — e é precisamente esse o objetivo. A Reviewslip apenas ajuda um cliente real que acabou de ter uma experiência real a pôr em palavras as suas próprias ideias. Não há geração em massa nem publicação em nome de ninguém. É o cliente que avalia, edita e publica.",
       },
       {
-        q: "Isto é permitido pelas políticas do Google e pelas regras da FTC?",
-        a: "Ajudar um cliente genuíno a escrever a sua própria avaliação honesta é permitido. Fabricar avaliações, incentivá-las ou publicar avaliações falsas não é — e a Reviewslip foi concebida especificamente para evitar tudo isso. Consulte a nossa página de Conformidade e Confiança para mais detalhes.",
+        q: "Isto é permitido pelas políticas do Google e pela lei?",
+        a: "Ajudar um cliente genuíno a escrever a sua própria avaliação honesta é permitido. Fabricar avaliações, incentivá-las ou publicar avaliações falsas não é — quer ao abrigo da regra da FTC nos EUA, das leis sobre avaliações da EU e do UK, de regras asiáticas como a proibição do marketing dissimulado (stealth marketing) no Japão, quer das políticas das plataformas. A Reviewslip foi concebida especificamente para evitar tudo isso. Consulte a nossa página de Conformidade e Confiança para mais detalhes.",
       },
       {
         q: "Que plataformas de avaliação são suportadas?",
@@ -277,7 +289,7 @@ const pt: Dictionary = {
     callout:
       "A Reviewslip nunca escreve avaliações falsas, nunca publica em nome de um cliente e nunca gera avaliações em massa. Um cliente genuíno, após uma visita genuína, recebe ajuda para redigir a sua própria avaliação honesta — e publica-a ele mesmo.",
     h1: "As regras que orientam a nossa conceção",
-    p1: "Em 2024, a Comissão Federal de Comércio dos EUA finalizou uma regra que proíbe avaliações falsas e fabricadas por IA, avaliações incentivadas não divulgadas e outras práticas enganosas, com penalizações por infração. O Google, o Yelp, o Trustpilot e outros proíbem o mesmo há muito tempo. Estas regras existem por bons motivos, e levamo-las a sério.",
+    p1: "As avaliações falsas são ilegais num número crescente de países, e não apenas num. Nos Estados Unidos, a regra de 2024 da FTC proíbe avaliações falsas e fabricadas por IA, avaliações incentivadas não divulgadas e outras práticas enganosas, com penalizações por infração. Na União Europeia, a Diretiva relativa às Práticas Comerciais Desleais (Unfair Commercial Practices Directive) — atualizada pela Diretiva Omnibus (Omnibus Directive) — exige que as avaliações sejam genuínas e verificáveis, e a Lei dos Serviços Digitais (Digital Services Act) acrescenta deveres ao nível das plataformas; a Lei dos Mercados Digitais, da Concorrência e dos Consumidores de 2024 (Digital Markets, Competition and Consumers Act 2024) do Reino Unido proíbe pura e simplesmente as avaliações falsas e enganosas. Na Ásia, as regras de 2023 do Japão sobre marketing dissimulado (stealth marketing) e a lei chinesa contra a concorrência desleal (anti-unfair-competition law) visam as avaliações fabricadas ou não divulgadas. O Google, o TripAdvisor, o Trustpilot e as restantes plataformas proíbem o mesmo em todo o mundo. Estas regras existem por bons motivos, e levamo-las a sério.",
     h2: "Como a Reviewslip se mantém em conformidade",
     list: [
       "Cliente real, experiência real. A ferramenta destina-se a ser usada no seu local por alguém que realmente o visitou.",
@@ -293,7 +305,7 @@ const pt: Dictionary = {
     p4Link: "Termos de Serviço",
     p4End: ".",
     disclaimer:
-      "Esta página é um resumo em linguagem simples, não aconselhamento jurídico. Consulte as orientações atuais da FTC e as políticas de cada plataforma para a sua jurisdição.",
+      "Esta página é um resumo em linguagem simples, não aconselhamento jurídico. Consulte as orientações atuais da FTC, da EU, do UK e locais — e as políticas de cada plataforma — para cada mercado onde opera.",
   },
 
   faqPage: {
@@ -303,7 +315,7 @@ const pt: Dictionary = {
 
     warningLead: "O maior erro de todos:",
     warning:
-      "Entregar o código QR apenas aos clientes que julga estarem satisfeitos. Isso é filtragem seletiva de avaliações (review gating) — o Google proíbe-a e a regra de 2024 da FTC visa-a especificamente. Ofereça o mesmo caminho de avaliação a toda a gente e deixe que as opiniões honestas caiam onde caírem.",
+      "Entregar o código QR apenas aos clientes que julga estarem satisfeitos. Isso é filtragem seletiva de avaliações (review gating) — o Google proíbe-a, tal como as regras de defesa do consumidor, desde a FTC nos EUA até à EU, ao UK e à Ásia. Ofereça o mesmo caminho de avaliação a toda a gente e deixe que as opiniões honestas caiam onde caírem.",
 
     sections: [
       {
@@ -321,11 +333,11 @@ const pt: Dictionary = {
           },
           {
             q: "Devo pedir a todos os clientes ou apenas aos satisfeitos?",
-            a: "A todos os clientes. Pedir seletivamente apenas às pessoas que espera que sejam positivas é filtragem seletiva de avaliações, e é proibido pelas políticas do Google e pela regra de 2024 da FTC. É também contraproducente: uma ficha em que todas as avaliações são de cinco estrelas parece menos fiável a quem procura do que uma com uma distribuição realista. Disponibilize o código QR a toda a gente.",
+            a: "A todos os clientes. Pedir seletivamente apenas às pessoas que espera que sejam positivas é filtragem seletiva de avaliações, e é proibido pelas políticas do Google e pelas regras de defesa do consumidor, desde a FTC nos EUA até à EU, ao UK e à Ásia. É também contraproducente: uma ficha em que todas as avaliações são de cinco estrelas parece menos fiável a quem procura do que uma com uma distribuição realista. Disponibilize o código QR a toda a gente.",
           },
           {
             q: "E se alguém teve uma má experiência?",
-            a: "Deixe-o dizê-lo — ou, melhor ainda, resolva a situação antes de ele sair. A Reviewslip redige a partir do que o cliente seleciona, por isso o caminho honesto para um visitante insatisfeito é escrever as suas próprias palavras ou expor a questão diretamente consigo. O que nunca pode fazer é esconder ou negar o caminho de avaliação a alguém por esperar críticas. Suprimir avaliações negativas é exatamente aquilo que a regra da FTC foi escrita para travar.",
+            a: "Deixe-o dizê-lo — ou, melhor ainda, resolva a situação antes de ele sair. A Reviewslip redige a partir do que o cliente seleciona, por isso o caminho honesto para um visitante insatisfeito é escrever as suas próprias palavras ou expor a questão diretamente consigo. O que nunca pode fazer é esconder ou negar o caminho de avaliação a alguém por esperar críticas. Suprimir avaliações negativas é exatamente aquilo que a regra da FTC — e as suas equivalentes na União Europeia, no Reino Unido e na Ásia — foram escritas para travar.",
           },
         ],
       },
@@ -363,7 +375,7 @@ const pt: Dictionary = {
         items: [
           {
             q: "Posso oferecer um desconto ou um brinde por uma avaliação?",
-            a: "Não. As avaliações incentivadas são proibidas pelo Google, e a regra da FTC abrange também os incentivos não divulgados. Isto aplica-se mesmo que aceitasse de bom grado uma avaliação negativa em troca — o problema é o pagamento, não o teor da avaliação. Pode agradecer às pessoas. Não pode pagar-lhes.",
+            a: "Não. As avaliações incentivadas são proibidas pelo Google e são abrangidas pela regra da FTC e pelos seus equivalentes na EU, no UK e na Ásia. Isto aplica-se mesmo que aceitasse de bom grado uma avaliação negativa em troca — o problema é o pagamento, não o teor da avaliação. Pode agradecer às pessoas. Não pode pagar-lhes.",
           },
           {
             q: "O pessoal, amigos ou familiares podem deixar avaliações?",
@@ -375,7 +387,7 @@ const pt: Dictionary = {
           },
           {
             q: "Posso escrever a avaliação por um cliente que diz estar satisfeito?",
-            a: "Não. Mesmo com autorização verbal, se for você a escrevê-la e a publicá-la, passa a ser uma avaliação sua e não dele — e essa é a definição de avaliação falsa tanto na política do Google como na regra da FTC. Entregue-lhe o código QR e deixe-o fazê-lo.",
+            a: "Não. Mesmo com autorização verbal, se for você a escrevê-la e a publicá-la, passa a ser uma avaliação sua e não dele — e essa é a definição de avaliação falsa na política do Google, na regra da FTC dos EUA e nas leis sobre avaliações da União Europeia, do Reino Unido e da Ásia por igual. Entregue-lhe o código QR e deixe-o fazê-lo.",
           },
         ],
       },
@@ -386,11 +398,11 @@ const pt: Dictionary = {
         items: [
           {
             q: "Qual é o pior que pode acontecer?",
-            a: "Grosso modo, por ordem de gravidade: avaliações individuais são filtradas e nunca chegam a aparecer; um conjunto é removido retroativamente, por vezes meses depois; a ficha recebe um alerta ao consumidor a avisar os visitantes de que foi detetada atividade suspeita; ou a ficha é suspensa. Do lado legal, a regra da FTC prevê sanções civis aplicadas por infração — ou seja, por cada avaliação falsa, e não por empresa. E há ainda o simples dano reputacional de ser publicamente apanhado.",
+            a: "Grosso modo, por ordem de gravidade: avaliações individuais são filtradas e nunca chegam a aparecer; um conjunto é removido retroativamente, por vezes meses depois; a ficha recebe um alerta ao consumidor a avisar os visitantes de que foi detetada atividade suspeita; ou a ficha é suspensa. Do lado legal, a regra da FTC nos EUA prevê sanções civis aplicadas por infração — por cada avaliação falsa, e não por empresa — e os regimes da EU, do UK e da Ásia têm as suas próprias multas e mecanismos de aplicação. E há ainda o simples dano reputacional de ser publicamente apanhado.",
           },
           {
-            q: "O que é que a regra da FTC proíbe, afinal?",
-            a: "A regra de 2024 visa as avaliações falsas e fabricadas por IA de pessoas que nunca tiveram uma experiência genuína, as avaliações incentivadas não divulgadas, as pessoas ligadas ao negócio que se fazem passar por clientes e a supressão ou ocultação de avaliações negativas. O que não proíbe é ajudar um cliente genuíno a pôr em palavras a sua própria opinião honesta — que é exatamente a conceção da Reviewslip.",
+            q: "O que é que estas regras proíbem, afinal?",
+            a: "Na regra da FTC dos EUA, nas leis sobre avaliações da União Europeia e do Reino Unido e nas suas equivalentes asiáticas, os alvos são os mesmos: avaliações falsas ou fabricadas por IA de pessoas que nunca tiveram uma experiência genuína, avaliações incentivadas ou patrocinadas não divulgadas, pessoas ligadas ao negócio que se fazem passar por clientes e a supressão ou ocultação de avaliações negativas. O que nenhuma delas proíbe é ajudar um cliente genuíno a pôr em palavras a sua própria opinião honesta — que é exatamente a conceção da Reviewslip.",
           },
           {
             q: "Se as avaliações forem removidas, a culpa é da Reviewslip ou minha?",
@@ -398,7 +410,7 @@ const pt: Dictionary = {
           },
           {
             q: "Isto aplica-se fora dos Estados Unidos?",
-            a: "A regra da FTC é lei norte-americana, mas as políticas das plataformas são globais — as regras do Google sobre avaliações falsas, incentivadas e filtradas seletivamente aplicam-se onde quer que opere. Muitas outras jurisdições têm os seus próprios regimes de defesa do consumidor que abrangem avaliações enganosas, e várias têm vindo a apertá-los. Encare estas orientações como o mínimo, não como o máximo.",
+            a: "Sim — a regra da FTC é lei norte-americana, mas a maioria dos mercados tem agora as suas próprias regras. A Diretiva relativa às Práticas Comerciais Desleais da União Europeia (atualizada pela Diretiva Omnibus) e a Lei dos Serviços Digitais, a Digital Markets, Competition and Consumers Act 2024 do Reino Unido, a regulamentação japonesa de 2023 sobre marketing dissimulado e as regras chinesas contra a concorrência desleal em matéria de avaliações fabricadas visam todas a mesma conduta — e várias têm vindo a apertar. As políticas das plataformas (Google, TripAdvisor, Facebook, LINE, Xiaohongshu, Wongnai) aplicam-se em todo o lado, de qualquer forma. Encare estas orientações como o mínimo, não como o máximo, e verifique as regras dos mercados onde opera.",
           },
         ],
       },
@@ -432,7 +444,7 @@ const pt: Dictionary = {
       "Conte-nos sobre o seu negócio e ajudamo-lo a começar com o pé direito.",
 
     disclaimer:
-      "Estas são orientações práticas baseadas nas políticas publicadas das plataformas e na regra da FTC — não constituem aconselhamento jurídico. As regras das plataformas mudam e os requisitos onde opera podem ser diferentes. Consulte as orientações atuais da sua jurisdição e procure aconselhamento profissional se tiver dúvidas.",
+      "Estas são orientações práticas baseadas nas políticas publicadas das plataformas e nas regras de defesa do consumidor dos EUA (FTC), da União Europeia e do Reino Unido, e da Ásia — não constituem aconselhamento jurídico. As regras mudam e diferem consoante o mercado. Consulte as orientações atuais onde opera e procure aconselhamento profissional se tiver dúvidas.",
   },
 
   demo: {
@@ -476,6 +488,59 @@ const pt: Dictionary = {
       errRequired: "Este campo é obrigatório.",
       errEmail: "Introduza um endereço de email válido.",
     },
+  },
+
+  auth: {
+    login: {
+      eyebrow: "Bem-vindo de volta",
+      title: "Inicie sessão na Reviewslip.",
+      lede: "Faça a gestão dos seus locais, códigos QR e slips de avaliação.",
+      submit: "Iniciar sessão",
+      sending: "A iniciar sessão…",
+      remember: "Manter a sessão iniciada",
+      forgot: "Esqueceu-se da palavra-passe?",
+      altLead: "Novo na Reviewslip?",
+      altLink: "Crie uma conta",
+    },
+    signup: {
+      eyebrow: "Crie a sua conta",
+      title: "Comece a reunir avaliações honestas.",
+      lede: "Configure o seu primeiro local em minutos. Não é preciso cartão enquanto finalizamos os planos.",
+      submit: "Criar conta",
+      sending: "A criar conta…",
+      altLead: "Já tem uma conta?",
+      altLink: "Inicie sessão",
+      points: [
+        "Um código QR personalizado para cada local",
+        "Rascunhos assistidos por IA que os seus clientes editam e publicam",
+        "Feito para o manter do lado certo das regras das plataformas",
+      ],
+    },
+    fields: {
+      password: "Palavra-passe",
+      passwordPlaceholder: "Pelo menos 10 caracteres",
+      passwordHint: "Use pelo menos 10 caracteres. Uma frase curta funciona bem.",
+      confirm: "Confirmar palavra-passe",
+      confirmPlaceholder: "Escreva-a mais uma vez",
+      show: "Mostrar palavra-passe",
+      hide: "Ocultar palavra-passe",
+    },
+    terms: {
+      lead: "Aceito os ",
+      termsLink: "Termos de Serviço",
+      mid: " e a ",
+      privacyLink: "Política de Privacidade",
+      end: ".",
+    },
+    errors: {
+      passwordShort: "Use pelo menos 10 caracteres.",
+      passwordMatch: "As duas palavras-passe não coincidem.",
+      termsRequired: "Aceite os termos para continuar.",
+    },
+    pendingTitle: "As contas ainda não estão abertas",
+    pendingBody:
+      "A Reviewslip ainda não foi lançada, por isso ainda não há onde iniciar sessão. Fale-nos do seu negócio e avisamo-lo assim que a inscrição abrir. Nada do que escreveu aqui foi enviado ou guardado.",
+    pendingCta: "Entre em contacto",
   },
 
   slip: {
@@ -530,7 +595,7 @@ const pt: Dictionary = {
       title: "Termos de Serviço",
       s1: "Utilização aceitável",
       p1Lead:
-        "Aceita usar a Reviewslip apenas para convidar clientes genuínos que tiveram uma experiência real com o seu negócio a escrever as suas próprias avaliações honestas. Cumprirá as regras da FTC sobre avaliações e as políticas de qualquer plataforma para a qual encaminhe os clientes. Consulte a nossa página de ",
+        "Aceita usar a Reviewslip apenas para convidar clientes genuínos que tiveram uma experiência real com o seu negócio a escrever as suas próprias avaliações honestas. Cumprirá a lei aplicável em matéria de avaliações — incluindo as regras da FTC nos EUA, a Diretiva relativa às Práticas Comerciais Desleais e a Diretiva Omnibus da União Europeia, a Digital Markets, Competition and Consumers Act 2024 do Reino Unido, regras asiáticas como a regulamentação japonesa sobre marketing dissimulado e a lei chinesa contra a concorrência desleal, e a lei local em qualquer outro sítio onde opere — e as políticas de qualquer plataforma para a qual encaminhe os clientes. Consulte a nossa página de ",
       p1Link: "Conformidade e Confiança",
       p1End: ".",
       s2: "Conduta proibida",

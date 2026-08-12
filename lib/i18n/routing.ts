@@ -19,6 +19,8 @@ export const ROUTES = [
   "/faq",
   "/compliance",
   "/contact",
+  "/login",
+  "/signup",
   "/legal/privacy",
   "/legal/terms",
 ] as const;
@@ -36,6 +38,7 @@ const HREFLANG: Record<Locale, string> = {
   de: "de",
   pt: "pt",
   it: "it",
+  nl: "nl",
   th: "th",
   zh: "zh-Hans",
   ja: "ja",

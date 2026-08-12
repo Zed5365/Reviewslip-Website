@@ -56,8 +56,17 @@ export default function Footer({ lang, t }: { lang: Locale; t: Dictionary }) {
 
         <div className={styles.col}>
           <h4 className={styles.colTitle}>{t.footer.colGetStarted}</h4>
-          <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
+          <Link href={localizedPath(lang, "/signup")} className="btn btn-go">
+            {t.nav.signup}
+          </Link>
+          <Link
+            href={localizedPath(lang, "/contact")}
+            className={`btn btn-quiet ${styles.secondaryCta}`}
+          >
             {t.common.getInTouch}
+          </Link>
+          <Link href={localizedPath(lang, "/login")} className={styles.link}>
+            {t.nav.login}
           </Link>
         </div>
       </div>

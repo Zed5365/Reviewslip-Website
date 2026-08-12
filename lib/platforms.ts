@@ -31,6 +31,7 @@ const WORKS_WITH: Record<Locale, string> = {
   de: "Kompatibel mit",
   pt: "Compatível com",
   it: "Compatibile con",
+  nl: "Werkt met",
   th: "ใช้งานได้กับ",
   zh: "支持平台",
   ja: "対応プラットフォーム",
