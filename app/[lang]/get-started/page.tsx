@@ -44,11 +44,7 @@ export default async function GetStartedPage({
           </div>
 
           <div className={styles.formCol}>
-            <ContactForm
-              f={t.contact.form}
-              heading={l.formHeading}
-              submitLabel={l.formSubmit}
-            />
+            <ContactForm f={t.contact.form} />
           </div>
         </div>
       </section>
