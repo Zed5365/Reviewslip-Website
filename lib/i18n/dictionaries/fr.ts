@@ -170,7 +170,7 @@ const fr: Dictionary = {
       },
       {
         q: "Quelles plateformes d'avis sont prises en charge ?",
-        a: "Les avis Google au lancement. C'est là que la plupart des commerces de proximité constatent le plus grand impact. D'autres plateformes pourront suivre en fonction de la demande.",
+        a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu et Wongnai. Reviewslip aide vos clients à publier sur la plateforme la plus importante pour votre entreprise et votre région.",
       },
       {
         q: "Combien de temps prend la configuration ?",
@@ -420,8 +420,8 @@ const fr: Dictionary = {
             a: "Plus lentement que vous ne le souhaiteriez, et c'est justement l'intérêt. Un programme qui ajoute une poignée d'avis authentiques chaque semaine se cumule en une fiche nettement plus solide au fil des mois, sans jamais paraître anormal à aucun moment. Les tentatives de comprimer cela en une quinzaine de jours sont ce qui déclenche tout ce qui est décrit plus haut.",
           },
           {
-            q: "Puis-je utiliser Reviewslip pour d'autres plateformes que Google ?",
-            a: "Pas encore — uniquement les avis Google pour le moment. Gardez à l'esprit que les autres plateformes ont leurs propres règles, et que certaines sont encore plus strictes : plusieurs interdisent explicitement toute sollicitation d'avis. Vérifiez la politique de toute plateforme avant d'y diriger vos clients.",
+            q: "Quelles plateformes Reviewslip prend-il en charge ?",
+            a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu et Wongnai — pour que vous puissiez rejoindre vos clients sur la plateforme la plus importante de votre marché. Chaque plateforme a toutefois ses propres règles, et certaines sont plus strictes que Google : plusieurs restreignent ou interdisent purement et simplement toute sollicitation d'avis. Vérifiez la politique de toute plateforme avant d'y diriger vos clients, où que vous exerciez.",
           },
         ],
       },

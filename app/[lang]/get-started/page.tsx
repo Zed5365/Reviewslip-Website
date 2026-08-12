@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ContactForm from "@/components/marketing/ContactForm";
+import PlatformStrip from "@/components/marketing/PlatformStrip";
 import JsonLd from "@/components/JsonLd";
 import { isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -41,6 +42,9 @@ export default async function GetStartedPage({
                 <li key={p}>{p}</li>
               ))}
             </ul>
+            <div className={styles.platforms}>
+              <PlatformStrip lang={lang} />
+            </div>
           </div>
 
           <div className={styles.formCol}>

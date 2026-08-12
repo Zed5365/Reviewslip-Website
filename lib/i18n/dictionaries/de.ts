@@ -170,7 +170,7 @@ const de: Dictionary = {
       },
       {
         q: "Welche Bewertungsplattformen werden unterstützt?",
-        a: "Zum Start Google-Bewertungen. Dort erzielen die meisten lokalen Unternehmen die größte Wirkung. Je nach Nachfrage könnten weitere Plattformen folgen.",
+        a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu und Wongnai. Reviewslip hilft Ihren Kunden, auf der Plattform zu posten, die für Ihr Unternehmen und Ihre Region am wichtigsten ist.",
       },
       {
         q: "Wie lange dauert die Einrichtung?",
@@ -420,8 +420,8 @@ const de: Dictionary = {
             a: "Langsamer, als Ihnen lieb ist — und genau das ist der Punkt. Ein Programm, das jede Woche eine Handvoll echter Bewertungen hinzugewinnt, summiert sich über Monate zu einem deutlich stärkeren Eintrag und wirkt zu keinem Zeitpunkt auffällig. Versuche, das auf zwei Wochen zu komprimieren, lösen genau all das aus, was oben beschrieben wurde.",
           },
           {
-            q: "Kann ich Reviewslip für andere Plattformen als Google nutzen?",
-            a: "Noch nicht — vorerst nur für Google-Bewertungen. Bedenken Sie, dass andere Plattformen eigene Regeln haben, und manche sind noch strenger: Mehrere untersagen das Einholen von Bewertungen ausdrücklich vollständig. Prüfen Sie die Richtlinie einer Plattform, bevor Sie Kunden dorthin verweisen.",
+            q: "Welche Plattformen unterstützt Reviewslip?",
+            a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu und Wongnai — so können Sie Ihre Kunden auf der Plattform erreichen, die in Ihrem Markt am wichtigsten ist. Jede Plattform hat jedoch ihre eigenen Regeln, und einige sind strenger als Google: Mehrere schränken das Einholen von Bewertungen ein oder verbieten es ganz. Prüfen Sie die Richtlinie jeder Plattform, bevor Sie Kunden dorthin verweisen, wo auch immer Sie tätig sind.",
           },
         ],
       },

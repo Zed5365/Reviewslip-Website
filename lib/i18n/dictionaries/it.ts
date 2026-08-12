@@ -170,7 +170,7 @@ const it: Dictionary = {
       },
       {
         q: "Quali piattaforme di recensioni sono supportate?",
-        a: "Le recensioni Google al lancio. È lì che la maggior parte delle attività locali ottiene il maggiore impatto. Altre piattaforme potrebbero seguire in base alla domanda.",
+        a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu e Wongnai. Reviewslip aiuta i tuoi clienti a pubblicare sulla piattaforma più importante per la tua attività e per la tua regione.",
       },
       {
         q: "Quanto tempo richiede la configurazione?",
@@ -420,8 +420,8 @@ const it: Dictionary = {
             a: "Più lentamente di quanto vorresti, ed è proprio questo il punto. Un programma che aggiunge una manciata di recensioni autentiche ogni settimana si somma fino a una scheda nettamente più solida nel giro di mesi, e non appare mai anomalo in nessun momento. I tentativi di comprimere tutto questo in quindici giorni sono ciò che innesca tutto quanto descritto sopra.",
           },
           {
-            q: "Posso usare Reviewslip per piattaforme diverse da Google?",
-            a: "Non ancora — per ora solo recensioni Google. Tieni presente che le altre piattaforme hanno regole proprie, e alcune sono ancora più severe: diverse vietano esplicitamente qualsiasi sollecitazione di recensioni. Verifica la policy di qualunque piattaforma prima di indirizzarvi i clienti.",
+            q: "Quali piattaforme supporta Reviewslip?",
+            a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu e Wongnai — così puoi incontrare i tuoi clienti sulla piattaforma più importante nel tuo mercato. Ogni piattaforma ha però regole proprie, e alcune sono più severe di Google: diverse limitano o vietano del tutto la sollecitazione di recensioni. Verifica la policy di qualunque piattaforma prima di indirizzarvi i clienti, ovunque tu operi.",
           },
         ],
       },

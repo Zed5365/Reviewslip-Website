@@ -174,7 +174,7 @@ const en = {
       },
       {
         q: "Which review platforms are supported?",
-        a: "Google reviews at launch. It's where most local businesses see the biggest impact. More platforms may follow based on demand.",
+        a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu and Wongnai. Reviewslip helps your customers post to whichever platform matters most for your business and your region.",
       },
       {
         q: "How long does setup take?",
@@ -424,8 +424,8 @@ const en = {
             a: "More slowly than you would like, and that is rather the point. A programme adding a handful of genuine reviews each week compounds into a materially stronger listing over months, and never looks anomalous at any moment. Attempts to compress that into a fortnight are what trigger everything described above.",
           },
           {
-            q: "Can I use Reviewslip for platforms other than Google?",
-            a: "Not yet — Google reviews only for now. Bear in mind that other platforms have their own rules, and some are stricter still: several explicitly prohibit soliciting reviews at all. Check the policy of any platform before you point customers at it.",
+            q: "Which platforms does Reviewslip support?",
+            a: "Google, TripAdvisor, LINE, Facebook, Xiaohongshu and Wongnai — so you can meet your customers on whichever platform matters most in your market. Each platform has its own rules, though, and some are stricter than Google: several restrict or prohibit soliciting reviews at all. Check the policy of any platform before you point customers at it, wherever you operate.",
           },
         ],
       },

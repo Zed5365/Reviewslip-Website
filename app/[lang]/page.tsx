@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import DemoSlip from "@/components/marketing/DemoSlip";
 import PricingCards from "@/components/marketing/PricingCards";
 import Faq from "@/components/marketing/Faq";
+import PlatformStrip from "@/components/marketing/PlatformStrip";
 import JsonLd from "@/components/JsonLd";
 import { isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -69,6 +70,13 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
               autoStart
             />
           </div>
+        </div>
+      </section>
+
+      {/* Supported platforms */}
+      <section className={styles.platforms}>
+        <div className="wrap">
+          <PlatformStrip lang={lang} />
         </div>
       </section>
 

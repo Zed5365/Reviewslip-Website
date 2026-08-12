@@ -66,6 +66,11 @@
 /* Social proof                                                               */
 /* -------------------------------------------------------------------------- */
 
+.platforms {
+  padding-block: clamp(2rem, 5vw, 2.75rem);
+  border-top: 1px solid var(--jade-line);
+}
+
 .proof {
   border-block: 1px solid var(--jade-line);
   background: var(--shade-deep);

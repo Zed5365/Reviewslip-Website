@@ -135,5 +135,10 @@ See [PLAN.md](PLAN.md) for the full context.
   gives no invented statistics or thresholds. Have it reviewed before launch, and re-check
   it whenever platform policy changes.
 - **Pricing is placeholder** (`lib/plans.ts`) until finalised.
-- **Platform**: Google reviews only for v1.
+- **Platforms**: Google, TripAdvisor, LINE, Facebook, Xiaohongshu and Wongnai. The list
+  lives in `lib/platforms.ts` (brand names — never translated); the "Works with" strip
+  (`components/marketing/PlatformStrip.tsx`) shows them on the home and get-started pages.
+  Note: the hero/features copy still leads with Google as the flagship example, and the
+  compliance/FAQ guidance is written mainly around Google + the FTC rule — broaden that
+  copy and add each platform's own review policies before launch.
 - The demo uses canned drafts and never calls an AI model.

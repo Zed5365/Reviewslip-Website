@@ -56,6 +56,17 @@
   font-weight: 700;
 }
 
+.platforms {
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--jade-line);
+}
+
+.platforms :global(ul),
+.platforms > div {
+  justify-content: flex-start;
+}
+
 .formCol {
   min-width: 0;
 }
