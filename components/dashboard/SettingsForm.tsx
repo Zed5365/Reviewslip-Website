@@ -71,11 +71,16 @@ export default function SettingsForm({
   );
   const [busy, startBusy] = useTransition();
   const [notice, setNotice] = useState("");
+  // Which button is working, so it can say so. Reading a website through the
+  // model takes twenty seconds or more, and a button that only greys out for
+  // that long reads as broken.
+  const [reading, setReading] = useState<"analyse" | "suggest" | null>(null);
 
   const full = cats.length >= settings.limits.categories;
 
   function onAnalyse() {
-    setNotice("Reading the website…");
+    setReading("analyse");
+    setNotice("Reading the website — this can take up to a minute.");
     startBusy(async () => {
       // Annotated, or the fallback narrows the union and the success fields
       // vanish from the type.
@@ -85,6 +90,7 @@ export default function SettingsForm({
           error: "Could not read the website.",
         })
       );
+      setReading(null);
       setNotice(
         result.ok
           ? `Stored ${result.count} detail${result.count === 1 ? "" : "s"} from the website.`
@@ -94,13 +100,15 @@ export default function SettingsForm({
   }
 
   function onSuggest() {
-    setNotice("Reading the website…");
+    setReading("suggest");
+    setNotice("Reading the website — this can take up to a minute.");
     startBusy(async () => {
       const result = await suggest().catch(
         (): { categories?: Suggestion[]; error?: string } => ({
           error: "Could not read the website.",
         })
       );
+      setReading(null);
       if (result.categories?.length) {
         setCats(result.categories);
         setNotice("Suggested below. Edit anything, then Save to keep them.");
@@ -220,7 +228,7 @@ export default function SettingsForm({
             disabled={busy}
             onClick={onSuggest}
           >
-            Suggest from website
+            {reading === "suggest" ? "Reading…" : "Suggest from website"}
           </button>
         </div>
 
@@ -269,7 +277,11 @@ export default function SettingsForm({
             disabled={busy}
             onClick={onAnalyse}
           >
-            {settings.safeDetails.value.length ? "Re-analyse website" : "Analyse website"}
+            {reading === "analyse"
+              ? "Reading…"
+              : settings.safeDetails.value.length
+                ? "Re-analyse website"
+                : "Analyse website"}
           </button>
         </div>
 
