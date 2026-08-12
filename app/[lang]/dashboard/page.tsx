@@ -90,6 +90,17 @@ export default async function DashboardPage({
           {me.plan.reviewAllowance.toLocaleString()} reviews this month
         </p>
 
+        <p style={{ marginBottom: "2rem" }}>
+          {/* At the cap this still goes to the same page, which explains the
+              limit and offers plans — better than a button that does nothing. */}
+          <Link
+            className="btn btn-go"
+            href={localizedPath(lang, "/dashboard/venues/new")}
+          >
+            Add a venue
+          </Link>
+        </p>
+
         {me.venues.length === 0 ? (
           <p>
             No venues yet. {t.common.getInTouch} —{" "}

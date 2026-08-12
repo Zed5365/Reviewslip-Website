@@ -22,6 +22,7 @@ export const ROUTES = [
   "/login",
   "/signup",
   "/dashboard",
+  "/dashboard/venues/new",
   "/legal/privacy",
   "/legal/terms",
 ] as const;
