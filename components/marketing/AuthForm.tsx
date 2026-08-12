@@ -111,6 +111,7 @@ export default function AuthForm({
         },
         body: JSON.stringify({
           mode,
+          lang,
           email: fields.email.trim(),
           password: fields.password,
           ...(isSignup
@@ -118,9 +119,26 @@ export default function AuthForm({
             : { remember }),
         }),
       });
-      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+
+      const data = await res.json().catch(() => ({}));
       clearSecrets();
-      // A real backend redirects to the app; nothing more to render here.
+
+      if (!res.ok) {
+        // The backend owns the rules, so its message is the accurate one. Both
+        // the common failures — wrong credentials, email already registered —
+        // are about the email field, which is where someone will look.
+        if (typeof data.error === "string") {
+          setErrors({ email: data.error });
+          setStatus("idle");
+          return;
+        }
+        setStatus("error");
+        return;
+      }
+
+      // The session is set as an httpOnly cookie; a full navigation is what
+      // makes the server-rendered dashboard pick it up.
+      window.location.assign(data.redirect ?? localizedPath(lang, "/"));
     } catch {
       clearSecrets();
       setStatus("error");
