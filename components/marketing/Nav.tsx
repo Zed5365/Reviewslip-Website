@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 import { localizedPath } from "@/lib/i18n/routing";
-import LocaleControls from "./LocaleControls";
+import LanguageSelect from "./LanguageSelect";
 import styles from "./Nav.module.css";
 
 interface Props {
@@ -54,7 +54,7 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
         </nav>
 
         <div className={styles.actions}>
-          <LocaleControls lang={lang} selectors={selectors} />
+          <LanguageSelect lang={lang} label={selectors.language} />
           <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
             {ctaLabel}
           </Link>
@@ -83,7 +83,7 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
             </Link>
           ))}
           <div className={styles.mobileControls}>
-            <LocaleControls lang={lang} selectors={selectors} compact />
+            <LanguageSelect lang={lang} label={selectors.language} />
           </div>
           <Link
             href={localizedPath(lang, "/contact")}

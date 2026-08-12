@@ -8,17 +8,20 @@ import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 import { localizedPath } from "@/lib/i18n/routing";
 import { useCurrency } from "@/lib/CurrencyProvider";
+import CurrencySelect from "./CurrencySelect";
 import styles from "./PricingCards.module.css";
 
 interface Props {
   lang: Locale;
+  /** Label for the currency selector (t.selectors.country). */
+  currencyLabel: string;
   t: {
     pricing: Dictionary["pricing"];
     plans: Dictionary["plans"];
   };
 }
 
-export default function PricingCards({ lang, t }: Props) {
+export default function PricingCards({ lang, currencyLabel, t }: Props) {
   const { money } = useCurrency();
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
   const ctaHref = localizedPath(lang, "/contact");
@@ -57,24 +60,28 @@ export default function PricingCards({ lang, t }: Props) {
 
   return (
     <div>
-      <div className={styles.toggle} role="group" aria-label="Billing period">
-        <button
-          type="button"
-          className={styles.toggleBtn}
-          aria-pressed={cycle === "monthly"}
-          onClick={() => setCycle("monthly")}
-        >
-          {t.pricing.monthly}
-        </button>
-        <button
-          type="button"
-          className={styles.toggleBtn}
-          aria-pressed={cycle === "yearly"}
-          onClick={() => setCycle("yearly")}
-        >
-          {t.pricing.yearly}
-          <span className={styles.save}>{t.pricing.savings}</span>
-        </button>
+      <div className={styles.controls}>
+        <div className={styles.toggle} role="group" aria-label="Billing period">
+          <button
+            type="button"
+            className={styles.toggleBtn}
+            aria-pressed={cycle === "monthly"}
+            onClick={() => setCycle("monthly")}
+          >
+            {t.pricing.monthly}
+          </button>
+          <button
+            type="button"
+            className={styles.toggleBtn}
+            aria-pressed={cycle === "yearly"}
+            onClick={() => setCycle("yearly")}
+          >
+            {t.pricing.yearly}
+            <span className={styles.save}>{t.pricing.savings}</span>
+          </button>
+        </div>
+
+        <CurrencySelect label={currencyLabel} />
       </div>
 
       {PLACEHOLDER_PRICING && (

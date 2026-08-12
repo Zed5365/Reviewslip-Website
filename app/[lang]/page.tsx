@@ -151,6 +151,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           </div>
           <PricingCards
             lang={lang}
+            currencyLabel={t.selectors.country}
             t={{ pricing: t.pricing, plans: t.plans }}
           />
           <p className={styles.pricingLink}>

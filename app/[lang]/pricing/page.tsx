@@ -41,6 +41,7 @@ export default async function PricingPage({
         <div className="wrap">
           <PricingCards
             lang={lang}
+            currencyLabel={t.selectors.country}
             t={{ pricing: t.pricing, plans: t.plans }}
           />
         </div>
