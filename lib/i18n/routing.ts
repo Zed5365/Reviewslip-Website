@@ -21,6 +21,7 @@ export const ROUTES = [
   "/contact",
   "/login",
   "/signup",
+  "/dashboard",
   "/legal/privacy",
   "/legal/terms",
 ] as const;
