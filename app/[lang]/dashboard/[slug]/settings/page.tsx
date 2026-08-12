@@ -3,7 +3,10 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
-import SettingsForm, { type BusinessState } from "@/components/dashboard/SettingsForm";
+import SettingsForm, {
+  type BusinessState,
+  type Suggestion,
+} from "@/components/dashboard/SettingsForm";
 import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
@@ -63,10 +66,16 @@ export default async function BusinessSettingsPage({
           place: text("place"),
           // Blanks dropped. An empty list means "reset to the built-in set", so
           // an emptied editor resets rather than leaving the business with nothing.
-          safeDetails: formData
-            .getAll("safeDetails")
-            .map((value) => String(value).trim())
-            .filter(Boolean),
+          // Labels and notes arrive as two same-length lists, one input each
+          // per row, so they zip by index. A row with no label is one the
+          // person emptied and the server drops it.
+          categories: formData
+            .getAll("catLabel")
+            .map((value, index) => ({
+              label: String(value).trim(),
+              focus: String(formData.getAll("catFocus")[index] ?? "").trim(),
+            }))
+            .filter((cat) => cat.label),
         },
       });
 
@@ -78,6 +87,75 @@ export default async function BusinessSettingsPage({
       return {
         error:
           err instanceof Error ? err.message : "Could not save the settings.",
+      };
+    }
+  }
+
+  /**
+   * Reads the website and *stores* what it finds, rather than handing back a
+   * draft. That is what makes the detail list memory: it is the evidence of what
+   * the writer has been told, checked against the page it came from, which is
+   * why the list itself is read only.
+   */
+  async function analyse(): Promise<{
+    ok: boolean;
+    count?: number;
+    error?: string;
+  }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again." };
+
+    try {
+      const seed = await call<{
+        proposal: {
+          kind: string;
+          place: string;
+          safeDetails: { detail: string; source: string }[];
+        };
+      }>(`/businesses/${slug}/seed`, { method: "POST", token: current });
+
+      const details = seed.proposal.safeDetails.map((d) => d.detail);
+
+      await call(`/businesses/${slug}`, {
+        method: "PATCH",
+        token: current,
+        body: {
+          kind: seed.proposal.kind,
+          place: seed.proposal.place,
+          safeDetails: details,
+        },
+      });
+
+      revalidatePath(localizedPath(locale, `/dashboard/${slug}/settings`));
+      return { ok: true, count: details.length };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "Could not read it.",
+      };
+    }
+  }
+
+  /** Proposes the buttons. Fills the editor only — Save still stores them. */
+  async function suggest(): Promise<{
+    categories?: Suggestion[];
+    error?: string;
+  }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { error: "Sign in again." };
+
+    try {
+      return await call<{ categories: Suggestion[] }>(
+        `/businesses/${slug}/categories/suggest`,
+        { method: "POST", token: current }
+      );
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not read it.",
       };
     }
   }
@@ -99,6 +177,8 @@ export default async function BusinessSettingsPage({
 
         <SettingsForm
           action={save}
+          analyse={analyse}
+          suggest={suggest}
           name={data.business.name}
           settings={data.settings}
         />

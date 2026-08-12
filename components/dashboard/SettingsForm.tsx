@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 
 import type { BusinessSettings } from "@/lib/customer";
 
@@ -9,6 +9,11 @@ export interface BusinessState {
   ok?: boolean;
   /** A save that worked but is worth reading — a stale model slug, say. */
   warning?: string;
+}
+
+export interface Suggestion {
+  label: string;
+  focus: string;
 }
 
 type Action = (state: BusinessState, formData: FormData) => Promise<BusinessState>;
@@ -41,21 +46,69 @@ function Origin({ source }: { source: string }) {
 
 export default function SettingsForm({
   action,
+  analyse,
+  suggest,
   name,
   settings,
 }: {
   action: Action;
+  /** Reads the website and stores what it finds. Returns how many details. */
+  analyse: () => Promise<{ ok: boolean; count?: number; error?: string }>;
+  /** Reads the website and proposes buttons. Fills the editor; saves nothing. */
+  suggest: () => Promise<{ categories?: Suggestion[]; error?: string }>;
   name: string;
   settings: BusinessSettings;
 }) {
   const [state, formAction, pending] = useActionState(action, EMPTY);
 
-  // The one genuinely interactive part: a list that grows and shrinks. Every row
-  // is an input of the same name, so the action reads them all with getAll.
-  const [details, setDetails] = useState<string[]>(
-    settings.safeDetails.value.length ? settings.safeDetails.value : [""]
+  const [cats, setCats] = useState<Suggestion[]>(() =>
+    settings.categories.value.map((c) => ({
+      label: c.label,
+      // The server fills a blank note in with the label, so showing that back
+      // would turn "no note" into a note the moment it was saved twice.
+      focus: c.focus === c.label ? "" : c.focus,
+    }))
   );
-  const full = details.length >= settings.limits.safeDetails;
+  const [busy, startBusy] = useTransition();
+  const [notice, setNotice] = useState("");
+
+  const full = cats.length >= settings.limits.categories;
+
+  function onAnalyse() {
+    setNotice("Reading the website…");
+    startBusy(async () => {
+      // Annotated, or the fallback narrows the union and the success fields
+      // vanish from the type.
+      const result = await analyse().catch(
+        (): { ok: boolean; count?: number; error?: string } => ({
+          ok: false,
+          error: "Could not read the website.",
+        })
+      );
+      setNotice(
+        result.ok
+          ? `Stored ${result.count} detail${result.count === 1 ? "" : "s"} from the website.`
+          : (result.error ?? "Could not read the website.")
+      );
+    });
+  }
+
+  function onSuggest() {
+    setNotice("Reading the website…");
+    startBusy(async () => {
+      const result = await suggest().catch(
+        (): { categories?: Suggestion[]; error?: string } => ({
+          error: "Could not read the website.",
+        })
+      );
+      if (result.categories?.length) {
+        setCats(result.categories);
+        setNotice("Suggested below. Edit anything, then Save to keep them.");
+      } else {
+        setNotice(result.error ?? "Nothing usable came back.");
+      }
+    });
+  }
 
   return (
     <form action={formAction} style={{ display: "grid", gap: "1.25rem", maxWidth: "34rem" }}>
@@ -99,89 +152,6 @@ export default function SettingsForm({
       </div>
 
       <div style={field}>
-        <label style={label} htmlFor="kind">
-          What this place is
-          <Origin source={settings.kind.source} />
-        </label>
-        <input
-          style={input}
-          id="kind"
-          name="kind"
-          defaultValue={settings.kind.value}
-          maxLength={120}
-          placeholder="a small lodge"
-        />
-        <span style={hint}>How a review refers to it, mid-sentence.</span>
-      </div>
-
-      <div style={field}>
-        <label style={label} htmlFor="place">
-          Where it is
-          <Origin source={settings.place.source} />
-        </label>
-        <input
-          style={input}
-          id="place"
-          name="place"
-          defaultValue={settings.place.value}
-          maxLength={160}
-          placeholder="San Kamphaeng, Chiang Mai, Thailand"
-        />
-      </div>
-
-      <div style={field}>
-        <span style={label}>
-          Details reviews may use
-          <Origin source={settings.safeDetails.source} />
-        </span>
-        <div style={{ display: "grid", gap: "0.5rem" }}>
-          {details.map((detail, index) => (
-            <div key={index} style={{ display: "flex", gap: "0.5rem" }}>
-              <input
-                style={input}
-                name="safeDetails"
-                defaultValue={detail}
-                maxLength={180}
-                placeholder="something a guest could see for themselves"
-              />
-              <button
-                type="button"
-                aria-label="Remove detail"
-                onClick={() => setDetails(details.filter((_, i) => i !== index))}
-                style={{
-                  flex: "0 0 auto",
-                  width: "2.2rem",
-                  borderRadius: 10,
-                  border: "1px solid var(--jade-line)",
-                  background: "transparent",
-                  color: "var(--ink-soft)",
-                  cursor: "pointer",
-                }}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-        <div>
-          <button
-            type="button"
-            className="btn btn-quiet"
-            disabled={full}
-            onClick={() => setDetails([...details, ""])}
-          >
-            {full ? `${settings.limits.safeDetails} is the maximum` : "Add detail"}
-          </button>
-        </div>
-        <span style={hint}>
-          The only things a review is allowed to claim about this business. A wrong
-          one is repeated in every review from then on, not just one — so no
-          numbers, no awards, no staff or dish names. Empty the list to fall back
-          to the defaults.
-        </span>
-      </div>
-
-      <div style={field}>
         <label style={label} htmlFor="websiteUrl">
           Business website
           <Origin source={settings.websiteUrl.source} />
@@ -193,7 +163,123 @@ export default function SettingsForm({
           type="url"
           defaultValue={settings.websiteUrl.value}
         />
-        <span style={hint}>Guests never see it.</span>
+        <span style={hint}>
+          Save this first, then Analyse reads it. Guests never see it.
+        </span>
+      </div>
+
+      {/* ------------------------------------------------------- categories */}
+
+      <div style={field}>
+        <span style={label}>
+          Review categories
+          <Origin source={settings.categories.source} />
+        </span>
+
+        <div style={{ display: "grid", gap: "0.5rem" }}>
+          {cats.map((cat, index) => (
+            <div key={index} style={{ display: "flex", gap: "0.5rem" }}>
+              <input
+                style={{ ...input, flex: "0 0 9rem" }}
+                name="catLabel"
+                defaultValue={cat.label}
+                maxLength={40}
+                placeholder="Rooms"
+              />
+              <input
+                style={input}
+                name="catFocus"
+                defaultValue={cat.focus}
+                maxLength={200}
+                placeholder="what a review under this button talks about"
+              />
+              <button
+                type="button"
+                aria-label="Remove category"
+                onClick={() => setCats(cats.filter((_, i) => i !== index))}
+                style={remove}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            className="btn btn-quiet"
+            disabled={full}
+            onClick={() => setCats([...cats, { label: "", focus: "" }])}
+          >
+            {full ? `${settings.limits.categories} is the maximum` : "Add category"}
+          </button>
+          <button
+            type="button"
+            className="btn btn-quiet"
+            disabled={busy}
+            onClick={onSuggest}
+          >
+            Suggest from website
+          </button>
+        </div>
+
+        <span style={hint}>
+          The buttons a guest picks from, up to {settings.limits.categories}. The
+          note steers what that review talks about; leave it blank to go on the
+          label alone. Remove them all to fall back to the built-in set.
+        </span>
+      </div>
+
+      {/* ---------------------------------------------------------- details */}
+
+      <div style={field}>
+        <span style={label}>
+          Details reviews may use
+          <Origin source={settings.safeDetails.source} />
+        </span>
+
+        {settings.safeDetails.value.length === 0 ? (
+          <p style={hint}>
+            Nothing stored yet — Analyse reads the website above and fills this in.
+          </p>
+        ) : (
+          <ul
+            style={{
+              listStyle: "none",
+              margin: 0,
+              padding: "0.9rem 1rem",
+              display: "grid",
+              gap: "0.45rem",
+              border: "1px solid var(--jade-line)",
+              borderRadius: 10,
+              fontSize: "0.9rem",
+            }}
+          >
+            {settings.safeDetails.value.map((detail) => (
+              <li key={detail}>— {detail}</li>
+            ))}
+          </ul>
+        )}
+
+        <div>
+          <button
+            type="button"
+            className="btn btn-quiet"
+            disabled={busy}
+            onClick={onAnalyse}
+          >
+            {settings.safeDetails.value.length ? "Re-analyse website" : "Analyse website"}
+          </button>
+        </div>
+
+        <span style={hint}>
+          The only things a review is allowed to claim about this business, taken
+          from its own website. Read only on purpose: these are checked against
+          the page they came from, and a claim typed in by hand has nothing
+          backing it. A wrong one would be repeated in every review, so if
+          something here is off, fix the website and analyse again.
+        </span>
       </div>
 
       <p
@@ -204,14 +290,24 @@ export default function SettingsForm({
           color: state.error ? "#e98b7b" : "var(--jade)",
         }}
       >
-        {state.error ?? state.warning ?? (state.ok ? "Saved." : "")}
+        {state.error ?? state.warning ?? notice ?? (state.ok ? "Saved." : "")}
       </p>
 
       <div>
-        <button className="btn btn-go" type="submit" disabled={pending}>
+        <button className="btn btn-go" type="submit" disabled={pending || busy}>
           {pending ? "Saving…" : "Save settings"}
         </button>
       </div>
     </form>
   );
 }
+
+const remove: React.CSSProperties = {
+  flex: "0 0 auto",
+  width: "2.2rem",
+  borderRadius: 10,
+  border: "1px solid var(--jade-line)",
+  background: "transparent",
+  color: "var(--ink-soft)",
+  cursor: "pointer",
+};
