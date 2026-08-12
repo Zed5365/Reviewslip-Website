@@ -176,15 +176,29 @@ export default async function DashboardPage({
                   limit={venue.usage.tokenLimit}
                 />
 
-                <a
-                  className="btn btn-go"
-                  href={venue.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ marginTop: "0.5rem" }}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.6rem",
+                    flexWrap: "wrap",
+                    marginTop: "0.5rem",
+                  }}
                 >
-                  Open the guest page
-                </a>
+                  <Link
+                    className="btn btn-go"
+                    href={localizedPath(lang, `/dashboard/${venue.slug}`)}
+                  >
+                    Open
+                  </Link>
+                  {/* -ink, not -quiet: the quiet button is outlined for the dark
+                      canvas and renders as an empty box on this cream card. */}
+                  <Link
+                    className="btn btn-quiet-ink"
+                    href={localizedPath(lang, `/dashboard/${venue.slug}/settings`)}
+                  >
+                    Settings
+                  </Link>
+                </div>
               </div>
             ))}
           </div>

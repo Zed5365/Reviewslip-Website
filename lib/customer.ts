@@ -135,6 +135,42 @@ export interface Me {
   venues: VenueSummary[];
 }
 
+/** A setting as the review app describes it: the value, and where it came from. */
+export interface Setting<T> {
+  value: T;
+  source: "subscriber" | "env" | "default";
+}
+
+export interface VenueSettings {
+  apiKey: { set: boolean; hint: string; source: string };
+  model: Setting<string>;
+  googleUrl: Setting<string>;
+  tripadvisorUrl: Setting<string>;
+  websiteUrl: Setting<string>;
+  categories: Setting<{ id: string; label: string; focus: string }[]>;
+  kind: Setting<string>;
+  place: Setting<string>;
+  safeDetails: Setting<string[]>;
+  limits: { categories: number; safeDetails: number };
+}
+
+export interface VenueDetail {
+  venue: {
+    slug: string;
+    name: string;
+    status: string;
+    url: string;
+    createdAt: string;
+  };
+  settings: VenueSettings;
+  stats: {
+    month: { reviews: number; tokens: number; tokenLimit: number };
+    lifetime: { reviews: number; tokens: number; lastAt: string | null };
+    daily: { day: string; reviews: number; tokens: number }[];
+    byCategory: { category: string; reviews: number }[];
+  };
+}
+
 /**
  * The signed-in account and its venues, or null.
  *
