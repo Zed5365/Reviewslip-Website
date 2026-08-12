@@ -4,20 +4,20 @@ import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
 import SlugPicker, {
-  type CreateVenueState,
+  type CreateBusinessState,
 } from "@/components/dashboard/SlugPicker";
 import { call, currentUser, sessionToken } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
 export const metadata: Metadata = {
-  title: "Add a venue",
+  title: "Add a business",
   robots: { index: false, follow: false },
 };
 
-export default async function NewVenuePage({
+export default async function NewBusinessPage({
   params,
-}: PageProps<"/[lang]/dashboard/venues/new">) {
+}: PageProps<"/[lang]/dashboard/businesses/new">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
 
@@ -34,9 +34,9 @@ export default async function NewVenuePage({
    * the review app on the call below — this is not the check that matters.
    */
   async function create(
-    _prev: CreateVenueState,
+    _prev: CreateBusinessState,
     formData: FormData
-  ): Promise<CreateVenueState> {
+  ): Promise<CreateBusinessState> {
     "use server";
 
     const token = await sessionToken();
@@ -48,11 +48,11 @@ export default async function NewVenuePage({
     const name = String(formData.get("name") ?? "").trim();
 
     try {
-      await call("/venues", { method: "POST", body: { slug, name }, token });
+      await call("/businesses", { method: "POST", body: { slug, name }, token });
     } catch (err) {
       return {
         error:
-          err instanceof Error ? err.message : "Could not create the venue.",
+          err instanceof Error ? err.message : "Could not create the business.",
         values: { slug, name },
       };
     }
@@ -67,14 +67,14 @@ export default async function NewVenuePage({
   // Checked here as well as in the review app. Not belt-and-braces for its own
   // sake: it is the difference between explaining the limit up front and letting
   // someone fill in a form that was always going to be refused.
-  if (!me.canAddVenue) {
+  if (!me.canAddBusiness) {
     return (
       <section className="section">
         <div className="wrap">
-          <h1 style={{ marginBottom: "0.4rem" }}>No room for another venue</h1>
+          <h1 style={{ marginBottom: "0.4rem" }}>No room for another business</h1>
           <p className="lede" style={{ marginBottom: "2rem" }}>
-            {me.plan.name} covers {me.plan.venues} venue
-            {me.plan.venues === 1 ? "" : "s"}, and you have {me.usage.venues}.
+            {me.plan.name} covers {me.plan.businesses} business
+            {me.plan.businesses === 1 ? "" : "s"}, and you have {me.usage.businesses}.
           </p>
           <Link className="btn btn-go" href={localizedPath(lang, "/pricing")}>
             See plans
@@ -93,13 +93,13 @@ export default async function NewVenuePage({
           href={localizedPath(lang, "/dashboard")}
           style={{ color: "var(--jade)", fontSize: "0.9rem" }}
         >
-          ← All venues
+          ← All businesses
         </Link>
 
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Add a venue</h1>
+        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Add a business</h1>
         <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          {me.usage.venues} of{" "}
-          {me.plan.venues === null ? "unlimited" : me.plan.venues} used on{" "}
+          {me.usage.businesses} of{" "}
+          {me.plan.businesses === null ? "unlimited" : me.plan.businesses} used on{" "}
           {me.plan.name}
         </p>
 

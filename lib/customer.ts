@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 /**
  * The review app's customer API, and the browser's half of a session.
  *
- * The review app owns the database — accounts, venues, usage — and this site is
+ * The review app owns the database — accounts, businesses, usage — and this site is
  * a client of it. Nothing here talks to Postgres: two codebases writing one
  * schema is how schemas rot.
  *
@@ -110,7 +110,7 @@ export interface Session {
   expiresAt: string;
 }
 
-export interface VenueSummary {
+export interface BusinessSummary {
   slug: string;
   name: string;
   status: string;
@@ -126,13 +126,13 @@ export interface Me {
   plan: {
     id: string;
     name: string;
-    venues: number | null;
+    businesses: number | null;
     reviewAllowance: number;
-    tokensPerMonthPerVenue: number;
+    tokensPerMonthPerBusiness: number;
   };
-  usage: { reviewsThisMonth: number; venues: number };
-  canAddVenue: boolean;
-  venues: VenueSummary[];
+  usage: { reviewsThisMonth: number; businesses: number };
+  canAddBusiness: boolean;
+  businesses: BusinessSummary[];
 }
 
 /** A setting as the review app describes it: the value, and where it came from. */
@@ -141,7 +141,7 @@ export interface Setting<T> {
   source: "subscriber" | "env" | "default";
 }
 
-export interface VenueSettings {
+export interface BusinessSettings {
   apiKey: { set: boolean; hint: string; source: string };
   model: Setting<string>;
   googleUrl: Setting<string>;
@@ -154,15 +154,15 @@ export interface VenueSettings {
   limits: { categories: number; safeDetails: number };
 }
 
-export interface VenueDetail {
-  venue: {
+export interface BusinessDetail {
+  business: {
     slug: string;
     name: string;
     status: string;
     url: string;
     createdAt: string;
   };
-  settings: VenueSettings;
+  settings: BusinessSettings;
   stats: {
     month: { reviews: number; tokens: number; tokenLimit: number };
     lifetime: { reviews: number; tokens: number; lastAt: string | null };
@@ -172,7 +172,7 @@ export interface VenueDetail {
 }
 
 /**
- * The signed-in account and its venues, or null.
+ * The signed-in account and its businesses, or null.
  *
  * Null covers both "no cookie" and "the token was rejected" — to a caller those
  * are the same thing: sign in again. Anything else, such as the service being

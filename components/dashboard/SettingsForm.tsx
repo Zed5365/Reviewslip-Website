@@ -2,18 +2,18 @@
 
 import { useActionState, useState } from "react";
 
-import type { VenueSettings } from "@/lib/customer";
+import type { BusinessSettings } from "@/lib/customer";
 
-export interface VenueState {
+export interface BusinessState {
   error?: string;
   ok?: boolean;
   /** A save that worked but is worth reading — a stale model slug, say. */
   warning?: string;
 }
 
-type Action = (state: VenueState, formData: FormData) => Promise<VenueState>;
+type Action = (state: BusinessState, formData: FormData) => Promise<BusinessState>;
 
-const EMPTY: VenueState = {};
+const EMPTY: BusinessState = {};
 
 const input: React.CSSProperties = {
   width: "100%",
@@ -46,7 +46,7 @@ export default function SettingsForm({
 }: {
   action: Action;
   name: string;
-  settings: VenueSettings;
+  settings: BusinessSettings;
 }) {
   const [state, formAction, pending] = useActionState(action, EMPTY);
 
@@ -60,7 +60,7 @@ export default function SettingsForm({
   return (
     <form action={formAction} style={{ display: "grid", gap: "1.25rem", maxWidth: "34rem" }}>
       <div style={field}>
-        <label style={label} htmlFor="name">Venue name</label>
+        <label style={label} htmlFor="name">Business name</label>
         <input style={input} id="name" name="name" defaultValue={name} maxLength={120} required />
       </div>
 
@@ -174,7 +174,7 @@ export default function SettingsForm({
           </button>
         </div>
         <span style={hint}>
-          The only things a review is allowed to claim about this venue. A wrong
+          The only things a review is allowed to claim about this business. A wrong
           one is repeated in every review from then on, not just one — so no
           numbers, no awards, no staff or dish names. Empty the list to fall back
           to the defaults.
@@ -183,7 +183,7 @@ export default function SettingsForm({
 
       <div style={field}>
         <label style={label} htmlFor="websiteUrl">
-          Venue website
+          Business website
           <Origin source={settings.websiteUrl.source} />
         </label>
         <input

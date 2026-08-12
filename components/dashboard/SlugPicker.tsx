@@ -2,18 +2,18 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 
-export interface CreateVenueState {
+export interface CreateBusinessState {
   error?: string;
   /** Echoed back so a rejected form does not empty itself. */
   values?: { slug?: string; name?: string };
 }
 
 type Action = (
-  state: CreateVenueState,
+  state: CreateBusinessState,
   formData: FormData
-) => Promise<CreateVenueState>;
+) => Promise<CreateBusinessState>;
 
-const EMPTY: CreateVenueState = {};
+const EMPTY: CreateBusinessState = {};
 
 interface Check {
   state: "idle" | "checking" | "ok" | "bad";
@@ -104,7 +104,7 @@ export default function SlugPicker({
     <form action={formAction} style={{ display: "grid", gap: "1.25rem", maxWidth: "34rem" }}>
       <div style={{ display: "grid", gap: "0.35rem" }}>
         <label htmlFor="name" style={{ fontSize: "0.85rem", fontWeight: 500 }}>
-          Venue name
+          Business name
         </label>
         <input
           id="name"
@@ -186,7 +186,7 @@ export default function SlugPicker({
         </span>
 
         <span style={{ fontSize: "0.8rem", color: "var(--ink-soft)" }}>
-          This becomes the venue&apos;s own web address and what a QR code points
+          This becomes the business&apos;s own web address and what a QR code points
           at. Changing it later means reprinting the code, so pick one you can
           live with.
         </span>
@@ -198,7 +198,7 @@ export default function SlugPicker({
 
       <div>
         <button className="btn btn-go" type="submit" disabled={pending || !ready}>
-          {pending ? "Creating…" : "Create venue"}
+          {pending ? "Creating…" : "Create business"}
         </button>
       </div>
     </form>

@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { call, sessionToken, type VenueDetail } from "@/lib/customer";
+import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
 export const metadata: Metadata = {
-  title: "Venue",
+  title: "Business",
   robots: { index: false, follow: false },
 };
 
@@ -38,7 +38,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-export default async function VenuePage({
+export default async function BusinessPage({
   params,
 }: PageProps<"/[lang]/dashboard/[slug]">) {
   const { lang, slug } = await params;
@@ -47,17 +47,17 @@ export default async function VenuePage({
   const token = await sessionToken();
   if (!token) redirect(localizedPath(lang, "/login"));
 
-  let data: VenueDetail;
+  let data: BusinessDetail;
   try {
-    data = await call<VenueDetail>(`/venues/${slug}`, { token });
+    data = await call<BusinessDetail>(`/businesses/${slug}`, { token });
   } catch (err) {
-    // The API answers 404 for a venue belonging to someone else as well as one
+    // The API answers 404 for a business belonging to someone else as well as one
     // that does not exist — deliberately, and it stays that way here.
     if ((err as { status?: number }).status === 404) notFound();
     throw err;
   }
 
-  const { venue, stats } = data;
+  const { business, stats } = data;
   const peak = Math.max(...stats.daily.map((d) => d.reviews), 1);
   const tokenShare = Math.round((stats.month.tokens / stats.month.tokenLimit) * 100);
 
@@ -68,13 +68,13 @@ export default async function VenuePage({
           href={localizedPath(lang, "/dashboard")}
           style={{ color: "var(--jade)", fontSize: "0.9rem" }}
         >
-          ← All venues
+          ← All businesses
         </Link>
 
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>{venue.name}</h1>
+        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>{business.name}</h1>
         <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          <a href={venue.url} target="_blank" rel="noreferrer">
-            {venue.url}
+          <a href={business.url} target="_blank" rel="noreferrer">
+            {business.url}
           </a>
         </p>
 
@@ -150,7 +150,7 @@ export default async function VenuePage({
 
         <Link
           className="btn btn-go"
-          href={localizedPath(lang, `/dashboard/${venue.slug}/settings`)}
+          href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
         >
           Settings
         </Link>

@@ -3,17 +3,17 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
-import SettingsForm, { type VenueState } from "@/components/dashboard/SettingsForm";
-import { call, sessionToken, type VenueDetail } from "@/lib/customer";
+import SettingsForm, { type BusinessState } from "@/components/dashboard/SettingsForm";
+import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
 export const metadata: Metadata = {
-  title: "Venue settings",
+  title: "Business settings",
   robots: { index: false, follow: false },
 };
 
-export default async function VenueSettingsPage({
+export default async function BusinessSettingsPage({
   params,
 }: PageProps<"/[lang]/dashboard/[slug]/settings">) {
   const { lang, slug } = await params;
@@ -25,9 +25,9 @@ export default async function VenueSettingsPage({
   const token = await sessionToken();
   if (!token) redirect(localizedPath(lang, "/login"));
 
-  let data: VenueDetail;
+  let data: BusinessDetail;
   try {
-    data = await call<VenueDetail>(`/venues/${slug}`, { token });
+    data = await call<BusinessDetail>(`/businesses/${slug}`, { token });
   } catch (err) {
     if ((err as { status?: number }).status === 404) notFound();
     throw err;
@@ -40,9 +40,9 @@ export default async function VenueSettingsPage({
    * to change, and the API ignores them even if sent.
    */
   async function save(
-    _prev: VenueState,
+    _prev: BusinessState,
     formData: FormData
-  ): Promise<VenueState> {
+  ): Promise<BusinessState> {
     "use server";
 
     const current = await sessionToken();
@@ -51,7 +51,7 @@ export default async function VenueSettingsPage({
     const text = (key: string) => String(formData.get(key) ?? "").trim();
 
     try {
-      const result = await call<{ warning?: string }>(`/venues/${slug}`, {
+      const result = await call<{ warning?: string }>(`/businesses/${slug}`, {
         method: "PATCH",
         token: current,
         body: {
@@ -62,7 +62,7 @@ export default async function VenueSettingsPage({
           kind: text("kind"),
           place: text("place"),
           // Blanks dropped. An empty list means "reset to the built-in set", so
-          // an emptied editor resets rather than leaving the venue with nothing.
+          // an emptied editor resets rather than leaving the business with nothing.
           safeDetails: formData
             .getAll("safeDetails")
             .map((value) => String(value).trim())
@@ -89,17 +89,17 @@ export default async function VenueSettingsPage({
           href={localizedPath(lang, `/dashboard/${slug}`)}
           style={{ color: "var(--jade)", fontSize: "0.9rem" }}
         >
-          ← {data.venue.name}
+          ← {data.business.name}
         </Link>
 
         <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Settings</h1>
         <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          Everything a review about this venue is allowed to say.
+          Everything a review about this business is allowed to say.
         </p>
 
         <SettingsForm
           action={save}
-          name={data.venue.name}
+          name={data.business.name}
           settings={data.settings}
         />
       </div>

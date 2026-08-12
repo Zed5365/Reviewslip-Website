@@ -77,15 +77,15 @@ export default async function DashboardPage({
   if (!me) redirect(localizedPath(lang, "/login"));
 
   const t = getDictionary(lang);
-  const venueLimit = me.plan.venues === null ? "unlimited" : me.plan.venues;
+  const businessLimit = me.plan.businesses === null ? "unlimited" : me.plan.businesses;
 
   return (
     <section className="section">
       <div className="wrap">
         <span className="eyebrow">{me.account.email}</span>
-        <h1 style={{ marginBottom: "0.4rem" }}>Your venues</h1>
+        <h1 style={{ marginBottom: "0.4rem" }}>Your businesses</h1>
         <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          {me.usage.venues} of {venueLimit} on {me.plan.name} ·{" "}
+          {me.usage.businesses} of {businessLimit} on {me.plan.name} ·{" "}
           {me.usage.reviewsThisMonth.toLocaleString()} of{" "}
           {me.plan.reviewAllowance.toLocaleString()} reviews this month
         </p>
@@ -95,15 +95,15 @@ export default async function DashboardPage({
               limit and offers plans — better than a button that does nothing. */}
           <Link
             className="btn btn-go"
-            href={localizedPath(lang, "/dashboard/venues/new")}
+            href={localizedPath(lang, "/dashboard/businesses/new")}
           >
-            Add a venue
+            Add a business
           </Link>
         </p>
 
-        {me.venues.length === 0 ? (
+        {me.businesses.length === 0 ? (
           <p>
-            No venues yet. {t.common.getInTouch} —{" "}
+            No businesses yet. {t.common.getInTouch} —{" "}
             <Link href={localizedPath(lang, "/contact")}>get in touch</Link> and
             we will set the first one up.
           </p>
@@ -115,9 +115,9 @@ export default async function DashboardPage({
               gridTemplateColumns: "repeat(auto-fit, minmax(19rem, 1fr))",
             }}
           >
-            {me.venues.map((venue) => (
+            {me.businesses.map((business) => (
               <div
-                key={venue.slug}
+                key={business.slug}
                 style={{
                   background: "var(--paper)",
                   color: "var(--ink)",
@@ -133,22 +133,22 @@ export default async function DashboardPage({
                     gap: "0.75rem",
                   }}
                 >
-                  <h2 style={{ fontSize: "1.3rem", margin: 0 }}>{venue.name}</h2>
+                  <h2 style={{ fontSize: "1.3rem", margin: 0 }}>{business.name}</h2>
                   <span
                     style={{
                       borderRadius: 999,
                       padding: "0.15rem 0.6rem",
                       fontSize: "0.75rem",
                       whiteSpace: "nowrap",
-                      background: venue.ready
+                      background: business.ready
                         ? "rgba(130,180,155,0.22)"
                         : "rgba(233,160,59,0.22)",
-                      color: venue.ready ? "#2f5f4c" : "#8a5a12",
+                      color: business.ready ? "#2f5f4c" : "#8a5a12",
                     }}
                   >
-                    {venue.status !== "active"
-                      ? venue.status
-                      : venue.ready
+                    {business.status !== "active"
+                      ? business.status
+                      : business.ready
                         ? "live"
                         : "no review link"}
                   </span>
@@ -162,18 +162,18 @@ export default async function DashboardPage({
                     margin: "0.2rem 0 1.1rem",
                   }}
                 >
-                  {venue.url}
+                  {business.url}
                 </p>
 
                 <Meter
                   label="Reviews this month"
-                  used={venue.usage.reviews}
+                  used={business.usage.reviews}
                   limit={me.plan.reviewAllowance}
                 />
                 <Meter
                   label="Tokens this month"
-                  used={venue.usage.tokens}
-                  limit={venue.usage.tokenLimit}
+                  used={business.usage.tokens}
+                  limit={business.usage.tokenLimit}
                 />
 
                 <div
@@ -186,7 +186,7 @@ export default async function DashboardPage({
                 >
                   <Link
                     className="btn btn-go"
-                    href={localizedPath(lang, `/dashboard/${venue.slug}`)}
+                    href={localizedPath(lang, `/dashboard/${business.slug}`)}
                   >
                     Open
                   </Link>
@@ -194,7 +194,7 @@ export default async function DashboardPage({
                       canvas and renders as an empty box on this cream card. */}
                   <Link
                     className="btn btn-quiet-ink"
-                    href={localizedPath(lang, `/dashboard/${venue.slug}/settings`)}
+                    href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
                   >
                     Settings
                   </Link>
