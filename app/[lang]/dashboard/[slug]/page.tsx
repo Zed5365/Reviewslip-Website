@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import ReviewList, { type ReviewRow } from "@/components/dashboard/ReviewList";
 import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
@@ -57,6 +58,38 @@ export default async function BusinessPage({
     throw err;
   }
 
+  // A separate call so a slow or failed review list cannot take the stats page
+  // down with it — the numbers are the point of this page, the list is beside it.
+  let reviews: ReviewRow[] = [];
+  try {
+    reviews = (
+      await call<{ reviews: ReviewRow[] }>(`/businesses/${slug}/reviews`, {
+        token,
+      })
+    ).reviews;
+  } catch {
+    reviews = [];
+  }
+
+  /** Records the owner's judgement. Called straight from the list's buttons. */
+  async function rate(id: number, liked: boolean): Promise<{ ok: boolean }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false };
+
+    try {
+      await call(`/businesses/${slug}/reviews/${id}/feedback`, {
+        method: "POST",
+        body: { liked },
+        token: current,
+      });
+      return { ok: true };
+    } catch {
+      return { ok: false };
+    }
+  }
+
   const { business, stats } = data;
   const peak = Math.max(...stats.daily.map((d) => d.reviews), 1);
   const tokenShare = Math.round((stats.month.tokens / stats.month.tokenLimit) * 100);
@@ -101,11 +134,18 @@ export default async function BusinessPage({
 
         <div
           style={{
+            display: "grid",
+            gap: "1.25rem",
+            gridTemplateColumns: "repeat(auto-fit, minmax(20rem, 1fr))",
+            marginBottom: "2rem",
+          }}
+        >
+        <div
+          style={{
             background: "var(--paper)",
             color: "var(--ink)",
             borderRadius: 14,
             padding: "1.4rem",
-            marginBottom: "2rem",
           }}
         >
           <h2 style={{ fontSize: "1.2rem", margin: 0 }}>Last 30 days</h2>
@@ -146,6 +186,9 @@ export default async function BusinessPage({
               ))}
             </ul>
           )}
+        </div>
+
+        <ReviewList reviews={reviews} rate={rate} />
         </div>
 
         <Link
