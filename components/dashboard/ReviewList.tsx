@@ -18,6 +18,30 @@ export interface ReviewRow {
  * through twenty of them feel broken, and the failure case is rare and
  * recoverable — the row simply goes back to how it was.
  */
+/**
+ * Inline SVG rather than an emoji. An emoji renders as whatever the guest's
+ * platform decides — a different colour, a different hand, a different size per
+ * OS — and it cannot inherit the button's colour, so the active state could not
+ * be shown in the ink colour. `down` reuses the same path, rotated.
+ */
+function Thumb({ down = false }: { down?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="15"
+      height="15"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      style={{ display: "block", margin: "0 auto" }}
+    >
+      <g transform={down ? "rotate(180 12 12)" : undefined}>
+        <path d="M1 21h4V9H1v12zm22-11a2 2 0 0 0-2-2h-6.31l.95-4.57.03-.32a1.5 1.5 0 0 0-.44-1.06L14.17 1 7.59 7.59A2 2 0 0 0 7 9v10a2 2 0 0 0 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" />
+      </g>
+    </svg>
+  );
+}
+
 export default function ReviewList({
   reviews,
   rate,
@@ -101,7 +125,7 @@ export default function ReviewList({
                     onClick={() => onRate(review.id, true)}
                     style={thumb(liked === true, "#2f5f4c", "rgba(130,180,155,0.3)")}
                   >
-                    👍
+                    <Thumb />
                   </button>
                   <button
                     type="button"
@@ -110,7 +134,7 @@ export default function ReviewList({
                     onClick={() => onRate(review.id, false)}
                     style={thumb(liked === false, "#8a3a2c", "rgba(233,139,123,0.3)")}
                   >
-                    👎
+                    <Thumb down />
                   </button>
                 </span>
               </div>
@@ -157,8 +181,9 @@ function thumb(
     height: "1.9rem",
     borderRadius: 999,
     cursor: "pointer",
-    fontSize: "0.95rem",
-    lineHeight: 1,
+    display: "grid",
+    placeItems: "center",
+    padding: 0,
     border: `1px solid ${active ? ink : "rgba(27,42,35,0.18)"}`,
     background: active ? fill : "transparent",
     color: active ? ink : "var(--ink-soft)",
