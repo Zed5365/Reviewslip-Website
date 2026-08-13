@@ -2,7 +2,53 @@
 
 import { useActionState, useState, useTransition } from "react";
 
+import { PLATFORMS } from "@/lib/platforms.data";
 import type { BusinessSettings } from "@/lib/customer";
+
+/** The settings field behind each platform's link. */
+const LINK_FIELD: Record<string, string> = {
+  google: "googleUrl",
+  tripadvisor: "tripadvisorUrl",
+  line: "lineUrl",
+  facebook: "facebookUrl",
+  xiaohongshu: "xiaohongshuUrl",
+  wongnai: "wongnaiUrl",
+};
+
+/**
+ * The brand mark, or an initial for Wongnai, which simple-icons does not carry.
+ * A hand-drawn approximation of a trademark would be recognisably wrong.
+ */
+function Mark({ label, hex, path }: { label: string; hex: string; path: string | null }) {
+  return (
+    <span
+      aria-hidden="true"
+      style={
+        path
+          ? markBox
+          : { ...markBox, background: hex, color: "#fff", fontSize: "0.72rem", fontWeight: 500 }
+      }
+    >
+      {path ? (
+        <svg viewBox="0 0 24 24" width="17" height="17" fill={hex} focusable="false">
+          <path d={path} />
+        </svg>
+      ) : (
+        label.slice(0, 1)
+      )}
+    </span>
+  );
+}
+
+const markBox: React.CSSProperties = {
+  flex: "0 0 auto",
+  width: "1.9rem",
+  height: "1.9rem",
+  borderRadius: 8,
+  display: "grid",
+  placeItems: "center",
+  border: "1px solid var(--jade-line)",
+};
 
 export interface BusinessState {
   error?: string;
@@ -142,39 +188,35 @@ export default function SettingsForm({
         </span>
       </div>
 
-      <div style={field}>
-        <label style={label} htmlFor="googleUrl">
-          Google review link
-          <Origin source={settings.googleUrl.source} />
-        </label>
-        <input
-          style={input}
-          id="googleUrl"
-          name="googleUrl"
-          type="url"
-          defaultValue={settings.googleUrl.value}
-          placeholder="https://www.google.com/maps?cid=…"
-        />
-        <span style={hint}>
-          Where Proceed to Google sends the guest. Without it they get a review
-          and nowhere to post it.
-        </span>
-      </div>
+      {PLATFORMS.map((platform) => {
+        const key = LINK_FIELD[platform.id];
+        const setting = (settings as unknown as Record<string, { value: string; source: string }>)[key];
 
-      <div style={field}>
-        <label style={label} htmlFor="tripadvisorUrl">
-          Tripadvisor link
-          <Origin source={settings.tripadvisorUrl.source} />
-        </label>
-        <input
-          style={input}
-          id="tripadvisorUrl"
-          name="tripadvisorUrl"
-          type="url"
-          defaultValue={settings.tripadvisorUrl.value}
-        />
-        <span style={hint}>Optional. Empty keeps the button off the page.</span>
-      </div>
+        return (
+          <div style={field} key={platform.id}>
+            <label style={label} htmlFor={key}>
+              {platform.label} review link
+              <Origin source={setting?.source ?? "default"} />
+            </label>
+            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+              <Mark label={platform.label} hex={platform.hex} path={platform.path} />
+              <input
+                style={input}
+                id={key}
+                name={key}
+                type="url"
+                defaultValue={setting?.value ?? ""}
+                placeholder="https://…"
+              />
+            </div>
+          </div>
+        );
+      })}
+
+      <span style={{ ...hint, marginTop: "-0.6rem" }}>
+        Every link you set gets its own button on the guest page. Leave one empty
+        and it stays off — a button that goes nowhere is worse than no button.
+      </span>
 
       {/* ------------------------------------------------------- categories */}
 
