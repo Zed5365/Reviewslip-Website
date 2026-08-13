@@ -18,7 +18,7 @@ export const SITE_NAME = "Reviewslip";
  */
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://reviewslip.app";
+  "https://reviewslip.com";
 
 export const CONTACT_EMAIL = "info@reviewslip.com";
 
