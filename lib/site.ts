@@ -27,13 +27,19 @@ export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURICompon
 )}`;
 
 /**
- * Where the contact form POSTs. Leave empty to use the built-in mailto fallback
- * (opens the visitor's email client with the message pre-filled — works with no
- * backend). To collect submissions server-side, set this to a form endpoint URL
- * (e.g. a Formspree "https://formspree.io/f/xxxx" endpoint or your own handler)
- * that accepts a JSON POST of { name, email, business, locations, message }.
+ * Where the contact form POSTs. The form sends a JSON body of
+ * { name, email, business, locations, message }. Leave empty to fall back to
+ * opening the visitor's email client with the message pre-filled.
+ *
+ * Currently a Formspree endpoint — submissions land in the Formspree dashboard
+ * and are forwarded to the email on that Formspree account. (Formspree accepts
+ * this JSON shape directly, no code change needed.)
+ *
+ * Alternative on file: Web3Forms access key 0a47a13a-5314-4eb8-b4ee-26b43fde9a3b
+ * — to switch, POST to https://api.web3forms.com/submit with `access_key`
+ * added to the body (a small change in ContactForm).
  */
-export const CONTACT_FORM_ENDPOINT = "";
+export const CONTACT_FORM_ENDPOINT = "https://formspree.io/f/mljrnyzy";
 
 /**
  * Where the login / sign-up forms POST. Leave empty until there is a real auth
