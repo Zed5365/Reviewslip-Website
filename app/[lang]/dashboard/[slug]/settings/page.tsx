@@ -3,6 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import DeleteBusiness from "@/components/dashboard/DeleteBusiness";
 import SettingsForm, {
   type BusinessState,
   type Suggestion,
@@ -160,6 +161,32 @@ export default async function BusinessSettingsPage({
     }
   }
 
+  /**
+   * Deletes it. The typed confirmation lives in the component; this is the call
+   * that cannot be taken back, so it does nothing clever — the API cascades the
+   * review history and frees the address.
+   */
+  async function destroy(): Promise<{ error?: string }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { error: "Your session expired. Sign in again." };
+
+    try {
+      await call(`/businesses/${slug}`, { method: "DELETE", token: current });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not delete it.",
+      };
+    }
+
+    revalidatePath(localizedPath(locale, "/dashboard"));
+
+    // Outside the try: redirect works by throwing, and there is no page left to
+    // return to anyway.
+    redirect(localizedPath(locale, "/dashboard"));
+  }
+
   return (
     <section className="section">
       <div className="wrap">
@@ -182,6 +209,8 @@ export default async function BusinessSettingsPage({
           name={data.business.name}
           settings={data.settings}
         />
+
+        <DeleteBusiness slug={slug} destroy={destroy} />
       </div>
     </section>
   );
