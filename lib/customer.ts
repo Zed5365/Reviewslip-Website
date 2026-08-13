@@ -19,6 +19,17 @@ const BASE = process.env.REVIEW_API_URL ?? "http://127.0.0.1:3000";
 
 export const SESSION_COOKIE = "rs_session";
 
+/**
+ * A readable companion to the session cookie. Holds no secret — just "someone is
+ * signed in" — so the nav can swap Sign in for Dashboard without the layout
+ * reading cookies, which would opt every marketing page out of static rendering.
+ *
+ * It can lie: a session revoked server-side leaves this behind until the next
+ * sign-out. The cost of that is a Dashboard link that bounces to /login, which is
+ * the same thing that happens if you visit /dashboard directly.
+ */
+export const SIGNED_IN_COOKIE = "rs_signed_in";
+
 /** Matches the review app's own session lifetime, so the two expire together. */
 const MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 
@@ -80,11 +91,20 @@ export async function setSessionCookie(token: string) {
     path: "/",
     maxAge: MAX_AGE_SECONDS,
   });
+
+  store.set(SIGNED_IN_COOKIE, "1", {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: MAX_AGE_SECONDS,
+  });
 }
 
 export async function clearSessionCookie() {
   const store = await cookies();
   store.delete(SESSION_COOKIE);
+  store.delete(SIGNED_IN_COOKIE);
 }
 
 export async function sessionToken(): Promise<string | undefined> {

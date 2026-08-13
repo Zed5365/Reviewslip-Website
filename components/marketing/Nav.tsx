@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 import { localizedPath } from "@/lib/i18n/routing";
@@ -17,6 +17,14 @@ interface Props {
 
 export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
   const [open, setOpen] = useState(false);
+
+  // Read after mount, not during render: the server has no idea and guessing
+  // would mismatch the hydrated markup. A signed-in visitor sees Sign in for a
+  // moment on first paint, which is the price of keeping these pages static.
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    setSignedIn(document.cookie.split("; ").includes("rs_signed_in=1"));
+  }, []);
 
   const links = [
     { route: "/how-it-works", label: nav.howItWorks },
@@ -55,15 +63,26 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
 
         <div className={styles.actions}>
           <LanguageSelect lang={lang} label={selectors.language} />
-          <Link href={localizedPath(lang, "/login")} className={styles.signin}>
-            {nav.login}
-          </Link>
-          <Link
-            href={localizedPath(lang, "/signup")}
-            className="btn btn-quiet"
-          >
-            {nav.signup}
-          </Link>
+          {signedIn ? (
+            <Link
+              href={localizedPath(lang, "/dashboard")}
+              className="btn btn-quiet"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href={localizedPath(lang, "/login")} className={styles.signin}>
+                {nav.login}
+              </Link>
+              <Link
+                href={localizedPath(lang, "/signup")}
+                className="btn btn-quiet"
+              >
+                {nav.signup}
+              </Link>
+            </>
+          )}
           <Link href={localizedPath(lang, "/contact")} className="btn btn-go">
             {ctaLabel}
           </Link>
@@ -92,22 +111,24 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
             </Link>
           ))}
           <Link
-            href={localizedPath(lang, "/login")}
+            href={localizedPath(lang, signedIn ? "/dashboard" : "/login")}
             className={styles.mobileLink}
             onClick={() => setOpen(false)}
           >
-            {nav.login}
+            {signedIn ? "Dashboard" : nav.login}
           </Link>
           <div className={styles.mobileControls}>
             <LanguageSelect lang={lang} label={selectors.language} />
           </div>
-          <Link
-            href={localizedPath(lang, "/signup")}
-            className="btn btn-quiet"
-            onClick={() => setOpen(false)}
-          >
-            {nav.signup}
-          </Link>
+          {!signedIn && (
+            <Link
+              href={localizedPath(lang, "/signup")}
+              className="btn btn-quiet"
+              onClick={() => setOpen(false)}
+            >
+              {nav.signup}
+            </Link>
+          )}
           <Link
             href={localizedPath(lang, "/contact")}
             className="btn btn-go"
