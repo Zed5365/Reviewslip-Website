@@ -51,4 +51,8 @@ export const CONTACT_FORM_ENDPOINT = "https://formspree.io/f/mljrnyzy";
  * it must be an HTTPS endpoint that accepts a JSON POST of
  * { mode: "login" | "signup", email, password, name?, business? }.
  */
-export const AUTH_ENDPOINT = "";
+/**
+ * Where the auth form posts. Handled by app/api/auth/route.ts, which talks to
+ * the review app and sets the session cookie.
+ */
+export const AUTH_ENDPOINT = "/api/auth";
