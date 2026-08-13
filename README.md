@@ -113,7 +113,7 @@ See [PLAN.md](PLAN.md) for the full context.
 ## Notes
 
 - **Marketing only** — no sign-up. All CTAs link to `/contact` (contact form).
-- **Contact email** is a placeholder in `lib/site.ts` (`hello@reviewslip.app`) — swap it.
+- **Contact email** is `info@reviewslip.com` (set in `lib/site.ts`).
 - **Contact form** (`components/marketing/ContactForm.tsx`) posts to
   `CONTACT_FORM_ENDPOINT` in `lib/site.ts`. Left empty, it falls back to opening the
   visitor's email client with the message pre-filled (works with no backend). Set it to a
