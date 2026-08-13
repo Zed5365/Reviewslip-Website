@@ -20,7 +20,7 @@ export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
   "https://reviewslip.app";
 
-export const CONTACT_EMAIL = "hello@reviewslip.app";
+export const CONTACT_EMAIL = "info@reviewslip.com";
 
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
   "Reviewslip enquiry"
