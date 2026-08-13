@@ -126,6 +126,23 @@ export default function SettingsForm({
       </div>
 
       <div style={field}>
+        <label style={label} htmlFor="websiteUrl">
+          Business website
+          <Origin source={settings.websiteUrl.source} />
+        </label>
+        <input
+          style={input}
+          id="websiteUrl"
+          name="websiteUrl"
+          type="url"
+          defaultValue={settings.websiteUrl.value}
+        />
+        <span style={hint}>
+          Save this first, then Analyse reads it. Guests never see it.
+        </span>
+      </div>
+
+      <div style={field}>
         <label style={label} htmlFor="googleUrl">
           Google review link
           <Origin source={settings.googleUrl.source} />
@@ -157,23 +174,6 @@ export default function SettingsForm({
           defaultValue={settings.tripadvisorUrl.value}
         />
         <span style={hint}>Optional. Empty keeps the button off the page.</span>
-      </div>
-
-      <div style={field}>
-        <label style={label} htmlFor="websiteUrl">
-          Business website
-          <Origin source={settings.websiteUrl.source} />
-        </label>
-        <input
-          style={input}
-          id="websiteUrl"
-          name="websiteUrl"
-          type="url"
-          defaultValue={settings.websiteUrl.value}
-        />
-        <span style={hint}>
-          Save this first, then Analyse reads it. Guests never see it.
-        </span>
       </div>
 
       {/* ------------------------------------------------------- categories */}

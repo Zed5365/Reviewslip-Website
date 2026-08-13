@@ -66,7 +66,20 @@ export default function ReviewList({
         this business.
       </p>
 
-      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.9rem" }}>
+      {/* Fixed frame: twenty reviews would otherwise push the stats card and
+          everything below it far off the page. The list scrolls inside itself. */}
+      <ul
+        style={{
+          listStyle: "none",
+          margin: 0,
+          padding: "0 0.5rem 0 0",
+          display: "grid",
+          gap: "0.9rem",
+          maxHeight: "26rem",
+          overflowY: "auto",
+          overscrollBehavior: "contain",
+        }}
+      >
         {reviews.map((review) => {
           const liked = ratings[review.id] ?? null;
 
@@ -88,7 +101,7 @@ export default function ReviewList({
                     onClick={() => onRate(review.id, true)}
                     style={thumb(liked === true, "#2f5f4c", "rgba(130,180,155,0.3)")}
                   >
-                    ↑
+                    👍
                   </button>
                   <button
                     type="button"
@@ -97,7 +110,7 @@ export default function ReviewList({
                     onClick={() => onRate(review.id, false)}
                     style={thumb(liked === false, "#8a3a2c", "rgba(233,139,123,0.3)")}
                   >
-                    ↓
+                    👎
                   </button>
                 </span>
               </div>
