@@ -22,9 +22,13 @@ function Meter({
 }: {
   label: string;
   used: number;
-  limit: number;
+  limit?: number;
 }) {
-  const share = limit > 0 ? Math.min(used / limit, 1) : 0;
+  // A missing limit used to crash the whole page on .toLocaleString(). One field
+  // absent from an API response — a version skew between the two deploys, say —
+  // should cost that meter its denominator, not the dashboard.
+  const cap = Number.isFinite(limit) && (limit as number) > 0 ? (limit as number) : 0;
+  const share = cap > 0 ? Math.min(used / cap, 1) : 0;
 
   return (
     <div style={{ marginBottom: "0.85rem" }}>
@@ -38,7 +42,8 @@ function Meter({
       >
         <span style={{ color: "var(--ink-soft)" }}>{label}</span>
         <span style={{ fontVariantNumeric: "tabular-nums" }}>
-          {used.toLocaleString()} / {limit.toLocaleString()}
+          {used.toLocaleString()}
+          {cap > 0 ? ` / ${cap.toLocaleString()}` : ""}
         </span>
       </div>
       <div
@@ -52,7 +57,7 @@ function Meter({
         aria-label={label}
         aria-valuenow={used}
         aria-valuemin={0}
-        aria-valuemax={limit}
+        aria-valuemax={cap || undefined}
       >
         <div
           style={{
