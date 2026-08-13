@@ -127,7 +127,10 @@ export interface Me {
     id: string;
     name: string;
     businesses: number | null;
+    /** The advertised total: the per-business limit times the plan's businesses. */
     reviewAllowance: number;
+    /** What each business is actually held to, which is the meter that matters. */
+    reviewsPerBusiness: number;
     tokensPerMonthPerBusiness: number;
   };
   usage: { reviewsThisMonth: number; businesses: number };

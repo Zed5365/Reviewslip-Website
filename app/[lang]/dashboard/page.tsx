@@ -165,10 +165,12 @@ export default async function DashboardPage({
                   {business.url}
                 </p>
 
+                {/* Against the per-business limit, not the account total: a
+                    business metered against 15,000 would look idle at 1,400. */}
                 <Meter
                   label="Reviews this month"
                   used={business.usage.reviews}
-                  limit={me.plan.reviewAllowance}
+                  limit={me.plan.reviewsPerBusiness}
                 />
                 <Meter
                   label="Tokens this month"
