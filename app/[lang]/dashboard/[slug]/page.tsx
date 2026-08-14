@@ -191,12 +191,20 @@ export default async function BusinessPage({
         <ReviewList reviews={reviews} rate={rate} />
         </div>
 
-        <Link
-          className="btn btn-go"
-          href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
-        >
-          Settings
-        </Link>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+          <Link
+            className="btn btn-go"
+            href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
+          >
+            Settings
+          </Link>
+          <Link
+            className="btn btn-quiet"
+            href={localizedPath(lang, `/dashboard/${business.slug}/poster`)}
+          >
+            Table card
+          </Link>
+        </div>
       </div>
     </section>
   );
