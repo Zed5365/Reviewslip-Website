@@ -243,6 +243,8 @@ export default async function BusinessSettingsPage({
           Everything a review about this business is allowed to say.
         </p>
 
+        {/* Deleting is passed in rather than rendered after: it lives on the
+            General tab, which only the form knows which one is showing. */}
         <SettingsForm
           action={save}
           analyse={analyse}
@@ -250,9 +252,9 @@ export default async function BusinessSettingsPage({
           draftContext={draftContext}
           name={data.business.name}
           settings={data.settings}
-        />
-
-        <DeleteBusiness slug={slug} destroy={destroy} />
+        >
+          <DeleteBusiness slug={slug} destroy={destroy} />
+        </SettingsForm>
       </div>
     </section>
   );
