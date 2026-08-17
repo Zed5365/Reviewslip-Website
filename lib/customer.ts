@@ -170,11 +170,14 @@ export interface BusinessSettings {
   googleUrl: Setting<string>;
   tripadvisorUrl: Setting<string>;
   websiteUrl: Setting<string>;
+  /** Topics, in the dashboard's words. `categories` is the field the API uses. */
   categories: Setting<{ id: string; label: string; focus: string }[]>;
   kind: Setting<string>;
   place: Setting<string>;
   safeDetails: Setting<string[]>;
-  limits: { categories: number; safeDetails: number };
+  /** This business's own AI context: free prose, drafted then edited by hand. */
+  contextDoc: Setting<string>;
+  limits: { categories: number; safeDetails: number; contextDoc: number };
 }
 
 export interface BusinessDetail {
