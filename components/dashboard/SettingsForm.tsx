@@ -112,7 +112,42 @@ const label: React.CSSProperties = { fontSize: "0.85rem", fontWeight: 500 };
 const hint: React.CSSProperties = { fontSize: "0.8rem", color: "var(--ink-soft)" };
 const field: React.CSSProperties = { display: "grid", gap: "0.35rem" };
 const row: React.CSSProperties = { display: "flex", gap: "0.6rem", flexWrap: "wrap" };
-const panel: React.CSSProperties = { display: "grid", gap: "1.25rem" };
+
+/**
+ * One tab's fields.
+ *
+ * `display` is set here rather than left to the `hidden` attribute, and that is
+ * the whole reason this component exists. `hidden` works through the user-agent
+ * rule `[hidden] { display: none }`, which any inline style outranks — so a
+ * panel carrying an inline `display: grid` stayed on screen with `hidden` set,
+ * and every tab rendered at once.
+ *
+ * The attribute stays alongside it: assistive technology and in-page find both
+ * read it, and `display: none` alone says nothing about why. Mounted either way,
+ * so a hidden field still reaches FormData and one Save covers all four.
+ */
+function Panel({
+  id,
+  current,
+  children,
+}: {
+  id: TabId;
+  current: TabId;
+  children: React.ReactNode;
+}) {
+  const on = id === current;
+  return (
+    <div
+      id={`panel-${id}`}
+      role="tabpanel"
+      aria-labelledby={`tab-${id}`}
+      hidden={!on}
+      style={{ display: on ? "grid" : "none", gap: "1.25rem" }}
+    >
+      {children}
+    </div>
+  );
+}
 
 /** Says where an inherited value came from, so nothing reads as a mystery. */
 function Origin({ source }: { source: string }) {
@@ -296,13 +331,7 @@ export default function SettingsForm({
       >
         {/* ------------------------------------------------------- general */}
 
-        <div
-          id="panel-general"
-          role="tabpanel"
-          aria-labelledby="tab-general"
-          hidden={tab !== "general"}
-          style={panel}
-        >
+        <Panel id="general" current={tab}>
           <div style={field}>
             <label style={label} htmlFor="name">Business name</label>
             {/* Not `required`. With panels hidden rather than unmounted, the
@@ -360,17 +389,11 @@ export default function SettingsForm({
             empty and it stays off — a button that goes nowhere is worse than no
             button.
           </span>
-        </div>
+        </Panel>
 
         {/* ---------------------------------------------------- AI context */}
 
-        <div
-          id="panel-context"
-          role="tabpanel"
-          aria-labelledby="tab-context"
-          hidden={tab !== "context"}
-          style={panel}
-        >
+        <Panel id="context" current={tab}>
           {/* These two were being cleared on every save: the form never showed
               them, and an absent field arrives as an empty string, which reads
               as "clear it". Reading the website filled them in and the next
@@ -449,17 +472,11 @@ export default function SettingsForm({
               customers already write is the most useful thing here.
             </span>
           </div>
-        </div>
+        </Panel>
 
         {/* -------------------------------------------------------- topics */}
 
-        <div
-          id="panel-topics"
-          role="tabpanel"
-          aria-labelledby="tab-topics"
-          hidden={tab !== "topics"}
-          style={panel}
-        >
+        <Panel id="topics" current={tab}>
           <div style={field}>
             <span style={label}>
               Review topics
@@ -535,17 +552,11 @@ export default function SettingsForm({
               blank to go on the name alone.
             </span>
           </div>
-        </div>
+        </Panel>
 
         {/* ------------------------------------------------------- details */}
 
-        <div
-          id="panel-details"
-          role="tabpanel"
-          aria-labelledby="tab-details"
-          hidden={tab !== "details"}
-          style={panel}
-        >
+        <Panel id="details" current={tab}>
           <div style={field}>
             <span style={label}>
               Details reviews may use
@@ -617,7 +628,7 @@ export default function SettingsForm({
               own pages, which is the safest way to fill them in.
             </span>
           </div>
-        </div>
+        </Panel>
 
         {/* Outside every panel: one Save covers all four, and an error raised
             by a field on another tab still has somewhere to appear. */}
