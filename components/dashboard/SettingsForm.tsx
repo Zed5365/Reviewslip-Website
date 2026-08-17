@@ -250,13 +250,19 @@ export default function SettingsForm({
    * name. So a save that did not re-draft sends nothing for a slot, and the
    * review app leaves what it already has alone.
    */
-  const [fonts, setFonts] = useState(settings.theme.fonts);
+  // Defaulted rather than trusted. The two apps deploy separately, so this page
+  // can be running against a review app that predates the field — and reading
+  // through an absent `fonts` took the whole settings page down with a 500,
+  // which is a bad way to find out the deploys went out in the wrong order.
+  const storedFonts = settings.theme?.fonts ?? { display: null, ui: null };
+
+  const [fonts, setFonts] = useState(storedFonts);
   const [fontFiles, setFontFiles] = useState<{
     display: StoredFont | null;
     ui: StoredFont | null;
   }>({ display: null, ui: null });
   const [rights, setRights] = useState(
-    Boolean(settings.theme.fonts.display || settings.theme.fonts.ui)
+    Boolean(storedFonts.display || storedFonts.ui)
   );
 
   const [busy, startBusy] = useTransition();

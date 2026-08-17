@@ -169,7 +169,7 @@ export default function ThemeEditor({
                   style={select}
                 >
                   {row.fonts.map((font) => (
-                    <option key={font.id} value={font.id}>
+                    <option key={font.id} value={font.id} style={option}>
                       {font.name} — {font.note}
                     </option>
                   ))}
@@ -400,6 +400,24 @@ const select: React.CSSProperties = {
   color: "var(--paper)",
   font: "inherit",
   fontSize: "0.85rem",
+  // The dropdown list is drawn by the operating system, not by this page, and
+  // it defaults to a white popup — which the cream `color` above then renders
+  // almost invisibly on. This tells the UA to draw a dark control instead, so
+  // the popup matches the page and the inherited colour is right for it.
+  colorScheme: "dark",
+};
+
+/**
+ * Belt and braces for the same problem.
+ *
+ * `color-scheme` is the modern fix and is what does the work in current
+ * browsers; some still ignore it for the popup and take these instead. The
+ * marketing selects solve it this way in LocaleControls.module.css — same
+ * colours, so the two look alike.
+ */
+const option: React.CSSProperties = {
+  background: "var(--shade-soft)",
+  color: "var(--cream)",
 };
 
 const hexInput: React.CSSProperties = {

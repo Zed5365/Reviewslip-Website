@@ -188,8 +188,13 @@ export interface BusinessSettings {
   theme: Setting<Palette> & {
     derived: Derived;
     adjusted: string[];
-    /** The typefaces actually taken off the site, described without the file. */
-    fonts: { display: FontSummary | null; ui: FontSummary | null };
+    /**
+     * The typefaces actually taken off the site, described without the file.
+     *
+     * Optional because the review app deploys separately: a dashboard running
+     * ahead of it will not get this, and must not fall over on that.
+     */
+    fonts?: { display: FontSummary | null; ui: FontSummary | null };
   };
   limits: { categories: number; safeDetails: number; contextDoc: number };
 }
