@@ -2,8 +2,10 @@
 
 import { useActionState, useRef, useState, useTransition } from "react";
 
+import ThemeEditor from "@/components/dashboard/ThemeEditor";
 import { PLATFORMS } from "@/lib/platforms.data";
 import type { BusinessSettings } from "@/lib/customer";
+import type { Derived, Palette } from "@/lib/theme";
 
 /** The settings field behind each platform's link. */
 const LINK_FIELD: Record<string, string> = {
@@ -32,6 +34,7 @@ const TABS = [
   { id: "context", label: "AI context" },
   { id: "topics", label: "Topics" },
   { id: "details", label: "Details" },
+  { id: "theme", label: "Theme" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -95,6 +98,13 @@ type Analysis = {
 };
 type Topics = { categories?: Suggestion[]; error?: string };
 type Context = { contextDoc?: string; dropped?: string[]; error?: string };
+export type ThemeDraft = {
+  theme?: Palette;
+  sources?: Partial<Record<keyof Palette, string>>;
+  derived?: Derived;
+  adjusted?: string[];
+  error?: string;
+};
 
 const EMPTY: BusinessState = {};
 
@@ -164,6 +174,8 @@ export default function SettingsForm({
   analyse,
   suggest,
   draftContext,
+  draftTheme,
+  previewTheme,
   name,
   settings,
   children,
@@ -175,6 +187,10 @@ export default function SettingsForm({
   suggest: () => Promise<Topics>;
   /** Reads the website and the listings, and drafts the AI context. */
   draftContext: () => Promise<Context>;
+  /** Reads the website and picks four colours. */
+  draftTheme: () => Promise<ThemeDraft>;
+  /** Asks what four colours derive to, so the preview is the served palette. */
+  previewTheme: (theme: Palette) => Promise<{ derived?: Derived; adjusted?: string[] }>;
   name: string;
   settings: BusinessSettings;
   /** Deleting the business. Rendered in General, outside the form. */
@@ -201,14 +217,19 @@ export default function SettingsForm({
   const [kind, setKind] = useState(settings.kind.value);
   const [place, setPlace] = useState(settings.place.value);
 
+  const [palette, setPalette] = useState<Palette>(settings.theme.value);
+  const [paletteSources, setPaletteSources] = useState<
+    Partial<Record<keyof Palette, string>>
+  >({});
+
   const [busy, startBusy] = useTransition();
   const [notice, setNotice] = useState("");
   // Which button is working, so it can say so. Reading a website through the
   // model takes twenty seconds or more, and a button that only greys out for
   // that long reads as broken.
-  const [reading, setReading] = useState<"analyse" | "suggest" | "context" | null>(
-    null
-  );
+  const [reading, setReading] = useState<
+    "analyse" | "suggest" | "context" | "theme" | null
+  >(null);
 
   const full = cats.length >= settings.limits.categories;
   const detailsFull = details.length >= settings.limits.safeDetails;
@@ -235,7 +256,7 @@ export default function SettingsForm({
    * takes long enough that the shared "this can take a minute" is load-bearing.
    */
   function read<T extends { error?: string }>(
-    which: "analyse" | "suggest" | "context",
+    which: "analyse" | "suggest" | "context" | "theme",
     call: () => Promise<T>,
     apply: (result: T) => string
   ) {
@@ -284,6 +305,19 @@ export default function SettingsForm({
       return cut
         ? `Drafted, with ${cut} sentence${cut === 1 ? "" : "s"} dropped for claiming something a customer could not check. Read it, then Save.`
         : "Drafted below. Read it, edit anything, then Save to keep it.";
+    });
+  }
+
+  function onDraftTheme() {
+    read("theme", draftTheme, (result) => {
+      if (!result.theme) return "No usable colours came back.";
+      setPalette(result.theme);
+      setPaletteSources(result.sources ?? {});
+
+      const moved = result.adjusted?.length ?? 0;
+      return moved
+        ? `Picked four colours, ${moved} nudged for readability. Check the preview, then Save.`
+        : "Picked four colours from your site. Check the preview, then Save.";
     });
   }
 
@@ -626,6 +660,37 @@ export default function SettingsForm({
               customer could not check with their own eyes — Save will tell you
               which line and why. Reading the website proposes these from your
               own pages, which is the safest way to fill them in.
+            </span>
+          </div>
+        </Panel>
+
+        {/* --------------------------------------------------------- theme */}
+
+        <Panel id="theme" current={tab}>
+          <div style={field}>
+            <span style={label}>
+              Colours
+              <Origin source={settings.theme.source} />
+            </span>
+
+            <ThemeEditor
+              value={palette}
+              derived={settings.theme.derived}
+              adjusted={settings.theme.adjusted}
+              sources={paletteSources}
+              busy={busy}
+              reading={reading === "theme"}
+              onChange={(patch) => setPalette({ ...palette, ...patch })}
+              onGenerate={onDraftTheme}
+              preview={previewTheme}
+            />
+
+            <span style={hint}>
+              Four colours, taken from your own site or set by hand. Everything
+              else — tints, borders, the text colour on the paper and inside the
+              button — is worked out from them, so you are choosing a palette
+              rather than filling in a stylesheet. They apply to your review page
+              and to the printed table card.
             </span>
           </div>
         </Panel>

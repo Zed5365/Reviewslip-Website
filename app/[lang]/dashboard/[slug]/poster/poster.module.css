@@ -44,7 +44,7 @@
      A5 costs a cartridge to print and leaves a white margin on any printer that
      cannot go borderless — which is most of the printers a small venue owns. */
   background: #fff;
-  color: #14211b;
+  color: var(--card-ink, #14211b);
   box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.45);
 }
 
@@ -53,7 +53,7 @@
 .frame {
   flex: 1;
   width: 100%;
-  border: 0.4mm solid #82b49b;
+  border: 0.4mm solid var(--card-frame, #82b49b);
   border-radius: 2mm;
   padding: 9mm 7mm 7mm;
 
@@ -77,7 +77,7 @@
   width: 18mm;
   height: 0.6mm;
   margin: 5mm 0;
-  background: #e9a03b;
+  background: var(--card-rule, #e9a03b);
 }
 
 .headline {
@@ -107,14 +107,14 @@
 .url {
   font-size: 3.6mm;
   letter-spacing: 0.02em;
-  color: #5d6b62;
+  color: var(--card-muted, #5d6b62);
   margin: 0 0 1mm;
   overflow-wrap: anywhere;
 }
 
 .hint {
   font-size: 3.4mm;
-  color: #5d6b62;
+  color: var(--card-muted, #5d6b62);
   margin: 0;
 }
 
@@ -123,7 +123,7 @@
   font-size: 3mm;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #93a099;
+  color: var(--card-brand, #93a099);
 }
 
 /* --------------------------------------------------------------- printing */

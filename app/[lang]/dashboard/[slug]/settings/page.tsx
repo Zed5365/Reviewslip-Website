@@ -7,8 +7,15 @@ import DeleteBusiness from "@/components/dashboard/DeleteBusiness";
 import SettingsForm, {
   type BusinessState,
   type Suggestion,
+  type ThemeDraft,
 } from "@/components/dashboard/SettingsForm";
-import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
+import {
+  call,
+  sessionToken,
+  type BusinessDetail,
+  type Derived,
+  type Palette,
+} from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
@@ -89,6 +96,15 @@ export default async function BusinessSettingsPage({
             .getAll("detail")
             .map((value) => String(value).trim())
             .filter(Boolean),
+          // A form cannot post an object, so the four colours arrive as four
+          // fields and are put back together here. The review app validates the
+          // hex values and refuses a pair too close to tell apart.
+          theme: {
+            ground: text("theme-ground"),
+            paper: text("theme-paper"),
+            accent: text("theme-accent"),
+            highlight: text("theme-highlight"),
+          },
         },
       });
 
@@ -202,6 +218,52 @@ export default async function BusinessSettingsPage({
     }
   }
 
+  /** Picks four colours off the website. Fills the swatches; saves nothing. */
+  async function draftTheme(): Promise<ThemeDraft> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { error: "Sign in again." };
+
+    try {
+      return await call<ThemeDraft>(`/businesses/${slug}/theme/draft`, {
+        method: "POST",
+        token: current,
+      });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not read it.",
+      };
+    }
+  }
+
+  /**
+   * What four colours actually become once the contrast checks have run.
+   *
+   * Server-side so the derivation has exactly one implementation — the review
+   * app's theme.js, which is also what serves the guest page. No model call, so
+   * it is cheap enough to ask on every change to a swatch.
+   */
+  async function previewTheme(
+    theme: Palette
+  ): Promise<{ derived?: Derived; adjusted?: string[] }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return {};
+
+    try {
+      return await call<{ derived: Derived; adjusted: string[] }>(
+        `/businesses/${slug}/theme/preview`,
+        { method: "POST", token: current, body: { theme } }
+      );
+    } catch {
+      // A bad intermediate value while someone is typing a hex code is normal,
+      // not an error worth showing. The preview simply keeps its last good one.
+      return {};
+    }
+  }
+
   /**
    * Deletes it. The typed confirmation lives in the component; this is the call
    * that cannot be taken back, so it does nothing clever — the API cascades the
@@ -250,6 +312,8 @@ export default async function BusinessSettingsPage({
           analyse={analyse}
           suggest={suggest}
           draftContext={draftContext}
+          draftTheme={draftTheme}
+          previewTheme={previewTheme}
           name={data.business.name}
           settings={data.settings}
         >

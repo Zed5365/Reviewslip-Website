@@ -2,6 +2,8 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
+import type { Derived, Palette } from "./theme";
+
 /**
  * The review app's customer API, and the browser's half of a session.
  *
@@ -177,8 +179,20 @@ export interface BusinessSettings {
   safeDetails: Setting<string[]>;
   /** This business's own AI context: free prose, drafted then edited by hand. */
   contextDoc: Setting<string>;
+  /**
+   * The four colours the guest page and the table card are built from, plus what
+   * they derive to. `derived` is the palette actually served — the contrast
+   * checks in the review app's theme.js may have moved a colour, and `adjusted`
+   * says in words which ones and why.
+   */
+  theme: Setting<Palette> & { derived: Derived; adjusted: string[] };
   limits: { categories: number; safeDetails: number; contextDoc: number };
 }
+
+// Re-exported as types only. The shape lives in lib/theme.ts because the theme
+// editor is a client component and this module is server-only; a value imported
+// from here would drag cookies() into the browser bundle.
+export type { Palette, Derived } from "./theme";
 
 export interface BusinessDetail {
   business: {

@@ -3,12 +3,32 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import PrintPoster from "@/components/dashboard/PrintPoster";
-import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
+import {
+  call,
+  sessionToken,
+  type BusinessDetail,
+  type Derived,
+} from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import { qrCode } from "@/lib/qr";
 
 import styles from "./poster.module.css";
+
+/**
+ * The card's four themed properties, as an inline style.
+ *
+ * Only the `--card-*` ones. The review app derives them against white rather
+ * than against the theme's own paper, so a business whose brand colour is pale
+ * still gets a legible card — see theme.js.
+ */
+function cardVars(derived: Derived): React.CSSProperties {
+  const vars: Record<string, string> = {};
+  for (const name of ["--card-ink", "--card-frame", "--card-rule", "--card-muted", "--card-brand"]) {
+    if (derived[name]) vars[name] = derived[name];
+  }
+  return vars as React.CSSProperties;
+}
 
 export const metadata: Metadata = {
   title: "Table card",
@@ -78,7 +98,12 @@ export default async function PosterPage({
         </div>
       </section>
 
-      <div className={styles.sheet}>
+      {/* The business's palette, scoped to the sheet. Only the card properties
+          are set: the stock stays white and the QR stays pure black, both for
+          reasons in poster.module.css that a theme does not get to override.
+          Falling back to the shipped values when there is no theme is the
+          module's own job — every rule carries them as var() fallbacks. */}
+      <div className={styles.sheet} style={cardVars(data.settings.theme.derived)}>
         <div className={styles.frame}>
           <h2 className={styles.name}>{business.name}</h2>
           <div className={styles.rule} />
