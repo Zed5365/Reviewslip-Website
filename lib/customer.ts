@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-import type { Derived, Palette } from "./theme";
+import type { Derived, FontSummary, Palette } from "./theme";
 
 /**
  * The review app's customer API, and the browser's half of a session.
@@ -185,14 +185,19 @@ export interface BusinessSettings {
    * checks in the review app's theme.js may have moved a colour, and `adjusted`
    * says in words which ones and why.
    */
-  theme: Setting<Palette> & { derived: Derived; adjusted: string[] };
+  theme: Setting<Palette> & {
+    derived: Derived;
+    adjusted: string[];
+    /** The typefaces actually taken off the site, described without the file. */
+    fonts: { display: FontSummary | null; ui: FontSummary | null };
+  };
   limits: { categories: number; safeDetails: number; contextDoc: number };
 }
 
 // Re-exported as types only. The shape lives in lib/theme.ts because the theme
 // editor is a client component and this module is server-only; a value imported
 // from here would drag cookies() into the browser bundle.
-export type { Palette, Derived } from "./theme";
+export type { Palette, Derived, StoredFont, FontSummary } from "./theme";
 
 export interface BusinessDetail {
   business: {

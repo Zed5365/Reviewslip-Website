@@ -67,6 +67,29 @@ export const UI_FONTS = [
 /** The custom properties the review app derives, keyed as they appear in CSS. */
 export type Derived = Record<string, string>;
 
+/**
+ * A typeface taken off the business's own site, whole — the file included.
+ *
+ * Carried through the dashboard rather than re-derived because it is a stored
+ * field: the review app downloads and checks it during drafting, and Save has to
+ * hand the same bytes back. `data` is base64 and can be a couple of hundred
+ * kilobytes, which is why the settings payload describes rather than includes.
+ */
+export interface StoredFont {
+  family: string;
+  format: string;
+  source: string;
+  data: string;
+}
+
+/** What the settings payload says about a grabbed font, minus the file. */
+export interface FontSummary {
+  family: string;
+  format: string;
+  source: string;
+  kb: number;
+}
+
 export const PALETTE_SLOTS: {
   key: keyof Palette;
   label: string;

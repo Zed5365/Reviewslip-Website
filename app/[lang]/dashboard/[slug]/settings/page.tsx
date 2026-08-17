@@ -24,6 +24,30 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/**
+ * One grabbed font field, ready to spread into the patch body.
+ *
+ * Three states, and all three are meaningful. A field that is not in the form at
+ * all leaves what is stored alone — the settings payload does not carry the
+ * bytes, so a save that did not re-draft has nothing to send. An empty string
+ * clears it. Anything else is JSON the review app produced during drafting, and
+ * it validates the shape again on the way in regardless of what happens here.
+ */
+function font(field: string, formData: FormData): Record<string, unknown> {
+  if (!formData.has(field)) return {};
+
+  const raw = String(formData.get(field) ?? "").trim();
+  if (!raw) return { [field]: null };
+
+  try {
+    return { [field]: JSON.parse(raw) };
+  } catch {
+    // A mangled value is dropped rather than forwarded as a string, which the
+    // review app would refuse anyway — this just makes the intent local.
+    return {};
+  }
+}
+
 export default async function BusinessSettingsPage({
   params,
 }: PageProps<"/[lang]/dashboard/[slug]/settings">) {
@@ -111,6 +135,12 @@ export default async function BusinessSettingsPage({
             // anything else here, so this cannot become a link to elsewhere.
             logo: text("theme-logo"),
           },
+          // The grabbed font files. Absent means "leave what is stored alone",
+          // an empty string means "drop it", and a JSON body is a new file the
+          // review app has already downloaded and checked. Parsed here so a
+          // mangled value is dropped rather than sent on as a string.
+          ...font("fontDisplay", formData),
+          ...font("fontUi", formData),
         },
       });
 

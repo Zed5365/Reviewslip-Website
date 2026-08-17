@@ -9,6 +9,7 @@ import {
   PALETTE_SLOTS,
   UI_FONTS,
   type Derived,
+  type FontSummary,
   type Palette,
 } from "@/lib/theme";
 
@@ -31,7 +32,11 @@ export default function ThemeEditor({
   sources,
   busy,
   reading,
+  fonts,
+  rightsConfirmed,
   onChange,
+  onDropFont,
+  onRights,
   onGenerate,
   preview,
 }: {
@@ -42,7 +47,12 @@ export default function ThemeEditor({
   sources: Partial<Record<keyof Palette, string>>;
   busy: boolean;
   reading: boolean;
+  /** The typefaces actually taken off the site, if any. */
+  fonts: { display: FontSummary | null; ui: FontSummary | null };
+  rightsConfirmed: boolean;
   onChange: (patch: Partial<Palette>) => void;
+  onDropFont: (slot: "display" | "ui") => void;
+  onRights: (confirmed: boolean) => void;
   onGenerate: () => void;
   /** Asks the review app what these four derive to. No model call. */
   preview: (theme: Palette) => Promise<{ derived?: Derived; adjusted?: string[] }>;
@@ -124,34 +134,89 @@ export default function ThemeEditor({
         {[
           { key: "display" as const, label: "Review text", fonts: DISPLAY_FONTS },
           { key: "ui" as const, label: "Everything else", fonts: UI_FONTS },
-        ].map((row) => (
-          <div key={row.key} style={{ display: "grid", gap: "0.25rem" }}>
-            <label style={{ fontSize: "0.85rem", fontWeight: 500 }} htmlFor={`theme-${row.key}`}>
-              {row.label}
-            </label>
-            <select
-              id={`theme-${row.key}`}
-              name={`theme-${row.key}`}
-              value={value[row.key]}
-              onChange={(e) => onChange({ [row.key]: e.target.value })}
-              style={select}
-            >
-              {row.fonts.map((font) => (
-                <option key={font.id} value={font.id}>
-                  {font.name} — {font.note}
-                </option>
-              ))}
-            </select>
-            {sources[row.key] && <div style={hint}>On your site: {sources[row.key]}</div>}
-          </div>
-        ))}
+        ].map((row) => {
+          const grabbed = fonts[row.key];
+          return (
+            <div key={row.key} style={{ display: "grid", gap: "0.25rem" }}>
+              <label style={{ fontSize: "0.85rem", fontWeight: 500 }} htmlFor={`theme-${row.key}`}>
+                {row.label}
+              </label>
+
+              {grabbed ? (
+                // Your own file is in use, so the dropdown is not what is
+                // rendering — showing it as an active control would be a lie.
+                <div style={grabbedBox}>
+                  <div>
+                    <strong style={{ fontWeight: 500 }}>{grabbed.family}</strong>{" "}
+                    <span style={hint}>
+                      — your own file, {grabbed.kb}kB {grabbed.format}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-quiet"
+                    onClick={() => onDropFont(row.key)}
+                  >
+                    Use a standard font instead
+                  </button>
+                </div>
+              ) : (
+                <select
+                  id={`theme-${row.key}`}
+                  name={`theme-${row.key}`}
+                  value={value[row.key]}
+                  onChange={(e) => onChange({ [row.key]: e.target.value })}
+                  style={select}
+                >
+                  {row.fonts.map((font) => (
+                    <option key={font.id} value={font.id}>
+                      {font.name} — {font.note}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {/* The dropdown is the fallback even when a file is in use, so it
+                  still has to be submitted — as a hidden field when the visible
+                  control is gone. */}
+              {grabbed && (
+                <input type="hidden" name={`theme-${row.key}`} value={value[row.key]} />
+              )}
+
+              {sources[row.key] && <div style={hint}>On your site: {sources[row.key]}</div>}
+            </div>
+          );
+        })}
+
         <span style={hint}>
-          Chosen from a shortlist rather than taken off your site: a font file on
-          your server is licensed for your domain, not ours. Generating picks the
-          closest match to what you already use. These cover Latin text — a
-          review written in Thai, Chinese, Japanese or Korean falls back to the
-          reader&rsquo;s own device font, which is the only way it renders at all.
+          Generating takes the real font files off your site where it can. Where
+          it cannot — some foundries license per website and their files cannot
+          be served from here — it falls back to the closest match from the list.
+          Either way this covers Latin text: a review written in Thai, Chinese,
+          Japanese or Korean falls back to the reader&rsquo;s own device font,
+          which is the only way it renders at all.
         </span>
+
+        {(fonts.display || fonts.ui) && (
+          <label style={rightsBox}>
+            <input
+              type="checkbox"
+              name="fontRights"
+              checked={rightsConfirmed}
+              onChange={(e) => onRights(e.target.checked)}
+              style={{ marginTop: "0.15rem" }}
+            />
+            <span>
+              <strong style={{ fontWeight: 500 }}>
+                I have the right to use these fonts on this page.
+              </strong>{" "}
+              Your review page is on our domain, so your font is being served
+              from ours. Most paid typefaces are licensed per website and do not
+              allow that. If you are not sure, untick this and use a standard
+              font — nobody will notice, and it cannot come back on you.
+            </span>
+          </label>
+        )}
       </div>
 
       {/* ---------------------------------------------------------- logo */}
@@ -298,6 +363,31 @@ const swatch: React.CSSProperties = {
   border: "1px solid var(--jade-line)",
   borderRadius: 10,
   background: "transparent",
+  cursor: "pointer",
+};
+
+const grabbedBox: React.CSSProperties = {
+  display: "flex",
+  gap: "0.8rem",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  padding: "0.6rem 0.75rem",
+  borderRadius: 10,
+  border: "1px solid var(--jade-line)",
+  fontSize: "0.88rem",
+};
+
+const rightsBox: React.CSSProperties = {
+  display: "flex",
+  gap: "0.6rem",
+  alignItems: "flex-start",
+  padding: "0.85rem 1rem",
+  borderRadius: 10,
+  border: "1px solid var(--jade-line)",
+  fontSize: "0.82rem",
+  color: "var(--ink-soft)",
+  lineHeight: 1.5,
   cursor: "pointer",
 };
 

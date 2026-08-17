@@ -5,7 +5,7 @@ import { useActionState, useRef, useState, useTransition } from "react";
 import ThemeEditor from "@/components/dashboard/ThemeEditor";
 import { PLATFORMS } from "@/lib/platforms.data";
 import type { BusinessSettings } from "@/lib/customer";
-import type { Derived, Palette } from "@/lib/theme";
+import type { Derived, FontSummary, Palette, StoredFont } from "@/lib/theme";
 
 /** The settings field behind each platform's link. */
 const LINK_FIELD: Record<string, string> = {
@@ -105,10 +105,25 @@ export type ThemeDraft = {
   adjusted?: string[];
   /** Whether a logo was found and downloaded, or why it was not. */
   logoNote?: string;
+  /** The real typefaces taken off the site, file included, per slot. */
+  fonts?: { display: StoredFont | null; ui: StoredFont | null };
+  /** One line per slot: what was taken, or why it could not be. */
+  fontNotes?: string[];
   error?: string;
 };
 
 const EMPTY: BusinessState = {};
+
+/** A stored font, as the panel describes it. Mirrors the review app's describeFont. */
+function summarise(font: StoredFont | null): FontSummary | null {
+  if (!font) return null;
+  return {
+    family: font.family,
+    format: font.format,
+    source: font.source,
+    kb: Math.round((font.data.length * 3) / 4 / 1024),
+  };
+}
 
 const input: React.CSSProperties = {
   width: "100%",
@@ -224,6 +239,26 @@ export default function SettingsForm({
     Partial<Record<keyof Palette, string>>
   >({});
 
+  /**
+   * The grabbed typefaces.
+   *
+   * Two pieces of state because they play two roles. `fonts` is what is
+   * described on screen — family, size, format — and comes back from the server
+   * on load. `fontFiles` is the bytes, and only exists after a draft in this
+   * session: Save has to hand them back, and the settings payload deliberately
+   * does not carry a couple of hundred kilobytes of base64 just to display a
+   * name. So a save that did not re-draft sends nothing for a slot, and the
+   * review app leaves what it already has alone.
+   */
+  const [fonts, setFonts] = useState(settings.theme.fonts);
+  const [fontFiles, setFontFiles] = useState<{
+    display: StoredFont | null;
+    ui: StoredFont | null;
+  }>({ display: null, ui: null });
+  const [rights, setRights] = useState(
+    Boolean(settings.theme.fonts.display || settings.theme.fonts.ui)
+  );
+
   const [busy, startBusy] = useTransition();
   const [notice, setNotice] = useState("");
   // Which button is working, so it can say so. Reading a website through the
@@ -316,15 +351,38 @@ export default function SettingsForm({
       setPalette(result.theme);
       setPaletteSources(result.sources ?? {});
 
+      // The files, and the descriptions drawn from them. A slot that could not
+      // be grabbed comes back null and falls to the shortlist.
+      const got = result.fonts ?? { display: null, ui: null };
+      setFontFiles(got);
+      setFonts({
+        display: summarise(got.display),
+        ui: summarise(got.ui),
+      });
+      // Re-confirmed per draft: these may be different files from the ones the
+      // customer agreed to last time.
+      setRights(false);
+
       const moved = result.adjusted?.length ?? 0;
       const colours = moved
-        ? `Picked colours and typefaces, ${moved} colour${moved === 1 ? "" : "s"} nudged for readability.`
-        : "Picked colours and typefaces from your site.";
+        ? `Picked colours, ${moved} nudged for readability.`
+        : "Picked colours from your site.";
 
-      // The logo has its own outcome — it is fetched over the network and can
-      // fail on its own while the rest of the draft is perfectly good.
-      return `${colours} ${result.logoNote ?? ""} Check the preview, then Save.`.trim();
+      // The logo and each font are fetched over the network and can fail on
+      // their own while the rest of the draft is perfectly good, so each says
+      // what happened to it.
+      return [colours, ...(result.fontNotes ?? []), result.logoNote, "Then Save."]
+        .filter(Boolean)
+        .join(" ");
     });
+  }
+
+  /** Back to the shortlist for one slot, file and all. */
+  function onDropFont(slot: "display" | "ui") {
+    setFonts({ ...fonts, [slot]: null });
+    // Explicitly null rather than absent: absent means "leave what is stored
+    // alone", and this is a request to clear it.
+    setFontFiles({ ...fontFiles, [slot]: null });
   }
 
   const counts: Partial<Record<TabId, number>> = {
@@ -686,10 +744,33 @@ export default function SettingsForm({
               sources={paletteSources}
               busy={busy}
               reading={reading === "theme"}
+              fonts={fonts}
+              rightsConfirmed={rights}
               onChange={(patch) => setPalette({ ...palette, ...patch })}
+              onDropFont={onDropFont}
+              onRights={setRights}
               onGenerate={onDraftTheme}
               preview={previewTheme}
             />
+
+            {/* The files themselves, carried through the form so a save made
+                from any tab keeps them. Only present when this session drafted
+                them — otherwise the field is absent and the review app leaves
+                what it already has. A slot cleared by the customer, or one they
+                have not confirmed the rights for, sends an explicit empty
+                string, which the review app reads as "drop it". */}
+            {(["display", "ui"] as const).map((slot) => {
+              const file = fontFiles[slot];
+              const send = file && rights ? JSON.stringify(file) : fonts[slot] ? undefined : "";
+              return send === undefined ? null : (
+                <input
+                  key={slot}
+                  type="hidden"
+                  name={slot === "display" ? "fontDisplay" : "fontUi"}
+                  value={send}
+                />
+              );
+            })}
 
             <span style={hint}>
               Four colours, taken from your own site or set by hand. Everything
