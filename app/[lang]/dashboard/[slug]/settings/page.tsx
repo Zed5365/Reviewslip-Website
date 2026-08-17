@@ -104,6 +104,12 @@ export default async function BusinessSettingsPage({
             paper: text("theme-paper"),
             accent: text("theme-accent"),
             highlight: text("theme-highlight"),
+            display: text("theme-display"),
+            ui: text("theme-ui"),
+            // Already a stored data URI when it is anything at all — the review
+            // app downloaded and checked it during drafting and refuses
+            // anything else here, so this cannot become a link to elsewhere.
+            logo: text("theme-logo"),
           },
         },
       });

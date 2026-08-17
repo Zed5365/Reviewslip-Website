@@ -105,6 +105,19 @@ export default async function PosterPage({
           module's own job — every rule carries them as var() fallbacks. */}
       <div className={styles.sheet} style={cardVars(data.settings.theme.derived)}>
         <div className={styles.frame}>
+          {/* Above the name, not instead of it: a mark alone leaves a guest who
+              scanned the wrong card with no way to tell. A stored data URI, so
+              printing does not depend on the customer's server being up.
+              eslint-disable because next/image cannot optimise a data URI and
+              this is print output, not a page to score. */}
+          {data.settings.theme.value.logo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className={styles.logo}
+              src={data.settings.theme.value.logo}
+              alt=""
+            />
+          )}
           <h2 className={styles.name}>{business.name}</h2>
           <div className={styles.rule} />
           <p className={styles.headline}>Scan to leave us a review</p>

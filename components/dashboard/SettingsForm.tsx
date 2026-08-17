@@ -103,6 +103,8 @@ export type ThemeDraft = {
   sources?: Partial<Record<keyof Palette, string>>;
   derived?: Derived;
   adjusted?: string[];
+  /** Whether a logo was found and downloaded, or why it was not. */
+  logoNote?: string;
   error?: string;
 };
 
@@ -315,9 +317,13 @@ export default function SettingsForm({
       setPaletteSources(result.sources ?? {});
 
       const moved = result.adjusted?.length ?? 0;
-      return moved
-        ? `Picked four colours, ${moved} nudged for readability. Check the preview, then Save.`
-        : "Picked four colours from your site. Check the preview, then Save.";
+      const colours = moved
+        ? `Picked colours and typefaces, ${moved} colour${moved === 1 ? "" : "s"} nudged for readability.`
+        : "Picked colours and typefaces from your site.";
+
+      // The logo has its own outcome — it is fetched over the network and can
+      // fail on its own while the rest of the draft is perfectly good.
+      return `${colours} ${result.logoNote ?? ""} Check the preview, then Save.`.trim();
     });
   }
 

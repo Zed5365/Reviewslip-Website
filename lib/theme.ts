@@ -13,13 +13,56 @@
  * preview cannot promise a palette the guest will not get.
  */
 
-/** The four a business chooses. Everything else is derived from them. */
+/**
+ * What a business chooses: four colours, two typefaces and a mark.
+ *
+ * `display` and `ui` are ids from a fixed list in the review app's theme.js —
+ * never font names. A name would have to become part of a Google Fonts URL, and
+ * a URL built from something that arrived over the wire is not something to put
+ * in a page. `logo` is a stored data URI, never a link to the customer's server:
+ * hotlinking would put a request to a third party on every guest's phone.
+ */
 export interface Palette {
   ground: string;
   paper: string;
   accent: string;
   highlight: string;
+  display: string;
+  ui: string;
+  logo: string;
 }
+
+/**
+ * The typefaces on offer, mirroring theme.js.
+ *
+ * Duplicated deliberately and kept deliberately dumb: this is a label for a
+ * dropdown, not a source of truth. The review app resolves an unknown id to the
+ * shipped face, so the worst a stale entry here can do is offer a name that
+ * quietly lands on the default — not break a page.
+ */
+export const DISPLAY_FONTS = [
+  { id: "trirong", name: "Trirong", note: "the shipped face, also carries Thai" },
+  { id: "lora", name: "Lora", note: "a warm contemporary serif" },
+  { id: "playfair", name: "Playfair Display", note: "high contrast, editorial" },
+  { id: "baskerville", name: "Libre Baskerville", note: "a classic book serif" },
+  { id: "source-serif", name: "Source Serif 4", note: "clean and neutral" },
+  { id: "garamond", name: "EB Garamond", note: "old style, understated" },
+  { id: "fraunces", name: "Fraunces", note: "characterful, a little quirky" },
+  { id: "bitter", name: "Bitter", note: "a sturdy slab serif" },
+  { id: "dm-serif", name: "DM Serif Display", note: "a confident display serif" },
+];
+
+export const UI_FONTS = [
+  { id: "bai-jamjuree", name: "Bai Jamjuree", note: "the shipped face, also carries Thai" },
+  { id: "inter", name: "Inter", note: "a neutral interface sans" },
+  { id: "work-sans", name: "Work Sans", note: "friendly and open" },
+  { id: "manrope", name: "Manrope", note: "geometric and modern" },
+  { id: "dm-sans", name: "DM Sans", note: "geometric and soft" },
+  { id: "poppins", name: "Poppins", note: "circular geometric, informal" },
+  { id: "source-sans", name: "Source Sans 3", note: "humanist and very legible" },
+  { id: "karla", name: "Karla", note: "grotesque with character" },
+  { id: "nunito-sans", name: "Nunito Sans", note: "rounded and approachable" },
+];
 
 /** The custom properties the review app derives, keyed as they appear in CSS. */
 export type Derived = Record<string, string>;

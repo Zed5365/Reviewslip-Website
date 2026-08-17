@@ -4,7 +4,13 @@ import { useEffect, useRef, useState, useTransition } from "react";
 
 // From lib/theme, not lib/customer: this is a client component, and
 // lib/customer is server-only. See the note at the top of lib/theme.ts.
-import { PALETTE_SLOTS, type Derived, type Palette } from "@/lib/theme";
+import {
+  DISPLAY_FONTS,
+  PALETTE_SLOTS,
+  UI_FONTS,
+  type Derived,
+  type Palette,
+} from "@/lib/theme";
 
 /**
  * The theme tab: four colours, and an honest preview of what they become.
@@ -112,6 +118,80 @@ export default function ThemeEditor({
         ))}
       </div>
 
+      {/* --------------------------------------------------------- fonts */}
+
+      <div style={{ display: "grid", gap: "0.75rem" }}>
+        {[
+          { key: "display" as const, label: "Review text", fonts: DISPLAY_FONTS },
+          { key: "ui" as const, label: "Everything else", fonts: UI_FONTS },
+        ].map((row) => (
+          <div key={row.key} style={{ display: "grid", gap: "0.25rem" }}>
+            <label style={{ fontSize: "0.85rem", fontWeight: 500 }} htmlFor={`theme-${row.key}`}>
+              {row.label}
+            </label>
+            <select
+              id={`theme-${row.key}`}
+              name={`theme-${row.key}`}
+              value={value[row.key]}
+              onChange={(e) => onChange({ [row.key]: e.target.value })}
+              style={select}
+            >
+              {row.fonts.map((font) => (
+                <option key={font.id} value={font.id}>
+                  {font.name} — {font.note}
+                </option>
+              ))}
+            </select>
+            {sources[row.key] && <div style={hint}>On your site: {sources[row.key]}</div>}
+          </div>
+        ))}
+        <span style={hint}>
+          Chosen from a shortlist rather than taken off your site: a font file on
+          your server is licensed for your domain, not ours. Generating picks the
+          closest match to what you already use. These cover Latin text — a
+          review written in Thai, Chinese, Japanese or Korean falls back to the
+          reader&rsquo;s own device font, which is the only way it renders at all.
+        </span>
+      </div>
+
+      {/* ---------------------------------------------------------- logo */}
+
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>Logo</span>
+        {/* Carried through the form as a hidden field: it is a stored image, not
+            something to type, and it has to survive a save made from any tab. */}
+        <input type="hidden" name="theme-logo" value={value.logo} />
+
+        {value.logo ? (
+          <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={value.logo}
+              alt="Your logo"
+              style={{
+                maxHeight: "3rem",
+                maxWidth: "10rem",
+                objectFit: "contain",
+                // On the paper colour, since that is the lighter of the two and
+                // shows a dark mark; the guest page puts it on the ground.
+                background: v("--paper"),
+                borderRadius: 8,
+                padding: "0.4rem 0.6rem",
+              }}
+            />
+            <button
+              type="button"
+              className="btn btn-quiet"
+              onClick={() => onChange({ logo: "" })}
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <span style={hint}>None yet — generating from your website looks for one.</span>
+        )}
+      </div>
+
       <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
         <button type="button" className="btn btn-quiet" disabled={busy} onClick={onGenerate}>
           {reading ? "Reading…" : "Generate from website"}
@@ -127,6 +207,21 @@ export default function ThemeEditor({
         </div>
 
         <div style={{ ...previewFrame, background: v("--shade") }}>
+          {value.logo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={value.logo}
+              alt=""
+              style={{
+                display: "block",
+                maxHeight: "2rem",
+                maxWidth: "8rem",
+                objectFit: "contain",
+                objectPosition: "left center",
+                marginBottom: "0.5rem",
+              }}
+            />
+          )}
           <div style={{ color: v("--jade-dim"), ...eyebrow }}>YOUR BUSINESS</div>
           <div style={{ color: v("--paper"), fontSize: "1.4rem", lineHeight: 1.1 }}>
             Thanks for visiting<span style={{ color: v("--marigold") }}>.</span>
@@ -204,6 +299,17 @@ const swatch: React.CSSProperties = {
   borderRadius: 10,
   background: "transparent",
   cursor: "pointer",
+};
+
+const select: React.CSSProperties = {
+  width: "100%",
+  padding: "0.55rem 0.7rem",
+  borderRadius: 10,
+  border: "1px solid var(--jade-line)",
+  background: "rgba(243,236,220,0.06)",
+  color: "var(--paper)",
+  font: "inherit",
+  fontSize: "0.85rem",
 };
 
 const hexInput: React.CSSProperties = {

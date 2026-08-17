@@ -62,6 +62,17 @@
   align-items: center;
 }
 
+/* Height-capped, not width-capped: logos arrive at every aspect ratio, and a
+   wide wordmark held to a width becomes a hairline. Millimetres, like the rest
+   of this card — it is measured for paper, not for a screen. */
+.logo {
+  max-height: 16mm;
+  max-width: 70mm;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 5mm;
+}
+
 .name {
   font-family: var(--display);
   font-weight: 400;
