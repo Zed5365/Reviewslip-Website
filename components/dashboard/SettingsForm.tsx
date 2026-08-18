@@ -233,6 +233,7 @@ export default function SettingsForm({
   suggest,
   draftContext,
   draftTheme,
+  rulebook,
   previewTheme,
   name,
   settings,
@@ -247,6 +248,8 @@ export default function SettingsForm({
   draftContext: () => Promise<Context>;
   /** Reads the website and picks four colours. */
   draftTheme: () => Promise<ThemeDraft>;
+  /** Everything the writer is told about this business, as markdown. */
+  rulebook: () => Promise<{ markdown?: string; error?: string }>;
   /** Asks what four colours derive to, so the preview is the served palette. */
   previewTheme: (
     theme: Palette,
@@ -497,6 +500,43 @@ export default function SettingsForm({
     setFontFiles({ ...fontFiles, [slot]: null });
   }
 
+  /**
+   * Downloads the rulebook.
+   *
+   * Built server-side and handed back as text, because a server action cannot
+   * set a Content-Disposition header — so the file is assembled here, out of
+   * what came back, and the anchor is clicked programmatically. Revoked straight
+   * after: an object URL holds the blob in memory until it is.
+   */
+  function onRulebook() {
+    setNotice("Building it…");
+    startBusy(async () => {
+      // Annotated, or the fallback narrows the union and `markdown` vanishes
+      // from the type — the same trap as the other website readers here.
+      const result = await rulebook().catch(
+        (): { markdown?: string; error?: string } => ({
+          error: "Could not build it.",
+        })
+      );
+
+      if (!result.markdown) {
+        setNotice(result.error ?? "Could not build it.");
+        return;
+      }
+
+      const url = URL.createObjectURL(
+        new Blob([result.markdown], { type: "text/markdown;charset=utf-8" })
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "context.md";
+      link.click();
+      URL.revokeObjectURL(url);
+
+      setNotice("Downloaded context.md.");
+    });
+  }
+
   const counts: Partial<Record<TabId, number>> = {
     topics: cats.length,
   };
@@ -541,6 +581,22 @@ export default function SettingsForm({
         {/* ------------------------------------------------------- general */}
 
         <Panel id="general" current={tab}>
+          {/* Temporary. It answers "what is the AI actually working from",
+              which nothing else here does, and the file says so itself. */}
+          <TopAction>
+            <button
+              type="button"
+              className="btn btn-quiet"
+              disabled={busy}
+              onClick={onRulebook}
+            >
+              Download context.md
+            </button>
+            <span style={hint}>
+              Everything the writer is told about this business. Temporary.
+            </span>
+          </TopAction>
+
           <div style={field}>
             <label style={label} htmlFor="name">Business name</label>
             {/* Not `required`. With panels hidden rather than unmounted, the
@@ -564,7 +620,15 @@ export default function SettingsForm({
             />
             <span style={hint}>
               Save this first — every Read the website button on the other tabs
-              works from it. Customers never see it.
+              works from it. Customers never see it.{" "}
+              <strong style={{ fontWeight: 500 }}>
+                No website? Leave this empty and set your Facebook page below
+                instead
+              </strong>{" "}
+              — the other tabs will read that. It works less often, because
+              Facebook shows a sign-in wall to anything that is not a browser,
+              but it costs nothing to try and everything on those tabs can be
+              filled in by hand if it comes back empty.
             </span>
 
             {/* Always shown, not only when the field is empty. The reason

@@ -85,6 +85,43 @@ export async function call<T>(
   return data as T;
 }
 
+/**
+ * The same, for a route that answers with text rather than JSON.
+ *
+ * Separate rather than a flag on `call`, because the two differ in how they
+ * report failure as well as how they parse: a failing text route still answers
+ * JSON, so the error path has to try that before giving up.
+ */
+export async function callText(
+  path: string,
+  options: { token?: string } = {}
+): Promise<string> {
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}/api/customer${path}`, {
+      headers: options.token ? { Authorization: `Bearer ${options.token}` } : {},
+      cache: "no-store",
+    });
+  } catch {
+    throw apiError(503, "Could not reach the service. Try again in a moment.");
+  }
+
+  const body = await res.text();
+
+  if (!res.ok) {
+    let message = "Something went wrong.";
+    try {
+      const parsed = JSON.parse(body);
+      if (typeof parsed?.error === "string") message = parsed.error;
+    } catch {
+      // A non-JSON error body is not worth showing raw.
+    }
+    throw apiError(res.status, message);
+  }
+
+  return body;
+}
+
 /* ---------------------------------------------------------------- sessions */
 
 export async function setSessionCookie(token: string) {

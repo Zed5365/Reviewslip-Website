@@ -11,6 +11,7 @@ import SettingsForm, {
 } from "@/components/dashboard/SettingsForm";
 import {
   call,
+  callText,
   sessionToken,
   type BusinessDetail,
   type Derived,
@@ -256,6 +257,30 @@ export default async function BusinessSettingsPage({
     }
   }
 
+  /**
+   * The rulebook: everything the writer is told about this business.
+   *
+   * Returned as text rather than streamed as a file, because a server action
+   * cannot set a Content-Disposition header — the client makes the download out
+   * of what comes back. Temporary, and the document says so itself.
+   */
+  async function rulebook(): Promise<{ markdown?: string; error?: string }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { error: "Sign in again." };
+
+    try {
+      return {
+        markdown: await callText(`/businesses/${slug}/rulebook`, { token: current }),
+      };
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not build it.",
+      };
+    }
+  }
+
   /** Picks four colours off the website. Fills the swatches; saves nothing. */
   async function draftTheme(): Promise<ThemeDraft> {
     "use server";
@@ -352,6 +377,7 @@ export default async function BusinessSettingsPage({
           suggest={suggest}
           draftContext={draftContext}
           draftTheme={draftTheme}
+          rulebook={rulebook}
           previewTheme={previewTheme}
           name={data.business.name}
           settings={data.settings}
