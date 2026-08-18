@@ -141,6 +141,8 @@ export default async function BusinessSettingsPage({
           // mangled value is dropped rather than sent on as a string.
           ...font("fontDisplay", formData),
           ...font("fontUi", formData),
+          // The hero photograph, on the same three-state contract.
+          ...font("background", formData),
         },
       });
 
@@ -281,7 +283,8 @@ export default async function BusinessSettingsPage({
    * it is cheap enough to ask on every change to a swatch.
    */
   async function previewTheme(
-    theme: Palette
+    theme: Palette,
+    background = false
   ): Promise<{ derived?: Derived; adjusted?: string[] }> {
     "use server";
 
@@ -291,7 +294,7 @@ export default async function BusinessSettingsPage({
     try {
       return await call<{ derived: Derived; adjusted: string[] }>(
         `/businesses/${slug}/theme/preview`,
-        { method: "POST", token: current, body: { theme } }
+        { method: "POST", token: current, body: { theme, background } }
       );
     } catch {
       // A bad intermediate value while someone is typing a hex code is normal,

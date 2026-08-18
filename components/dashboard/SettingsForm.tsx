@@ -5,7 +5,14 @@ import { useActionState, useRef, useState, useTransition } from "react";
 import ThemeEditor from "@/components/dashboard/ThemeEditor";
 import { PLATFORMS } from "@/lib/platforms.data";
 import type { BusinessSettings } from "@/lib/customer";
-import type { Derived, FontSummary, Palette, StoredFont } from "@/lib/theme";
+import type {
+  BackgroundSummary,
+  Derived,
+  FontSummary,
+  Palette,
+  StoredBackground,
+  StoredFont,
+} from "@/lib/theme";
 
 /** The settings field behind each platform's link. */
 const LINK_FIELD: Record<string, string> = {
@@ -108,6 +115,9 @@ export type ThemeDraft = {
   fonts?: { display: StoredFont | null; ui: StoredFont | null };
   /** One line per slot: what was taken, or why it could not be. */
   fontNotes?: string[];
+  /** The hero photograph taken off the site, file included. */
+  background?: StoredBackground | null;
+  backgroundNote?: string;
   error?: string;
 };
 
@@ -228,7 +238,10 @@ export default function SettingsForm({
   /** Reads the website and picks four colours. */
   draftTheme: () => Promise<ThemeDraft>;
   /** Asks what four colours derive to, so the preview is the served palette. */
-  previewTheme: (theme: Palette) => Promise<{ derived?: Derived; adjusted?: string[] }>;
+  previewTheme: (
+    theme: Palette,
+    background?: boolean
+  ) => Promise<{ derived?: Derived; adjusted?: string[] }>;
   name: string;
   settings: BusinessSettings;
   /** Deleting the business. Rendered in General, outside the form. */
@@ -285,6 +298,15 @@ export default function SettingsForm({
   const [rights, setRights] = useState(
     Boolean(storedFonts.display || storedFonts.ui)
   );
+
+  // Same two-piece arrangement as the fonts, for the same reason: the settings
+  // payload describes the photograph without carrying half a megabyte of base64,
+  // so a save that did not re-draft has no file to send and must leave the
+  // stored one alone.
+  const [background, setBackground] = useState<BackgroundSummary | null>(
+    settings.theme?.background ?? null
+  );
+  const [backgroundFile, setBackgroundFile] = useState<StoredBackground | null>(null);
 
   const [busy, startBusy] = useTransition();
   const [notice, setNotice] = useState("");
@@ -408,6 +430,17 @@ export default function SettingsForm({
 
       // The files, and the descriptions drawn from them. A slot that could not
       // be grabbed comes back null and falls to the shortlist.
+      setBackground(
+        result.background
+          ? {
+              type: result.background.type,
+              source: result.background.source,
+              kb: Math.round((result.background.dataUri.length * 3) / 4 / 1024),
+            }
+          : null
+      );
+      setBackgroundFile(result.background ?? null);
+
       const got = result.fonts ?? { display: null, ui: null };
       setFontFiles(got);
       setFonts({
@@ -426,10 +459,24 @@ export default function SettingsForm({
       // The logo and each font are fetched over the network and can fail on
       // their own while the rest of the draft is perfectly good, so each says
       // what happened to it.
-      return [colours, ...(result.fontNotes ?? []), result.logoNote, "Then Save."]
+      return [
+        colours,
+        ...(result.fontNotes ?? []),
+        result.logoNote,
+        result.backgroundNote,
+        "Then Save.",
+      ]
         .filter(Boolean)
         .join(" ");
     });
+  }
+
+  /** Drops the photograph, file and all. */
+  function onDropBackground() {
+    setBackground(null);
+    // Explicitly null rather than absent: absent means "leave what is stored
+    // alone", and this is a request to clear it.
+    setBackgroundFile(null);
   }
 
   /** Back to the shortlist for one slot, file and all. */
@@ -783,8 +830,10 @@ export default function SettingsForm({
               busy={busy}
               reading={reading === "theme"}
               fonts={fonts}
+              background={background}
               rightsConfirmed={rights}
               onChange={(patch) => setPalette({ ...palette, ...patch })}
+              onDropBackground={onDropBackground}
               onDropFont={onDropFont}
               onRights={setRights}
               onGenerate={onDraftTheme}
@@ -798,6 +847,15 @@ export default function SettingsForm({
             {details.map((detail, index) => (
               <input key={index} type="hidden" name="detail" value={detail} />
             ))}
+
+            {/* The photograph, on the same three-state contract as the fonts:
+                absent leaves the stored one alone, an empty string clears it,
+                JSON is a file the review app downloaded and checked. */}
+            {backgroundFile ? (
+              <input type="hidden" name="background" value={JSON.stringify(backgroundFile)} />
+            ) : background ? null : (
+              <input type="hidden" name="background" value="" />
+            )}
 
             {/* The files themselves, carried through the form so a save made
                 from any tab keeps them. Only present when this session drafted

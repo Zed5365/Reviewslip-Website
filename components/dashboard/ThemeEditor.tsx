@@ -9,6 +9,7 @@ import {
   PALETTE_SLOTS,
   UI_FONTS,
   type Derived,
+  type BackgroundSummary,
   type FontSummary,
   type Palette,
 } from "@/lib/theme";
@@ -33,8 +34,10 @@ export default function ThemeEditor({
   busy,
   reading,
   fonts,
+  background,
   rightsConfirmed,
   onChange,
+  onDropBackground,
   onDropFont,
   onRights,
   onGenerate,
@@ -49,13 +52,19 @@ export default function ThemeEditor({
   reading: boolean;
   /** The typefaces actually taken off the site, if any. */
   fonts: { display: FontSummary | null; ui: FontSummary | null };
+  /** The hero photograph taken off the site, described. */
+  background: BackgroundSummary | null;
   rightsConfirmed: boolean;
   onChange: (patch: Partial<Palette>) => void;
   onDropFont: (slot: "display" | "ui") => void;
+  onDropBackground: () => void;
   onRights: (confirmed: boolean) => void;
   onGenerate: () => void;
   /** Asks the review app what these four derive to. No model call. */
-  preview: (theme: Palette) => Promise<{ derived?: Derived; adjusted?: string[] }>;
+  preview: (
+    theme: Palette,
+    background?: boolean
+  ) => Promise<{ derived?: Derived; adjusted?: string[] }>;
 }) {
   const [live, setLive] = useState<{ derived: Derived; adjusted: string[] }>({
     derived,
@@ -72,7 +81,7 @@ export default function ThemeEditor({
       startPreview(async () => {
         // Annotated, or the fallback narrows the union and the success fields
         // vanish from the type.
-        const result = await preview(value).catch(
+        const result = await preview(value, Boolean(background)).catch(
           (): { derived?: Derived; adjusted?: string[] } => ({})
         );
         if (result.derived) {
@@ -87,11 +96,11 @@ export default function ThemeEditor({
     // `preview` is a server action and stable enough; re-running on it would
     // fire a request per render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value.ground, value.paper, value.accent, value.highlight]);
+  }, [value.ground, value.paper, value.accent, value.highlight, background]);
 
   const v = (name: string) => live.derived[name] ?? "";
 
-  const themed = Boolean(fonts.display || fonts.ui || value.logo);
+  const themed = Boolean(fonts.display || fonts.ui || value.logo || background);
 
   return (
     <div style={{ display: "grid", gap: "1.25rem" }}>
@@ -271,6 +280,40 @@ export default function ThemeEditor({
         )}
       </div>
 
+      {/* ---------------------------------------------------- background */}
+
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>Background photo</span>
+
+        {background ? (
+          <div style={grabbedBox}>
+            <div>
+              <strong style={{ fontWeight: 500 }}>From your site</strong>{" "}
+              <span style={hint}>
+                — {background.kb}kB {background.type.replace("image/", "")}
+              </span>
+            </div>
+            <button type="button" className="btn btn-quiet" onClick={onDropBackground}>
+              Remove
+            </button>
+          </div>
+        ) : (
+          <span style={hint}>
+            None — generating looks for the photo at the top of your site.
+          </span>
+        )}
+
+        <span style={hint}>
+          It sits behind the whole page, heavily dimmed. That is not a style
+          choice: every colour above is held to a contrast ratio against your
+          background colour, and a photograph behind the text would make those
+          numbers meaningless. The wash over it is set strong enough that the
+          text still passes over a pure white photo and a pure black one, so the
+          photo reads as texture rather than as a picture. The preview below
+          shows it exactly as a customer will see it.
+        </span>
+      </div>
+
       {/* ------------------------------------------------------- preview */}
 
       <div>
@@ -279,7 +322,20 @@ export default function ThemeEditor({
           The guest page and the table card, in these colours.
         </div>
 
-        <div style={{ ...previewFrame, background: v("--shade") }}>
+        <div
+          style={{
+            ...previewFrame,
+            // Layered the same way body is in the guest page's stylesheet: the
+            // scrim over the photo over the ground. Anything else here would be
+            // a preview of a page nobody gets.
+            background: v("--shade"),
+            backgroundImage: v("--scrim")
+              ? `linear-gradient(${v("--scrim")}, ${v("--scrim")}), ${v("--backdrop")}`
+              : undefined,
+            backgroundSize: "auto, cover",
+            backgroundPosition: "center",
+          }}
+        >
           {value.logo && (
             // eslint-disable-next-line @next/next/no-img-element
             <img

@@ -100,3 +100,17 @@ export const PALETTE_SLOTS: {
   { key: "accent", label: "Accent", hint: "labels, borders and topic buttons" },
   { key: "highlight", label: "Highlight", hint: "the button that opens your listing" },
 ];
+
+/** The hero photograph taken off the site, whole. Carried by the form on save. */
+export interface StoredBackground {
+  type: string;
+  dataUri: string;
+  source: string;
+}
+
+/** What the settings payload says about it, minus the file. */
+export interface BackgroundSummary {
+  type: string;
+  source: string;
+  kb: number;
+}

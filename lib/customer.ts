@@ -2,7 +2,12 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-import type { Derived, FontSummary, Palette } from "./theme";
+import type {
+  BackgroundSummary,
+  Derived,
+  FontSummary,
+  Palette,
+} from "./theme";
 
 /**
  * The review app's customer API, and the browser's half of a session.
@@ -195,6 +200,8 @@ export interface BusinessSettings {
      * ahead of it will not get this, and must not fall over on that.
      */
     fonts?: { display: FontSummary | null; ui: FontSummary | null };
+    /** The hero photograph, described without the file. */
+    background?: BackgroundSummary | null;
   };
   limits: { categories: number; safeDetails: number; contextDoc: number };
 }
@@ -202,7 +209,14 @@ export interface BusinessSettings {
 // Re-exported as types only. The shape lives in lib/theme.ts because the theme
 // editor is a client component and this module is server-only; a value imported
 // from here would drag cookies() into the browser bundle.
-export type { Palette, Derived, StoredFont, FontSummary } from "./theme";
+export type {
+  Palette,
+  Derived,
+  StoredFont,
+  FontSummary,
+  StoredBackground,
+  BackgroundSummary,
+} from "./theme";
 
 export interface BusinessDetail {
   business: {
