@@ -71,8 +71,14 @@ export default async function BusinessPage({
     reviews = [];
   }
 
-  /** Records the owner's judgement. Called straight from the list's buttons. */
-  async function rate(id: number, liked: boolean): Promise<{ ok: boolean }> {
+  /**
+   * Records the owner's judgement. Called straight from the list's stars.
+   *
+   * `null` clears the rating, which is what a second tap on the star already
+   * set means. The review app treats that as a distinct value rather than a
+   * missing one, so it is sent as null rather than omitted.
+   */
+  async function rate(id: number, rating: number | null): Promise<{ ok: boolean }> {
     "use server";
 
     const current = await sessionToken();
@@ -81,7 +87,7 @@ export default async function BusinessPage({
     try {
       await call(`/businesses/${slug}/reviews/${id}/feedback`, {
         method: "POST",
-        body: { liked },
+        body: { rating },
         token: current,
       });
       return { ok: true };

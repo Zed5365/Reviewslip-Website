@@ -33,7 +33,6 @@ const TABS = [
   { id: "general", label: "General" },
   { id: "context", label: "About the business" },
   { id: "topics", label: "Topics" },
-  { id: "details", label: "Details" },
   { id: "theme", label: "Theme" },
 ] as const;
 
@@ -297,7 +296,6 @@ export default function SettingsForm({
   >(null);
 
   const full = cats.length >= settings.limits.categories;
-  const detailsFull = details.length >= settings.limits.safeDetails;
 
   function setCat(index: number, patch: Partial<Suggestion>) {
     setCats(cats.map((cat, i) => (i === index ? { ...cat, ...patch } : cat)));
@@ -338,21 +336,6 @@ export default function SettingsForm({
     });
   }
 
-  function onAnalyse() {
-    read("analyse", analyse, (result) => {
-      if (result.kind) setKind(result.kind);
-      if (result.place) setPlace(result.place);
-      if (result.details?.length) setDetails(result.details);
-
-      if (!result.details?.length) return "Nothing checkable came back from that page.";
-
-      // It fills fields on two tabs, so it has to say so — otherwise the
-      // description quietly changes on a panel nobody is looking at.
-      const changed = result.kind || result.place ? ", and the description on About the business" : "";
-      return `Proposed ${result.details.length} detail${result.details.length === 1 ? "" : "s"}${changed}. Edit anything, then Save.`;
-    });
-  }
-
   function onSuggest() {
     read("suggest", suggest, (result) => {
       if (!result.categories?.length) return "Nothing usable came back.";
@@ -361,15 +344,59 @@ export default function SettingsForm({
     });
   }
 
+  /**
+   * One button, two reads.
+   *
+   * The Details tab is gone, so this is now the only thing that fills the detail
+   * list — and it should be, since both reads answer the same question from the
+   * same pages. Two model calls rather than one because they are two different
+   * jobs under two different sets of rules: the details demand a source quote for
+   * every line and are screened hard, while the About text is prose that asserts
+   * nothing. Merging the prompts would weaken the half carrying the
+   * no-fabrication guarantee.
+   *
+   * Run together rather than in sequence — they read the same site and neither
+   * needs the other's answer, so waiting twice would double a wait already
+   * measured in tens of seconds.
+   *
+   * The About text is what the button is named for, so a failure there is the
+   * failure. A details read that comes back empty simply leaves the list alone.
+   */
   function onDraftContext() {
-    read("context", draftContext, (result) => {
-      if (!result.contextDoc) return "Nothing usable came back.";
-      setContext(result.contextDoc);
+    setReading("context");
+    setNotice("Reading the website — this can take up to a minute.");
 
-      const cut = result.dropped?.length ?? 0;
-      return cut
-        ? `Drafted, with ${cut} sentence${cut === 1 ? "" : "s"} dropped for claiming something a customer could not check. Read it, then Save.`
-        : "Drafted below. Read it, edit anything, then Save to keep it.";
+    startBusy(async () => {
+      const [about, facts] = await Promise.all([
+        draftContext().catch((): Context => ({ error: "Could not read the website." })),
+        analyse().catch((): Analysis => ({ ok: false })),
+      ]);
+      setReading(null);
+
+      if (about.error || !about.contextDoc) {
+        setNotice(about.error ?? "Nothing usable came back.");
+        return;
+      }
+
+      setContext(about.contextDoc);
+      if (facts.kind) setKind(facts.kind);
+      if (facts.place) setPlace(facts.place);
+      if (facts.details?.length) setDetails(facts.details);
+
+      const cut = about.dropped?.length ?? 0;
+      setNotice(
+        [
+          cut
+            ? `Drafted, with ${cut} sentence${cut === 1 ? "" : "s"} dropped for claiming something a customer could not check.`
+            : "Drafted below.",
+          facts.details?.length
+            ? `Found ${facts.details.length} detail${facts.details.length === 1 ? "" : "s"} a review may claim.`
+            : "",
+          "Read it, edit anything, then Save.",
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
     });
   }
 
@@ -415,7 +442,6 @@ export default function SettingsForm({
 
   const counts: Partial<Record<TabId, number>> = {
     topics: cats.length,
-    details: details.length,
   };
 
   return (
@@ -604,6 +630,53 @@ export default function SettingsForm({
               useful thing here.
             </span>
           </div>
+
+          {/* ------------------------------------------------ the detail list */}
+
+          {/* Read-only, and no longer a tab of its own. It is still the
+              load-bearing half — the only things a review may actually claim —
+              so it stays visible where it is produced rather than disappearing
+              with the page it used to live on. Editing it by hand is what went:
+              a detail typed in has nothing behind it, while every one of these
+              quotes a sentence from the site it came from. */}
+          <div style={field}>
+            <span style={label}>
+              Details a review may claim
+              <em style={{ ...hint, fontStyle: "normal", marginLeft: "0.4rem" }}>
+                {details.length}
+              </em>
+            </span>
+
+            {details.length === 0 ? (
+              <p style={hint}>
+                Nothing yet — drafting from the website fills this in.
+              </p>
+            ) : (
+              <ul
+                style={{
+                  listStyle: "none",
+                  margin: 0,
+                  padding: "0.85rem 1rem",
+                  display: "grid",
+                  gap: "0.4rem",
+                  border: "1px solid var(--jade-line)",
+                  borderRadius: 10,
+                  fontSize: "0.85rem",
+                }}
+              >
+                {details.map((detail, index) => (
+                  <li key={index}>— {detail}</li>
+                ))}
+              </ul>
+            )}
+
+            <span style={hint}>
+              Taken from your own pages, each one checked against the sentence it
+              came from. The writer may state these and nothing else about you,
+              so if something here is wrong, fix it on your website and draft
+              again.
+            </span>
+          </div>
         </Panel>
 
         {/* -------------------------------------------------------- topics */}
@@ -693,85 +766,6 @@ export default function SettingsForm({
           </div>
         </Panel>
 
-        {/* ------------------------------------------------------- details */}
-
-        <Panel id="details" current={tab}>
-          <TopAction>
-            <button
-              type="button"
-              className="btn btn-quiet"
-              disabled={busy}
-              onClick={onAnalyse}
-            >
-              {reading === "analyse"
-                ? "Reading…"
-                : details.length
-                  ? "Re-read website"
-                  : "Read website"}
-            </button>
-          </TopAction>
-
-          <div style={field}>
-            <span style={label}>
-              Details reviews may use
-              <Origin source={settings.safeDetails.source} />
-              <em style={{ ...hint, fontStyle: "normal", marginLeft: "0.4rem" }}>
-                {details.length}/{settings.limits.safeDetails}
-              </em>
-            </span>
-
-            <div style={{ display: "grid", gap: "0.4rem" }}>
-              {details.map((detail, index) => (
-                <div key={index} style={{ display: "flex", gap: "0.4rem" }}>
-                  <input
-                    style={{ ...input, padding: "0.5rem 0.65rem" }}
-                    name="detail"
-                    value={detail}
-                    onChange={(e) =>
-                      setDetails(
-                        details.map((d, i) => (i === index ? e.target.value : d))
-                      )
-                    }
-                    maxLength={180}
-                    placeholder="clean, comfortable rooms"
-                    aria-label={`Detail ${index + 1}`}
-                  />
-                  <button
-                    type="button"
-                    aria-label={`Remove detail ${index + 1}`}
-                    onClick={() => setDetails(details.filter((_, i) => i !== index))}
-                    style={remove}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div style={row}>
-              <button
-                type="button"
-                className="btn btn-quiet"
-                disabled={detailsFull}
-                onClick={() => setDetails([...details, ""])}
-              >
-                {detailsFull
-                  ? `${settings.limits.safeDetails} is the maximum`
-                  : "Add detail"}
-              </button>
-            </div>
-
-            <span style={hint}>
-              The only things a review is allowed to claim about this business.
-              Keep every one of them true: a wrong detail is repeated in every
-              review from then on, not just one. No numbers, and nothing a
-              customer could not check with their own eyes — Save will tell you
-              which line and why. Reading the website proposes these from your
-              own pages, which is the safest way to fill them in.
-            </span>
-          </div>
-        </Panel>
-
         {/* --------------------------------------------------------- theme */}
 
         <Panel id="theme" current={tab}>
@@ -796,6 +790,14 @@ export default function SettingsForm({
               onGenerate={onDraftTheme}
               preview={previewTheme}
             />
+
+            {/* The detail list, still stored and still submitted, with no
+                page of its own any more. Reading the website produces it
+                alongside the About text and it is shown read-only there; these
+                carry it through a save made from any tab. */}
+            {details.map((detail, index) => (
+              <input key={index} type="hidden" name="detail" value={detail} />
+            ))}
 
             {/* The files themselves, carried through the form so a save made
                 from any tab keeps them. Only present when this session drafted
