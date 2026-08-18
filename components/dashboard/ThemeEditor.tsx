@@ -91,8 +91,22 @@ export default function ThemeEditor({
 
   const v = (name: string) => live.derived[name] ?? "";
 
+  const themed = Boolean(fonts.display || fonts.ui || value.logo);
+
   return (
     <div style={{ display: "grid", gap: "1.25rem" }}>
+      {/* First, like every other tab: this is the thing to do here, and the
+          swatches below are what it produced. */}
+      <div style={topAction}>
+        <button type="button" className="btn btn-quiet" disabled={busy} onClick={onGenerate}>
+          {reading
+            ? "Reading…"
+            : themed
+              ? "Re-generate from website"
+              : "Generate from website"}
+        </button>
+      </div>
+
       <div style={{ display: "grid", gap: "0.75rem" }}>
         {PALETTE_SLOTS.map((slot) => (
           <div key={slot.key} style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
@@ -257,12 +271,6 @@ export default function ThemeEditor({
         )}
       </div>
 
-      <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-        <button type="button" className="btn btn-quiet" disabled={busy} onClick={onGenerate}>
-          {reading ? "Reading…" : "Generate from website"}
-        </button>
-      </div>
-
       {/* ------------------------------------------------------- preview */}
 
       <div>
@@ -364,6 +372,16 @@ const swatch: React.CSSProperties = {
   borderRadius: 10,
   background: "transparent",
   cursor: "pointer",
+};
+
+/** Matches the header on the other tabs — see TopAction in SettingsForm. */
+const topAction: React.CSSProperties = {
+  display: "flex",
+  gap: "0.6rem",
+  flexWrap: "wrap",
+  alignItems: "center",
+  paddingBottom: "1.1rem",
+  borderBottom: "1px solid var(--jade-line)",
 };
 
 const grabbedBox: React.CSSProperties = {

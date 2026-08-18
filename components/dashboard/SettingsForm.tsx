@@ -31,7 +31,7 @@ const LINK_FIELD: Record<string, string> = {
  */
 const TABS = [
   { id: "general", label: "General" },
-  { id: "context", label: "AI context" },
+  { id: "context", label: "About the business" },
   { id: "topics", label: "Topics" },
   { id: "details", label: "Details" },
   { id: "theme", label: "Theme" },
@@ -176,6 +176,28 @@ function Panel({
   );
 }
 
+/**
+ * The website-reading button, at the top of the panel it fills.
+ *
+ * At the top rather than beside the field it writes into, because it is the
+ * first thing to do on the tab and not the last: everything below it is either
+ * what the button produced or what you type when it could not. Underneath the
+ * fields it read as a footnote, and on the longer tabs you had to scroll past
+ * the empty thing you wanted filled to find the control that fills it.
+ */
+function TopAction({ children }: { children: React.ReactNode }) {
+  return <div style={topAction}>{children}</div>;
+}
+
+const topAction: React.CSSProperties = {
+  display: "flex",
+  gap: "0.6rem",
+  flexWrap: "wrap",
+  alignItems: "center",
+  paddingBottom: "1.1rem",
+  borderBottom: "1px solid var(--jade-line)",
+};
+
 /** Says where an inherited value came from, so nothing reads as a mystery. */
 function Origin({ source }: { source: string }) {
   if (source === "subscriber") return null;
@@ -202,7 +224,7 @@ export default function SettingsForm({
   analyse: () => Promise<Analysis>;
   /** Reads the website and proposes topics. Fills the editor; saves nothing. */
   suggest: () => Promise<Topics>;
-  /** Reads the website and the listings, and drafts the AI context. */
+  /** Reads the website and the listings, and drafts the About text. */
   draftContext: () => Promise<Context>;
   /** Reads the website and picks four colours. */
   draftTheme: () => Promise<ThemeDraft>;
@@ -326,7 +348,7 @@ export default function SettingsForm({
 
       // It fills fields on two tabs, so it has to say so — otherwise the
       // description quietly changes on a panel nobody is looking at.
-      const changed = result.kind || result.place ? ", and the description on AI context" : "";
+      const changed = result.kind || result.place ? ", and the description on About the business" : "";
       return `Proposed ${result.details.length} detail${result.details.length === 1 ? "" : "s"}${changed}. Edit anything, then Save.`;
     });
   }
@@ -498,6 +520,21 @@ export default function SettingsForm({
         {/* ---------------------------------------------------- AI context */}
 
         <Panel id="context" current={tab}>
+          <TopAction>
+            <button
+              type="button"
+              className="btn btn-quiet"
+              disabled={busy}
+              onClick={onDraftContext}
+            >
+              {reading === "context"
+                ? "Reading…"
+                : context
+                  ? "Re-draft from website"
+                  : "Draft from website"}
+            </button>
+          </TopAction>
+
           {/* These two were being cleared on every save: the form never showed
               them, and an absent field arrives as an empty string, which reads
               as "clear it". Reading the website filled them in and the next
@@ -520,7 +557,7 @@ export default function SettingsForm({
 
           <div style={field}>
             <label style={label} htmlFor="place">
-              Where it is
+              Location
               <Origin source={settings.place.source} />
             </label>
             <input
@@ -536,7 +573,7 @@ export default function SettingsForm({
 
           <div style={field}>
             <label style={label} htmlFor="contextDoc">
-              AI context
+              About the business
               <Origin source={settings.contextDoc.source} />
             </label>
             <textarea
@@ -546,34 +583,25 @@ export default function SettingsForm({
               value={context}
               onChange={(e) => setContext(e.target.value)}
               maxLength={settings.limits.contextDoc}
-              placeholder="Who comes here, what they tend to mention afterwards, and how their reviews read."
+              placeholder="Who comes here and why, what is nearby, what they tend to mention afterwards, and how their reviews read."
             />
 
-            <div style={row}>
-              <button
-                type="button"
-                className="btn btn-quiet"
-                disabled={busy}
-                onClick={onDraftContext}
-              >
-                {reading === "context"
-                  ? "Reading…"
-                  : context
-                    ? "Redraft from website"
-                    : "Draft from website"}
-              </button>
-              <span style={{ ...hint, alignSelf: "center" }}>
-                {context.length}/{settings.limits.contextDoc}
-              </span>
-            </div>
+            <span style={{ ...hint, alignSelf: "flex-end" }}>
+              {context.length}/{settings.limits.contextDoc} characters — the
+              writer reads all of it, so a full one is worth more than a tidy one.
+            </span>
 
             <span style={hint}>
-              Background for the writer: who your customers are, what they
-              notice, and how a real review of a place like yours reads. It
-              steers tone and subject matter — it is not a list of facts, and the
-              writer is told not to repeat claims from it. Drafting reads your
-              website and any review links on General, because how your own
-              customers already write is the most useful thing here.
+              Background for the writer: who your customers are, where you sit
+              and what is around you, what people notice, and how a real review
+              of a place like yours reads. Landmarks are worth having in here —
+              a station, a beach, a market, whatever someone would say they were
+              nearby for — because that is how customers explain why they came.
+              It steers tone and subject matter: it is not a list of facts, and
+              the writer is told not to repeat claims from it. Fill the space if
+              you can. Drafting reads your website and any review links on
+              General, because how your own customers already write is the most
+              useful thing here.
             </span>
           </div>
         </Panel>
@@ -581,6 +609,21 @@ export default function SettingsForm({
         {/* -------------------------------------------------------- topics */}
 
         <Panel id="topics" current={tab}>
+          <TopAction>
+            <button
+              type="button"
+              className="btn btn-quiet"
+              disabled={busy}
+              onClick={onSuggest}
+            >
+              {reading === "suggest"
+                ? "Reading…"
+                : cats.length
+                  ? "Re-generate from website"
+                  : "Generate from website"}
+            </button>
+          </TopAction>
+
           <div style={field}>
             <span style={label}>
               Review topics
@@ -637,14 +680,6 @@ export default function SettingsForm({
               >
                 {full ? `${settings.limits.categories} is the maximum` : "Add topic"}
               </button>
-              <button
-                type="button"
-                className="btn btn-quiet"
-                disabled={busy}
-                onClick={onSuggest}
-              >
-                {reading === "suggest" ? "Reading…" : "Generate from website"}
-              </button>
             </div>
 
             <span style={hint}>
@@ -661,6 +696,21 @@ export default function SettingsForm({
         {/* ------------------------------------------------------- details */}
 
         <Panel id="details" current={tab}>
+          <TopAction>
+            <button
+              type="button"
+              className="btn btn-quiet"
+              disabled={busy}
+              onClick={onAnalyse}
+            >
+              {reading === "analyse"
+                ? "Reading…"
+                : details.length
+                  ? "Re-read website"
+                  : "Read website"}
+            </button>
+          </TopAction>
+
           <div style={field}>
             <span style={label}>
               Details reviews may use
@@ -708,18 +758,6 @@ export default function SettingsForm({
                 {detailsFull
                   ? `${settings.limits.safeDetails} is the maximum`
                   : "Add detail"}
-              </button>
-              <button
-                type="button"
-                className="btn btn-quiet"
-                disabled={busy}
-                onClick={onAnalyse}
-              >
-                {reading === "analyse"
-                  ? "Reading…"
-                  : details.length
-                    ? "Re-read website"
-                    : "Read website"}
               </button>
             </div>
 
