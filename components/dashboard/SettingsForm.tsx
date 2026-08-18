@@ -567,27 +567,24 @@ export default function SettingsForm({
               works from it. Customers never see it.
             </span>
 
-            {/* Only when there is nothing to read. Shown to a business that has
-                filled the field in, this is an advert; shown to one that has
-                not, it is the answer to the problem it is currently stuck on —
-                every other tab reads this page, so without one the dashboard
-                does very little. */}
-            {!settings.websiteUrl.value && (
-              <p style={noWebsite}>
-                No website? Nearly everything else here is read off one — your
-                description, your topics, your colours, your logo. We build
-                them:{" "}
-                <a
-                  href="https://zzdigitaldesign.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: "var(--jade)" }}
-                >
-                  zzdigitaldesign.com
-                </a>
-                .
-              </p>
-            )}
+            {/* Always shown, not only when the field is empty. The reason
+                comes before the offer because that is the honest order: what
+                makes a website matter here is that every other tab reads it,
+                not that we happen to build them. */}
+            <p style={noWebsite}>
+              No website? Nearly everything else here is read off one — your
+              description, your topics, your colours, your logo. We build
+              them:{" "}
+              <a
+                href="https://zzdigitaldesign.com"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: "var(--jade)" }}
+              >
+                zzdigitaldesign.com
+              </a>
+              .
+            </p>
           </div>
 
           {PLATFORMS.map((platform) => {
