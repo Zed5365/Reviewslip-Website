@@ -198,6 +198,16 @@ function TopAction({ children }: { children: React.ReactNode }) {
   return <div style={topAction}>{children}</div>;
 }
 
+const noWebsite: React.CSSProperties = {
+  margin: 0,
+  padding: "0.7rem 0.85rem",
+  borderRadius: 10,
+  border: "1px solid var(--jade-line)",
+  fontSize: "0.8rem",
+  lineHeight: 1.5,
+  color: "var(--ink-soft)",
+};
+
 const topAction: React.CSSProperties = {
   display: "flex",
   gap: "0.6rem",
@@ -556,6 +566,28 @@ export default function SettingsForm({
               Save this first — every Read the website button on the other tabs
               works from it. Customers never see it.
             </span>
+
+            {/* Only when there is nothing to read. Shown to a business that has
+                filled the field in, this is an advert; shown to one that has
+                not, it is the answer to the problem it is currently stuck on —
+                every other tab reads this page, so without one the dashboard
+                does very little. */}
+            {!settings.websiteUrl.value && (
+              <p style={noWebsite}>
+                No website? Nearly everything else here is read off one — your
+                description, your topics, your colours, your logo. We build
+                them:{" "}
+                <a
+                  href="https://zzdigitaldesign.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: "var(--jade)" }}
+                >
+                  zzdigitaldesign.com
+                </a>
+                .
+              </p>
+            )}
           </div>
 
           {PLATFORMS.map((platform) => {
