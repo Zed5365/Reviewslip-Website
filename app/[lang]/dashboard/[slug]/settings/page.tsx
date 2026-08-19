@@ -102,6 +102,7 @@ export default async function BusinessSettingsPage({
           kind: text("kind"),
           place: text("place"),
           contextDoc: text("contextDoc"),
+          sourceText: text("sourceText"),
           // Blanks dropped. Labels and notes arrive as two same-length lists,
           // one input each per row, so they zip by index. A row with no label is
           // one the person emptied and the server drops it; an empty list is a
