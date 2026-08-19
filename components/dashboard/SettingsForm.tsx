@@ -901,7 +901,14 @@ export default function SettingsForm({
               browse button, so a deep list is worth having: two customers an
               hour apart get offered different things and lead with different
               subjects. The note steers what that review talks about; leave it
-              blank to go on the name alone.
+              blank to go on the name alone.{" "}
+              <strong style={{ fontWeight: 500 }}>
+                Name the things you are known for
+              </strong>{" "}
+              — a signature dish, a house speciality, a flagship product. Those
+              are what customers most want to talk about, and a review may name
+              the one they picked. Generating from your website looks for them
+              first.
             </span>
           </div>
         </Panel>
