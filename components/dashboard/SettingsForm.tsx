@@ -38,7 +38,6 @@ const LINK_FIELD: Record<string, string> = {
  */
 const TABS = [
   { id: "general", label: "General" },
-  { id: "context", label: "About the business" },
   { id: "topics", label: "Topics" },
   { id: "theme", label: "Theme" },
 ] as const;
@@ -95,15 +94,7 @@ export interface Suggestion {
 type Action = (state: BusinessState, formData: FormData) => Promise<BusinessState>;
 
 /** What reading the website can produce, per button. */
-type Analysis = {
-  ok: boolean;
-  kind?: string;
-  place?: string;
-  details?: string[];
-  error?: string;
-};
 type Topics = { categories?: Suggestion[]; error?: string };
-type Context = { contextDoc?: string; dropped?: string[]; error?: string };
 export type ThemeDraft = {
   theme?: Palette;
   sources?: Partial<Record<keyof Palette, string>>;
@@ -229,9 +220,7 @@ function Origin({ source }: { source: string }) {
 
 export default function SettingsForm({
   action,
-  analyse,
   suggest,
-  draftContext,
   draftTheme,
   rulebook,
   previewTheme,
@@ -240,12 +229,8 @@ export default function SettingsForm({
   children,
 }: {
   action: Action;
-  /** Reads the website and proposes the description and the details. */
-  analyse: () => Promise<Analysis>;
   /** Reads the website and proposes topics. Fills the editor; saves nothing. */
   suggest: () => Promise<Topics>;
-  /** Reads the website and the listings, and drafts the About text. */
-  draftContext: () => Promise<Context>;
   /** Reads the website and picks four colours. */
   draftTheme: () => Promise<ThemeDraft>;
   /** Everything the writer is told about this business, as markdown. */
@@ -276,13 +261,9 @@ export default function SettingsForm({
   // Controlled rather than defaultValue, unlike the link fields: every one of
   // these can be filled in by reading the website, and an uncontrolled input
   // ignores a value that arrives after it mounted.
-  const [details, setDetails] = useState<string[]>(settings.safeDetails.value);
-  const [context, setContext] = useState(settings.contextDoc.value);
-  const [kind, setKind] = useState(settings.kind.value);
   // Optional on the payload, because the review app deploys separately and a
   // dashboard running ahead of it will not be sent this field.
   const [sourceText, setSourceText] = useState(settings.sourceText?.value ?? "");
-  const [place, setPlace] = useState(settings.place.value);
 
   const [palette, setPalette] = useState<Palette>(settings.theme.value);
   const [paletteSources, setPaletteSources] = useState<
@@ -329,9 +310,7 @@ export default function SettingsForm({
   // Which button is working, so it can say so. Reading a website through the
   // model takes twenty seconds or more, and a button that only greys out for
   // that long reads as broken.
-  const [reading, setReading] = useState<
-    "analyse" | "suggest" | "context" | "theme" | null
-  >(null);
+  const [reading, setReading] = useState<"suggest" | "theme" | null>(null);
 
   const full = cats.length >= settings.limits.categories;
 
@@ -357,7 +336,7 @@ export default function SettingsForm({
    * takes long enough that the shared "this can take a minute" is load-bearing.
    */
   function read<T extends { error?: string }>(
-    which: "analyse" | "suggest" | "context" | "theme",
+    which: "suggest" | "theme",
     call: () => Promise<T>,
     apply: (result: T) => string
   ) {
@@ -382,63 +361,7 @@ export default function SettingsForm({
     });
   }
 
-  /**
-   * One button, two reads.
-   *
-   * The Details tab is gone, so this is now the only thing that fills the detail
-   * list — and it should be, since both reads answer the same question from the
-   * same pages. Two model calls rather than one because they are two different
-   * jobs under two different sets of rules: the details demand a source quote for
-   * every line and are screened hard, while the About text is prose that asserts
-   * nothing. Merging the prompts would weaken the half carrying the
-   * no-fabrication guarantee.
-   *
-   * Run together rather than in sequence — they read the same site and neither
-   * needs the other's answer, so waiting twice would double a wait already
-   * measured in tens of seconds.
-   *
-   * The About text is what the button is named for, so a failure there is the
-   * failure. A details read that comes back empty simply leaves the list alone.
-   */
-  function onDraftContext() {
-    setReading("context");
-    setNotice("Reading the website — this can take up to a minute.");
-
-    startBusy(async () => {
-      const [about, facts] = await Promise.all([
-        draftContext().catch((): Context => ({ error: "Could not read the website." })),
-        analyse().catch((): Analysis => ({ ok: false })),
-      ]);
-      setReading(null);
-
-      if (about.error || !about.contextDoc) {
-        setNotice(about.error ?? "Nothing usable came back.");
-        return;
-      }
-
-      setContext(about.contextDoc);
-      if (facts.kind) setKind(facts.kind);
-      if (facts.place) setPlace(facts.place);
-      if (facts.details?.length) setDetails(facts.details);
-
-      const cut = about.dropped?.length ?? 0;
-      setNotice(
-        [
-          cut
-            ? `Drafted, with ${cut} sentence${cut === 1 ? "" : "s"} dropped for claiming something a customer could not check.`
-            : "Drafted below.",
-          facts.details?.length
-            ? `Found ${facts.details.length} detail${facts.details.length === 1 ? "" : "s"} a review may claim.`
-            : "",
-          "Read it, edit anything, then Save.",
-        ]
-          .filter(Boolean)
-          .join(" ")
-      );
-    });
-  }
-
-  function onDraftTheme() {
+    function onDraftTheme() {
     read("theme", draftTheme, (result) => {
       if (!result.theme) return "No usable colours came back.";
       setPalette(result.theme);
@@ -622,8 +545,8 @@ export default function SettingsForm({
               defaultValue={settings.websiteUrl.value}
             />
             <span style={hint}>
-              Save this first — every Read the website button on the other tabs
-              works from it. Customers never see it.{" "}
+              Save this first — the Generate buttons on the other tabs work
+              from it. Customers never see it.{" "}
               <strong style={{ fontWeight: 500 }}>
                 No website? Leave this empty and set your Facebook page below
                 instead
@@ -673,7 +596,7 @@ export default function SettingsForm({
                 not that we happen to build them. */}
             <p style={noWebsite}>
               No website? Nearly everything else here is read off one — your
-              description, your topics, your colours, your logo. We build
+              topics and their descriptions, your colours, your logo. We build
               them:{" "}
               <a
                 href="https://zzdigitaldesign.com"
@@ -721,140 +644,6 @@ export default function SettingsForm({
 
         {/* ---------------------------------------------------- AI context */}
 
-        <Panel id="context" current={tab}>
-          <TopAction>
-            <button
-              type="button"
-              className="btn btn-quiet"
-              disabled={busy}
-              onClick={onDraftContext}
-            >
-              {reading === "context"
-                ? "Reading…"
-                : context
-                  ? "Re-draft from website"
-                  : "Draft from website"}
-            </button>
-          </TopAction>
-
-          {/* These two were being cleared on every save: the form never showed
-              them, and an absent field arrives as an empty string, which reads
-              as "clear it". Reading the website filled them in and the next
-              Save wiped them. */}
-          <div style={field}>
-            <label style={label} htmlFor="kind">
-              What kind of business
-              <Origin source={settings.kind.source} />
-            </label>
-            <input
-              style={input}
-              id="kind"
-              name="kind"
-              value={kind}
-              onChange={(e) => setKind(e.target.value)}
-              maxLength={120}
-              placeholder="a small lodge, a dental clinic, a bike shop"
-            />
-          </div>
-
-          <div style={field}>
-            <label style={label} htmlFor="place">
-              Location
-              <Origin source={settings.place.source} />
-            </label>
-            <input
-              style={input}
-              id="place"
-              name="place"
-              value={place}
-              onChange={(e) => setPlace(e.target.value)}
-              maxLength={160}
-              placeholder="town, region, country"
-            />
-          </div>
-
-          <div style={field}>
-            <label style={label} htmlFor="contextDoc">
-              About the business
-              <Origin source={settings.contextDoc.source} />
-            </label>
-            <textarea
-              style={{ ...input, minHeight: "13rem", lineHeight: 1.55, resize: "vertical" }}
-              id="contextDoc"
-              name="contextDoc"
-              value={context}
-              onChange={(e) => setContext(e.target.value)}
-              maxLength={settings.limits.contextDoc}
-              placeholder="Who comes here and why, what is nearby, what they tend to mention afterwards, and how their reviews read."
-            />
-
-            <span style={{ ...hint, alignSelf: "flex-end" }}>
-              {context.length}/{settings.limits.contextDoc} characters — the
-              writer reads all of it, so a full one is worth more than a tidy one.
-            </span>
-
-            <span style={hint}>
-              Background for the writer: who your customers are, where you sit
-              and what is around you, what people notice, and how a real review
-              of a place like yours reads. Landmarks are worth having in here —
-              a station, a beach, a market, whatever someone would say they were
-              nearby for — because that is how customers explain why they came.
-              It steers tone and subject matter: it is not a list of facts, and
-              the writer is told not to repeat claims from it. Fill the space if
-              you can. Drafting reads your website and any review links on
-              General, because how your own customers already write is the most
-              useful thing here.
-            </span>
-          </div>
-
-          {/* ------------------------------------------------ the detail list */}
-
-          {/* Read-only, and no longer a tab of its own. It is still the
-              load-bearing half — the only things a review may actually claim —
-              so it stays visible where it is produced rather than disappearing
-              with the page it used to live on. Editing it by hand is what went:
-              a detail typed in has nothing behind it, while every one of these
-              quotes a sentence from the site it came from. */}
-          <div style={field}>
-            <span style={label}>
-              Details a review may claim
-              <em style={{ ...hint, fontStyle: "normal", marginLeft: "0.4rem" }}>
-                {details.length}
-              </em>
-            </span>
-
-            {details.length === 0 ? (
-              <p style={hint}>
-                Nothing yet — drafting from the website fills this in.
-              </p>
-            ) : (
-              <ul
-                style={{
-                  listStyle: "none",
-                  margin: 0,
-                  padding: "0.85rem 1rem",
-                  display: "grid",
-                  gap: "0.4rem",
-                  border: "1px solid var(--jade-line)",
-                  borderRadius: 10,
-                  fontSize: "0.85rem",
-                }}
-              >
-                {details.map((detail, index) => (
-                  <li key={index}>— {detail}</li>
-                ))}
-              </ul>
-            )}
-
-            <span style={hint}>
-              Taken from your own pages, each one checked against the sentence it
-              came from. The writer may state these and nothing else about you,
-              so if something here is wrong, fix it on your website and draft
-              again.
-            </span>
-          </div>
-        </Panel>
-
         {/* -------------------------------------------------------- topics */}
 
         <Panel id="topics" current={tab}>
@@ -889,9 +678,17 @@ export default function SettingsForm({
                   defaultValue, which would leave the old topics on screen under
                   the new ones. */}
               {cats.map((cat, index) => (
-                <div key={index} style={{ display: "flex", gap: "0.4rem" }}>
+                <div
+                  key={index}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "9rem 1fr auto",
+                    gap: "0.4rem",
+                    alignItems: "start",
+                  }}
+                >
                   <input
-                    style={{ ...input, flex: "0 0 9rem", padding: "0.5rem 0.65rem" }}
+                    style={{ ...input, padding: "0.5rem 0.65rem" }}
                     name="catLabel"
                     value={cat.label}
                     onChange={(e) => setCat(index, { label: e.target.value })}
@@ -899,14 +696,25 @@ export default function SettingsForm({
                     placeholder="Rooms"
                     aria-label={`Topic ${index + 1} name`}
                   />
-                  <input
-                    style={{ ...input, padding: "0.5rem 0.65rem" }}
+                  {/* A textarea, not an input: this is a paragraph now, and
+                      a one-line box for a paragraph is a box people write one
+                      line into. Three rows is enough to see what you wrote and
+                      short enough that fifty of them still scroll. */}
+                  <textarea
+                    style={{
+                      ...input,
+                      padding: "0.5rem 0.65rem",
+                      minHeight: "4.5rem",
+                      resize: "vertical",
+                      lineHeight: 1.45,
+                    }}
                     name="catFocus"
+                    rows={3}
                     value={cat.focus}
                     onChange={(e) => setCat(index, { focus: e.target.value })}
-                    maxLength={200}
-                    placeholder="what a review under this topic talks about"
-                    aria-label={`Topic ${index + 1} note`}
+                    maxLength={settings.limits.description ?? 600}
+                    placeholder="What a review about this can say — and nothing else will be said."
+                    aria-label={`Topic ${index + 1} description`}
                   />
                   <button
                     type="button"
@@ -934,10 +742,9 @@ export default function SettingsForm({
             <span style={hint}>
               What a customer picks from, up to {settings.limits.categories}. The
               guest page shows ten of them drawn at random with the rest behind a
-              browse button, so a deep list is worth having: two customers an
-              hour apart get offered different things and lead with different
-              subjects. The note steers what that review talks about; leave it
-              blank to go on the name alone.{" "}
+              browse button and a search, so a deep list is worth having: two
+              customers an hour apart get offered different things and lead with
+              different subjects.{" "}
               <strong style={{ fontWeight: 500 }}>
                 Name the things you are known for
               </strong>{" "}
@@ -945,6 +752,22 @@ export default function SettingsForm({
               are what customers most want to talk about, and a review may name
               the one they picked. Generating from your website looks for them
               first.
+            </span>
+
+            <span style={hint}>
+              <strong style={{ fontWeight: 500 }}>
+                The description is the whole of what a review may say.
+              </strong>{" "}
+              There is no other document — if something about your business is
+              not written in one of these paragraphs, no review will ever
+              mention it. Write what a customer would notice rather than what a
+              brochure would lead with, and keep each one under{" "}
+              {settings.limits.description ?? 600} characters: every topic a
+              guest picks is sent with the request, so three chosen topics cost
+              three paragraphs. No numbers and no superlatives — both are
+              refused on save, because both end up repeated in every review
+              written under that button. A topic left blank falls back to its
+              name alone, which still works.
             </span>
           </div>
         </Panel>
@@ -975,14 +798,6 @@ export default function SettingsForm({
               onGenerate={onDraftTheme}
               preview={previewTheme}
             />
-
-            {/* The detail list, still stored and still submitted, with no
-                page of its own any more. Reading the website produces it
-                alongside the About text and it is shown read-only there; these
-                carry it through a save made from any tab. */}
-            {details.map((detail, index) => (
-              <input key={index} type="hidden" name="detail" value={detail} />
-            ))}
 
             {/* The photograph, on the same three-state contract as the fonts:
                 absent leaves the stored one alone, an empty string clears it,

@@ -99,9 +99,6 @@ export default async function BusinessSettingsPage({
           xiaohongshuUrl: text("xiaohongshuUrl"),
           wongnaiUrl: text("wongnaiUrl"),
           websiteUrl: text("websiteUrl"),
-          kind: text("kind"),
-          place: text("place"),
-          contextDoc: text("contextDoc"),
           sourceText: text("sourceText"),
           // Blanks dropped. Labels and notes arrive as two same-length lists,
           // one input each per row, so they zip by index. A row with no label is
@@ -114,14 +111,6 @@ export default async function BusinessSettingsPage({
               focus: String(formData.getAll("catFocus")[index] ?? "").trim(),
             }))
             .filter((cat) => cat.label),
-          // Editable now, where they used to be read-only evidence of what the
-          // website said. The validator in the review app is what keeps them
-          // honest: it refuses a detail carrying a number or a claim a customer
-          // could not check, whether a model wrote it or a person typed it.
-          safeDetails: formData
-            .getAll("detail")
-            .map((value) => String(value).trim())
-            .filter(Boolean),
           // A form cannot post an object, so the four colours arrive as four
           // fields and are put back together here. The review app validates the
           // hex values and refuses a pair too close to tell apart.
@@ -160,52 +149,7 @@ export default async function BusinessSettingsPage({
     }
   }
 
-  /**
-   * Reads the website and proposes the details a review may claim.
-   *
-   * It used to store them outright, on the argument that the list was evidence of
-   * what the writer had been told rather than something to edit. The details are
-   * editable now, so storing behind the customer's back would overwrite their own
-   * wording without asking. Same contract as everything else here: it fills the
-   * editor, and Save is a separate deliberate act — which also means the details
-   * and the description arrive together and are read together.
-   */
-  async function analyse(): Promise<{
-    ok: boolean;
-    kind?: string;
-    place?: string;
-    details?: string[];
-    error?: string;
-  }> {
-    "use server";
-
-    const current = await sessionToken();
-    if (!current) return { ok: false, error: "Sign in again." };
-
-    try {
-      const seed = await call<{
-        proposal: {
-          kind: string;
-          place: string;
-          safeDetails: { detail: string; source: string }[];
-        };
-      }>(`/businesses/${slug}/seed`, { method: "POST", token: current });
-
-      return {
-        ok: true,
-        kind: seed.proposal.kind,
-        place: seed.proposal.place,
-        details: seed.proposal.safeDetails.map((d) => d.detail),
-      };
-    } catch (err) {
-      return {
-        ok: false,
-        error: err instanceof Error ? err.message : "Could not read it.",
-      };
-    }
-  }
-
-  /** Proposes the topics. Fills the editor only — Save still stores them. */
+    /** Proposes the topics. Fills the editor only — Save still stores them. */
   async function suggest(): Promise<{
     categories?: Suggestion[];
     error?: string;
@@ -227,38 +171,7 @@ export default async function BusinessSettingsPage({
     }
   }
 
-  /**
-   * Drafts this business's own AI context document.
-   *
-   * Reads the website and any review listings that are set — how this business's
-   * real customers already write is the most useful thing on the subject, and the
-   * one thing its own marketing pages cannot say. `dropped` carries any sentence
-   * the screen removed for carrying a superlative, so the customer is told what
-   * went rather than wondering why the draft has a gap.
-   */
-  async function draftContext(): Promise<{
-    contextDoc?: string;
-    dropped?: string[];
-    error?: string;
-  }> {
-    "use server";
-
-    const current = await sessionToken();
-    if (!current) return { error: "Sign in again." };
-
-    try {
-      return await call<{ contextDoc: string; dropped: string[] }>(
-        `/businesses/${slug}/context/draft`,
-        { method: "POST", token: current }
-      );
-    } catch (err) {
-      return {
-        error: err instanceof Error ? err.message : "Could not read it.",
-      };
-    }
-  }
-
-  /**
+    /**
    * The rulebook: everything the writer is told about this business.
    *
    * Returned as text rather than streamed as a file, because a server action
@@ -374,9 +287,7 @@ export default async function BusinessSettingsPage({
             General tab, which only the form knows which one is showing. */}
         <SettingsForm
           action={save}
-          analyse={analyse}
           suggest={suggest}
-          draftContext={draftContext}
           draftTheme={draftTheme}
           rulebook={rulebook}
           previewTheme={previewTheme}

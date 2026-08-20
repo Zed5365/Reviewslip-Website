@@ -214,13 +214,14 @@ export interface BusinessSettings {
   googleUrl: Setting<string>;
   tripadvisorUrl: Setting<string>;
   websiteUrl: Setting<string>;
-  /** Topics, in the dashboard's words. `categories` is the field the API uses. */
+  /**
+   * Topics, in the dashboard's words. `categories` is the field the API uses.
+   *
+   * `focus` is the topic's description, and it is now the only thing the writer
+   * is ever told about the business — the separate description, location and
+   * verified-detail fields it used to sit beside are gone.
+   */
   categories: Setting<{ id: string; label: string; focus: string }[]>;
-  kind: Setting<string>;
-  place: Setting<string>;
-  safeDetails: Setting<string[]>;
-  /** This business's own AI context: free prose, drafted then edited by hand. */
-  contextDoc: Setting<string>;
   /**
    * What the owner pasted about the business, for when there is no readable
    * page. Optional because the review app deploys separately.
@@ -245,7 +246,7 @@ export interface BusinessSettings {
     /** The hero photograph, described without the file. */
     background?: BackgroundSummary | null;
   };
-  limits: { categories: number; safeDetails: number; contextDoc: number };
+  limits: { categories: number; description: number };
 }
 
 // Re-exported as types only. The shape lives in lib/theme.ts because the theme
