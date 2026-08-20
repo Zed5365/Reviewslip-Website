@@ -261,10 +261,6 @@ export default function SettingsForm({
   // Controlled rather than defaultValue, unlike the link fields: every one of
   // these can be filled in by reading the website, and an uncontrolled input
   // ignores a value that arrives after it mounted.
-  // Optional on the payload, because the review app deploys separately and a
-  // dashboard running ahead of it will not be sent this field.
-  const [sourceText, setSourceText] = useState(settings.sourceText?.value ?? "");
-
   const [palette, setPalette] = useState<Palette>(settings.theme.value);
   const [paletteSources, setPaletteSources] = useState<
     Partial<Record<keyof Palette, string>>
@@ -545,49 +541,18 @@ export default function SettingsForm({
               defaultValue={settings.websiteUrl.value}
             />
             <span style={hint}>
-              Save this first — the Generate buttons on the other tabs work
-              from it. Customers never see it.{" "}
+              Save this first — the Generate buttons on the other tabs work from
+              it. Customers never see it.{" "}
               <strong style={{ fontWeight: 500 }}>
-                No website? Leave this empty and set your Facebook page below
-                instead
+                No website? Put your Facebook page in here
               </strong>{" "}
-              — the other tabs will read that. It works less often, because
-              Facebook shows a sign-in wall to anything that is not a browser,
-              but it costs nothing to try and everything on those tabs can be
-              filled in by hand if it comes back empty.
-            </span>
-
-            {/* --------------------------------------- or paste it instead */}
-
-            {/* The answer for a business that is a Facebook page and nothing
-                else, which is a great many of them. Facebook serves a sign-in
-                wall to anything without a session, so reading their page
-                usually returns nothing — falling back to the URL was correct
-                and still failed. Pasted text always works, and it feeds the
-                same drafting prompts a fetched page would. */}
-            <label style={label} htmlFor="sourceText">
-              Or paste what is on your Facebook page
-            </label>
-            <textarea
-              style={{ ...input, minHeight: "8rem", lineHeight: 1.5, resize: "vertical" }}
-              id="sourceText"
-              name="sourceText"
-              value={sourceText}
-              onChange={(e) => setSourceText(e.target.value)}
-              maxLength={12000}
-              placeholder="Open your Facebook page, select the About text — and the menu, the services, the opening hours if they are there — and paste it here."
-            />
-            <span style={hint}>
-              Only needed if you have no website. Facebook will not let us read
-              your page directly: it shows a sign-in wall to anything that is not
-              a signed-in browser, so we get the wall rather than your page.
-              Pasted text works every time, and every button on the other tabs
-              reads it exactly as it would read a website. More is better —
-              paste the lot.{" "}
-              <strong style={{ fontWeight: 500 }}>
-                The Theme tab is the exception
-              </strong>{" "}
-              — colours, typefaces and a logo can only come from a real page.
+              — or in the Facebook review link below, which is read the same way
+              — and the other tabs will work from that instead. Be warned that it
+              often comes back empty: Facebook shows a sign-in wall to anything
+              that is not a signed-in browser, so what we fetch is the wall
+              rather than your page. If it does, write your topics and their
+              descriptions by hand on the Topics tab. That always works, and it
+              is the only thing that does.
             </span>
 
             {/* Always shown, not only when the field is empty. The reason

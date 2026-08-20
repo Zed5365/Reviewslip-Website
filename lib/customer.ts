@@ -223,11 +223,6 @@ export interface BusinessSettings {
    */
   categories: Setting<{ id: string; label: string; focus: string }[]>;
   /**
-   * What the owner pasted about the business, for when there is no readable
-   * page. Optional because the review app deploys separately.
-   */
-  sourceText?: Setting<string>;
-  /**
    * The four colours the guest page and the table card are built from, plus what
    * they derive to. `derived` is the palette actually served — the contrast
    * checks in the review app's theme.js may have moved a colour, and `adjusted`
