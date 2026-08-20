@@ -37,8 +37,15 @@ export const SESSION_COOKIE = "rs_session";
  */
 export const SIGNED_IN_COOKIE = "rs_signed_in";
 
-/** Matches the review app's own session lifetime, so the two expire together. */
-const MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
+/**
+ * Matches the review app's own session lifetime, so the two expire together.
+ *
+ * SESSION_HOURS in accounts.js is the authority; this is the browser half of
+ * the same decision and has to move with it. A cookie outliving its row means a
+ * token sent on every request that the server has already forgotten, and a row
+ * outliving its cookie means a session nobody can reach still in the table.
+ */
+const MAX_AGE_SECONDS = 24 * 60 * 60;
 
 export interface ApiError extends Error {
   status: number;
