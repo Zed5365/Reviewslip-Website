@@ -95,6 +95,7 @@ type Action = (state: BusinessState, formData: FormData) => Promise<BusinessStat
 
 /** What reading the website can produce, per button. */
 type Topics = { categories?: Suggestion[]; error?: string };
+type Described = { description?: string; error?: string };
 export type ThemeDraft = {
   theme?: Palette;
   sources?: Partial<Record<keyof Palette, string>>;
@@ -221,6 +222,7 @@ function Origin({ source }: { source: string }) {
 export default function SettingsForm({
   action,
   suggest,
+  describeTopic,
   draftTheme,
   rulebook,
   previewTheme,
@@ -231,6 +233,8 @@ export default function SettingsForm({
   action: Action;
   /** Reads the website and proposes topics. Fills the editor; saves nothing. */
   suggest: () => Promise<Topics>;
+  /** Writes one topic's description from its name and whatever is in the box. */
+  describeTopic: (label: string, hint: string) => Promise<Described>;
   /** Reads the website and picks four colours. */
   draftTheme: () => Promise<ThemeDraft>;
   /** Everything the writer is told about this business, as markdown. */
@@ -307,6 +311,45 @@ export default function SettingsForm({
   // model takes twenty seconds or more, and a button that only greys out for
   // that long reads as broken.
   const [reading, setReading] = useState<"suggest" | "theme" | null>(null);
+
+  // Which row is being written, by index. One at a time: these are model calls
+  // the business pays for, and a button that can be held down is a bill.
+  const [writing, setWriting] = useState<number | null>(null);
+
+  /**
+   * Writes one row's description.
+   *
+   * Deliberately outside the shared `read` helper. That one owns `reading`,
+   * which greys out every Generate button on the page — right for a call that
+   * replaces the whole list, wrong for one that touches a single row while the
+   * rest of the form stays usable.
+   */
+  function onDescribe(index: number) {
+    const cat = cats[index];
+    const label = cat.label.trim();
+    if (!label) {
+      setNotice("Name the topic first — that is what it writes about.");
+      return;
+    }
+
+    setWriting(index);
+    setNotice(`Writing "${label}" — this can take up to a minute.`);
+
+    startBusy(async () => {
+      const result = await describeTopic(label, cat.focus.trim()).catch(
+        (): Described => ({ error: "Could not write it." })
+      );
+      setWriting(null);
+
+      if (result.error || !result.description) {
+        setNotice(result.error ?? "Nothing usable came back.");
+        return;
+      }
+
+      setCat(index, { focus: result.description });
+      setNotice(`Written. Read it, change anything, then Save.`);
+    });
+  }
 
   const full = cats.length >= settings.limits.categories;
 
@@ -681,14 +724,42 @@ export default function SettingsForm({
                     placeholder="What a review about this can say — and nothing else will be said."
                     aria-label={`Topic ${index + 1} description`}
                   />
-                  <button
-                    type="button"
-                    aria-label={`Remove topic ${index + 1}`}
-                    onClick={() => setCats(cats.filter((_, i) => i !== index))}
-                    style={remove}
-                  >
-                    ×
-                  </button>
+                  <div style={{ display: "grid", gap: "0.3rem" }}>
+                    {/* Writes this row's description and nothing else. It uses
+                        the name, and whatever is already in the box as a
+                        steer — so it doubles as "generate from a keyword"
+                        without a second field to explain. */}
+                    <button
+                      type="button"
+                      className="btn btn-quiet"
+                      disabled={busy}
+                      onClick={() => onDescribe(index)}
+                      title={
+                        cat.focus.trim()
+                          ? "Write this description, building on what is in the box"
+                          : "Write this description from the topic name"
+                      }
+                      style={{
+                        padding: "0.4rem 0.6rem",
+                        fontSize: "0.75rem",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {writing === index
+                        ? "Writing…"
+                        : cat.focus.trim()
+                          ? "Rewrite"
+                          : "Write"}
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Remove topic ${index + 1}`}
+                      onClick={() => setCats(cats.filter((_, i) => i !== index))}
+                      style={remove}
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -733,6 +804,15 @@ export default function SettingsForm({
               refused on save, because both end up repeated in every review
               written under that button. A topic left blank falls back to its
               name alone, which still works.
+            </span>
+
+            <span style={hint}>
+              <strong style={{ fontWeight: 500 }}>Write</strong> fills in one
+              row on its own, from the topic name and your website — useful for
+              a topic you added by hand. Put a word or two in the box first and
+              it builds on those instead of starting from the name, so it works
+              as a keyword just as well as a blank. It only ever changes the row
+              you pressed it on.
             </span>
           </div>
         </Panel>

@@ -148,6 +148,35 @@ export default async function BusinessSettingsPage({
     }
   }
 
+  /**
+   * Writes one topic's description, leaving the other forty-nine alone.
+   *
+   * `hint` is whatever is already in that row's box — a keyword, a fragment, a
+   * note to self. It is passed through because it is the strongest signal there
+   * is about what the owner wants said, and losing it would make the button a
+   * worse option than typing.
+   */
+  async function describeTopic(
+    label: string,
+    hint: string
+  ): Promise<{ description?: string; error?: string }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { error: "Sign in again." };
+
+    try {
+      return await call<{ description: string }>(
+        `/businesses/${slug}/topics/describe`,
+        { method: "POST", token: current, body: { label, hint } }
+      );
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not write it.",
+      };
+    }
+  }
+
     /** Proposes the topics. Fills the editor only — Save still stores them. */
   async function suggest(): Promise<{
     categories?: Suggestion[];
@@ -287,6 +316,7 @@ export default async function BusinessSettingsPage({
         <SettingsForm
           action={save}
           suggest={suggest}
+          describeTopic={describeTopic}
           draftTheme={draftTheme}
           rulebook={rulebook}
           previewTheme={previewTheme}
