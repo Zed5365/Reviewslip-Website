@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useLayoutEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 
 import ThemeEditor from "@/components/dashboard/ThemeEditor";
 import { PLATFORMS } from "@/lib/platforms.data";
@@ -84,63 +84,6 @@ export interface BusinessState {
   ok?: boolean;
   /** A save that worked but is worth reading — a stale model slug, say. */
   warning?: string;
-}
-
-/**
- * A textarea the height of its own contents.
- *
- * Descriptions are bullet lists now, and a list is a different length for every
- * topic. A fixed box gives the long ones an inner scrollbar — the one piece of
- * chrome on this page nobody styled, and the one that makes a form feel like a
- * spreadsheet. Growing to fit means the scrollbar never appears.
- *
- * In a layout effect rather than on the change handler, because the value moves
- * without anyone typing: Write fills a row in, Generate replaces every row, and
- * both need the box to resize before the browser paints it.
- *
- * The height is cleared before it is read. scrollHeight is bounded below by the
- * element's current height, so measuring without resetting first makes a box
- * that can grow and never shrink.
- */
-function GrowingTextarea({
-  measureOn,
-  ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-  /**
-   * Anything that changes what this element can be measured against.
-   *
-   * The tab strip renders every panel and hides the inactive ones with
-   * `display: none`, so a box on a hidden tab has no layout and scrollHeight
-   * comes back as zero. Measured only on mount, every description on the Topics
-   * tab would keep the height of an empty one — and with the scrollbar turned
-   * off, that clips the text rather than scrolling it, which is worse than the
-   * scrollbar this replaced.
-   *
-   * A declared dependency rather than a ResizeObserver: the observer would fire
-   * on the height this effect itself sets, and guarding that loop is more
-   * moving parts than naming the one thing that actually matters.
-   */
-  measureOn?: unknown;
-}) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // Cleared before it is read: scrollHeight is bounded below by the current
-    // height, so measuring without resetting gives a box that grows and never
-    // shrinks.
-    el.style.height = "auto";
-
-    // scrollHeight is content plus padding; height is the border box here, so
-    // the borders have to be added back or the box lands two pixels short and
-    // clips the last line — which, with the scrollbar off, is invisible.
-    const borders = el.offsetHeight - el.clientHeight;
-    el.style.height = `${el.scrollHeight + borders}px`;
-  }, [props.value, measureOn]);
-
-  return <textarea {...props} ref={ref} />;
 }
 
 export interface Suggestion {
@@ -799,19 +742,22 @@ export default function SettingsForm({
                       a one-line box for a paragraph is a box people write one
                       line into. Three rows is enough to see what you wrote and
                       short enough that fifty of them still scroll. */}
-                  <GrowingTextarea
+                  {/* Fixed height, and it scrolls. Descriptions are lists of
+                      different lengths, and a box that grows to fit pushes the
+                      row below it down the page — fifty of those and the form
+                      is a mile long with no two rows aligned. The height is one
+                      row's worth for every one of them, and .scrollpane keeps
+                      the platform scrollbar out of it. */}
+                  <textarea
+                    className="scrollpane"
                     style={{
                       ...input,
                       padding: "0.5rem 0.65rem",
-                      minHeight: "4.5rem",
-                      // No resize handle and no scrollbar: it is always exactly
-                      // as tall as what is in it.
-                      resize: "none",
-                      overflow: "hidden",
+                      height: "5.5rem",
+                      resize: "vertical",
                       lineHeight: 1.5,
                     }}
                     name="catFocus"
-                    measureOn={tab}
                     rows={3}
                     value={cat.focus}
                     onChange={(e) => setCat(index, { focus: e.target.value })}

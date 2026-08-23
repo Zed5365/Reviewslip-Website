@@ -6,6 +6,7 @@ import { isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { buildPageMetadata } from "@/lib/i18n/metadata";
 import styles from "../auth.module.css";
+import TermsGate from "@/components/TermsGate";
 
 export async function generateMetadata({
   params,
@@ -26,6 +27,12 @@ export default async function SignupPage({
 
   return (
     <section className={styles.section}>
+      {/* Moved here from the layout. It used to stop everyone who landed on
+          any page of the site, including people reading the pricing. The
+          people it is actually addressed to are the ones about to hold an
+          account, so it meets them on the way in. */}
+      <TermsGate lang={lang} />
+
       <div className={`wrap ${styles.grid}`}>
         <div className={styles.copy}>
           <span className="eyebrow">{a.eyebrow}</span>

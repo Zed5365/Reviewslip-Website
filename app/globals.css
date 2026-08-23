@@ -408,3 +408,44 @@ img {
     scroll-behavior: auto !important;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Scrollpane                                                                 */
+/* -------------------------------------------------------------------------- */
+
+/* A box that scrolls without the platform scrollbar in it.
+
+   Topic descriptions are bullet lists, so they are a different length for every
+   topic and some of them will not fit. The default scrollbar is the one piece
+   of chrome nothing else on this page shares — grey, square, and as wide as a
+   thumb on Windows — and it is what makes a form full of these read as a
+   spreadsheet.
+
+   Both syntaxes on purpose. `scrollbar-width` and `scrollbar-color` are the
+   standard, honoured by Firefox and by recent Chromium; ::-webkit-scrollbar is
+   what Safari and older Chromium read. Neither alone covers a phone. */
+.scrollpane {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--jade-line) transparent;
+  /* Keeps a swipe inside the box from scrolling the page behind it once it
+     reaches the end, which on a long settings form is disorienting. */
+  overscroll-behavior: contain;
+}
+
+.scrollpane::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollpane::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollpane::-webkit-scrollbar-thumb {
+  background: var(--jade-line);
+  border-radius: 999px;
+}
+
+.scrollpane:hover::-webkit-scrollbar-thumb {
+  background: var(--jade-dim);
+}
