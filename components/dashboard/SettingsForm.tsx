@@ -89,6 +89,8 @@ export interface BusinessState {
 export interface Suggestion {
   label: string;
   focus: string;
+  /** Survives a re-generation, which otherwise replaces the whole set. */
+  locked?: boolean;
 }
 
 type Action = (state: BusinessState, formData: FormData) => Promise<BusinessState>;
@@ -332,6 +334,11 @@ export default function SettingsForm({
       return;
     }
 
+    if (cat.locked) {
+      setNotice("That topic is locked. Unlock it first.");
+      return;
+    }
+
     setWriting(index);
     setNotice(`Writing "${label}" — this can take up to a minute.`);
 
@@ -392,11 +399,38 @@ export default function SettingsForm({
     });
   }
 
+  /**
+   * Replaces the topic set with a freshly read one — except the locked rows.
+   *
+   * Merged here rather than on the server because the lock is a property of
+   * what is in this editor, which may not have been saved yet: someone who
+   * locks three rows and then presses Generate has not stored those locks, and
+   * a server-side merge would read the old ones.
+   *
+   * Locked rows keep their position at the top rather than being woven back in
+   * by name. The order is alphabetical once saved, so any arrangement here is
+   * temporary — and seeing what survived, together, is worth more for the one
+   * screen where it matters.
+   */
   function onSuggest() {
     read("suggest", suggest, (result) => {
       if (!result.categories?.length) return "Nothing usable came back.";
-      setCats(result.categories);
-      return `Proposed ${result.categories.length} topics. Edit anything, then Save to keep them.`;
+
+      const kept = cats.filter((c) => c.locked && c.label.trim());
+      const taken = new Set(kept.map((c) => c.label.trim().toLowerCase()));
+
+      // A proposal that duplicates a locked topic is dropped, not renamed. Two
+      // buttons for one thing is worse than one fewer suggestion.
+      const fresh = result.categories.filter(
+        (c) => !taken.has(c.label.trim().toLowerCase())
+      );
+
+      const merged = [...kept, ...fresh].slice(0, settings.limits.categories);
+      setCats(merged);
+
+      return kept.length
+        ? `Proposed ${fresh.length} topics, and kept your ${kept.length} locked ${kept.length === 1 ? "one" : "ones"}. Edit anything, then Save.`
+        : `Proposed ${fresh.length} topics. Edit anything, then Save to keep them.`;
     });
   }
 
@@ -725,6 +759,35 @@ export default function SettingsForm({
                     aria-label={`Topic ${index + 1} description`}
                   />
                   <div style={{ display: "grid", gap: "0.3rem" }}>
+                    {/* Always submitted, checked or not. A checkbox sends
+                        nothing when unchecked, and these three lists are
+                        zipped by index on the server — one missing entry and
+                        every row below it takes the wrong lock. */}
+                    <input
+                      type="hidden"
+                      name="catLocked"
+                      value={cat.locked ? "1" : ""}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setCat(index, { locked: !cat.locked })}
+                      aria-pressed={Boolean(cat.locked)}
+                      title={
+                        cat.locked
+                          ? "Locked — Generate from website will leave this one alone"
+                          : "Lock this topic against Generate from website"
+                      }
+                      style={{
+                        ...remove,
+                        color: cat.locked ? "var(--jade)" : undefined,
+                        borderColor: cat.locked ? "var(--jade-line)" : undefined,
+                      }}
+                    >
+                      {cat.locked ? "🔒" : "🔓"}
+                      <span style={visually}>
+                        {cat.locked ? "Unlock" : "Lock"} topic {index + 1}
+                      </span>
+                    </button>
                     {/* Writes this row's description and nothing else. It uses
                         the name, and whatever is already in the box as a
                         steer — so it doubles as "generate from a keyword"
@@ -732,10 +795,12 @@ export default function SettingsForm({
                     <button
                       type="button"
                       className="btn btn-quiet"
-                      disabled={busy}
+                      disabled={busy || Boolean(cat.locked)}
                       onClick={() => onDescribe(index)}
                       title={
-                        cat.focus.trim()
+                        cat.locked
+                          ? "Locked. Unlock it to rewrite it."
+                          : cat.focus.trim()
                           ? "Write this description, building on what is in the box"
                           : "Write this description from the topic name"
                       }
@@ -804,6 +869,15 @@ export default function SettingsForm({
               refused on save, because both end up repeated in every review
               written under that button. A topic left blank falls back to its
               name alone, which still works.
+            </span>
+
+            <span style={hint}>
+              <strong style={{ fontWeight: 500 }}>The padlock</strong> keeps a
+              topic through a re-generation. Generate from website replaces the
+              whole set, which is what you want the first time and rarely what
+              you want the second — so lock the ones you have written or edited
+              and they are carried across untouched, along with anything the
+              new set proposes that is not a duplicate of them.
             </span>
 
             <span style={hint}>
@@ -936,6 +1010,23 @@ function tabStyle(on: boolean): React.CSSProperties {
     whiteSpace: "nowrap",
   };
 }
+
+/**
+ * Off screen, still announced. The padlock reads as an emoji to a screen
+ * reader — "locked" at best, and nothing at all in some — so the button
+ * carries a real name for it that sighted people never see.
+ */
+const visually: React.CSSProperties = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
+};
 
 const remove: React.CSSProperties = {
   flex: "0 0 auto",

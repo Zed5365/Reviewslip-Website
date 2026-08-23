@@ -99,15 +99,19 @@ export default async function BusinessSettingsPage({
           xiaohongshuUrl: text("xiaohongshuUrl"),
           wongnaiUrl: text("wongnaiUrl"),
           websiteUrl: text("websiteUrl"),
-          // Blanks dropped. Labels and notes arrive as two same-length lists,
-          // one input each per row, so they zip by index. A row with no label is
-          // one the person emptied and the server drops it; an empty list is a
-          // business with no topics rather than one inheriting anybody else's.
+          // Blanks dropped. Labels, descriptions and locks arrive as three
+          // same-length lists, one field each per row, so they zip by index —
+          // which is why the lock is a hidden input rather than a checkbox: an
+          // unchecked checkbox sends nothing, and one gap would hand every row
+          // below it somebody else's lock. A row with no label is one the
+          // person emptied and the server drops it; an empty list is a business
+          // with no topics rather than one inheriting anybody else's.
           categories: formData
             .getAll("catLabel")
             .map((value, index) => ({
               label: String(value).trim(),
               focus: String(formData.getAll("catFocus")[index] ?? "").trim(),
+              locked: Boolean(formData.getAll("catLocked")[index]),
             }))
             .filter((cat) => cat.label),
           // A form cannot post an object, so the four colours arrive as four
