@@ -182,7 +182,10 @@ const editorTitle: React.CSSProperties = {
 
 const editorDone: React.CSSProperties = {
   flex: "0 0 auto",
-  padding: "0.5rem 1.1rem",
+  // The way out of a modal, and the thing a thumb reaches for first. Sized to
+  // the 44px both platforms ask of a touch target rather than to its text.
+  minHeight: "2.75rem",
+  padding: "0.5rem 1.25rem",
   borderRadius: 999,
   border: "1px solid var(--marigold)",
   background: "var(--marigold)",
@@ -800,18 +803,10 @@ export default function SettingsForm({
                   defaultValue, which would leave the old topics on screen under
                   the new ones. */}
               {cats.map((cat, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: "grid",
-                    // Wider than the 9rem it was: "Family Junior Suite" is a
-                    // real topic name and it was being cut to "Family Junior
-                    // Su", which is not something you can check at a glance.
-                    gridTemplateColumns: "minmax(9rem, 13rem) minmax(0, 1fr) auto",
-                    gap: "0.4rem",
-                    alignItems: "center",
-                  }}
-                >
+                // Laid out by a class, not inline: this is the one row on
+                // the form that has to restack on a phone, and a media query
+                // cannot be written in a style attribute.
+                <div key={index} className="topic-row">
                   <input
                     style={{ ...input, padding: "0.5rem 0.65rem" }}
                     name="catLabel"
@@ -830,6 +825,7 @@ export default function SettingsForm({
 
                   <button
                     type="button"
+                    className="topic-preview"
                     onClick={() => openEditor(index)}
                     aria-label={`Edit the description for topic ${index + 1}`}
                     style={{
@@ -860,7 +856,10 @@ export default function SettingsForm({
                   >
                     {preview(cat.focus)}
                   </button>
-                  <div style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                  <div
+                    className="topic-actions"
+                    style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}
+                  >
                     {/* Always submitted, checked or not. A checkbox sends
                         nothing when unchecked, and these three lists are
                         zipped by index on the server — one missing entry and

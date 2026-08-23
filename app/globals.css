@@ -484,3 +484,66 @@ img {
   background: rgba(6, 17, 14, 0.72);
   backdrop-filter: blur(2px);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Topic rows                                                                 */
+/* -------------------------------------------------------------------------- */
+
+/* One topic: its name, a preview of its description, and its two controls.
+
+   A class rather than the inline styles the rest of this form uses, because
+   this is the one part that has to change shape — and a media query is the one
+   thing an inline style cannot express. Three columns had no floor under them:
+   on a phone the description was squeezed to a few pixels and read as a stray
+   letter behind the Lock button. */
+.topic-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr) auto;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+@media (max-width: 40rem) {
+  /* Two rows instead of three columns: the name and its controls on one line,
+     the description across the width below. A description is the longest thing
+     here and the one worth reading, so it gets the whole line rather than
+     whatever is left of one. */
+  .topic-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.4rem 0.5rem;
+    padding-bottom: 0.7rem;
+  }
+
+  /* A hairline between rows. Stacked, two rows run together into a column of
+     boxes with no telling which belongs to which. */
+  .topic-row:not(:last-child) {
+    border-bottom: 1px solid var(--jade-line);
+  }
+
+  /* Placed explicitly, all three. Auto-placement puts each item after the
+     last, so a preview spanning the full width pushes the controls onto a
+     third line — three lines per row, times fifty topics. The name and its
+     controls share the first line; the description has the second to itself. */
+  .topic-row > input[name="catLabel"] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .topic-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .topic-preview {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* Thumbs. Lock came out 30px tall and the remove cross 19px — fine for a
+     pointer, and a coin toss for a finger. Both platforms' guidance puts the
+     floor around 44. */
+  .topic-actions button {
+    min-height: 42px;
+  }
+}
