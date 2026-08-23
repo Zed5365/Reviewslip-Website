@@ -129,9 +129,12 @@ function Star({ filled }: { filled: boolean }) {
  */
 export default function ReviewList({
   reviews,
+  failed = false,
   rate,
 }: {
   reviews: ReviewRow[];
+  /** The list could not be fetched — which is not the same as it being empty. */
+  failed?: boolean;
   rate: (id: number, rating: number | null) => Promise<{ ok: boolean }>;
 }) {
   const [ratings, setRatings] = useState<Record<number, number | null>>(() =>
@@ -152,6 +155,19 @@ export default function ReviewList({
       const result = await rate(id, next).catch(() => ({ ok: false }));
       if (!result?.ok) setRatings((cur) => ({ ...cur, [id]: before }));
     });
+  }
+
+  if (failed) {
+    return (
+      <div style={card}>
+        <h2 style={heading}>Latest reviews</h2>
+        <p style={{ fontSize: "0.85rem", color: "var(--ink-soft)" }}>
+          These could not be loaded just now — which is not the same as there
+          being none. The counts above come from a different query and are still
+          right. Try again in a moment; if it keeps happening, tell us.
+        </p>
+      </div>
+    );
   }
 
   if (reviews.length === 0) {

@@ -61,14 +61,22 @@ export default async function BusinessPage({
   // A separate call so a slow or failed review list cannot take the stats page
   // down with it — the numbers are the point of this page, the list is beside it.
   let reviews: ReviewRow[] = [];
+  let reviewsFailed = false;
   try {
     reviews = (
       await call<{ reviews: ReviewRow[] }>(`/businesses/${slug}/reviews`, {
         token,
       })
     ).reviews;
-  } catch {
-    reviews = [];
+  } catch (err) {
+    // Kept apart from an empty list, because they are different facts and this
+    // page used to tell the same story for both. A broken query behind this
+    // call rendered "Nothing yet. Reviews appear here as guests generate them."
+    // to an owner with forty-seven of them — which reads as a product that is
+    // not working rather than one that is broken, and sends them looking in
+    // entirely the wrong place.
+    reviewsFailed = true;
+    console.error(`Could not load reviews for ${slug}:`, err);
   }
 
   /**
@@ -194,7 +202,7 @@ export default async function BusinessPage({
           )}
         </div>
 
-        <ReviewList reviews={reviews} rate={rate} />
+        <ReviewList reviews={reviews} failed={reviewsFailed} rate={rate} />
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
