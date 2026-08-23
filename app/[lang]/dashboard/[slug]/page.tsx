@@ -61,13 +61,17 @@ export default async function BusinessPage({
   // A separate call so a slow or failed review list cannot take the stats page
   // down with it — the numbers are the point of this page, the list is beside it.
   let reviews: ReviewRow[] = [];
+  let notTaken = 0;
   let reviewsFailed = false;
   try {
-    reviews = (
-      await call<{ reviews: ReviewRow[] }>(`/businesses/${slug}/reviews`, {
-        token,
-      })
-    ).reviews;
+    const answer = await call<{ reviews: ReviewRow[]; notTaken?: number }>(
+      `/businesses/${slug}/reviews`,
+      { token }
+    );
+    reviews = answer.reviews;
+    // Optional: the review app deploys separately, and a dashboard running
+    // ahead of it gets a list and no count rather than falling over.
+    notTaken = answer.notTaken ?? 0;
   } catch (err) {
     // Kept apart from an empty list, because they are different facts and this
     // page used to tell the same story for both. A broken query behind this
@@ -202,7 +206,12 @@ export default async function BusinessPage({
           )}
         </div>
 
-        <ReviewList reviews={reviews} failed={reviewsFailed} rate={rate} />
+        <ReviewList
+            reviews={reviews}
+            notTaken={notTaken}
+            failed={reviewsFailed}
+            rate={rate}
+          />
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>

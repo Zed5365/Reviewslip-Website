@@ -129,10 +129,19 @@ function Star({ filled }: { filled: boolean }) {
  */
 export default function ReviewList({
   reviews,
+  notTaken = 0,
   failed = false,
   rate,
 }: {
   reviews: ReviewRow[];
+  /**
+   * Written, and never taken to a listing.
+   *
+   * The stat cards above count every generation, because that is what the
+   * tokens were spent on. This list holds only what a guest carried away. Both
+   * are true, and without this number the two look like a contradiction.
+   */
+  notTaken?: number;
   /** The list could not be fetched — which is not the same as it being empty. */
   failed?: boolean;
   rate: (id: number, rating: number | null) => Promise<{ ok: boolean }>;
@@ -184,6 +193,18 @@ export default function ReviewList({
   return (
     <div style={card}>
       <h2 style={heading}>Latest reviews</h2>
+      {notTaken > 0 && (
+        <p style={{ fontSize: "0.8rem", color: "var(--ink-soft)", margin: "0 0 0.6rem" }}>
+          These are the ones a guest took to a listing.{" "}
+          <strong style={{ fontWeight: 500 }}>
+            {notTaken} more {notTaken === 1 ? "was" : "were"} written and not
+            used
+          </strong>{" "}
+          — someone generated a review and left without pressing a Proceed
+          button. Those still count against the month above, because they still
+          cost a generation.
+        </p>
+      )}
       <p style={{ fontSize: "0.8rem", color: "var(--ink-soft)", margin: "0 0 1rem" }}>
         Five stars means you would be glad to see it on your listing — those are
         kept and shown to the writer on every review it writes from then on. One
