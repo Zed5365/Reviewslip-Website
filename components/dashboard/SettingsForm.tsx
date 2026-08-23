@@ -84,6 +84,22 @@ export interface BusinessState {
   warning?: string;
 }
 
+/**
+ * One line of a description, for the row that stands in for it.
+ *
+ * Descriptions are bullet lists. Rendered raw into a single line the dashes run
+ * together and read as noise, so the leading marker comes off each one and they
+ * are joined with a separator that says they were separate.
+ */
+function preview(focus: string): string {
+  const lines = focus
+    .split("\n")
+    .map((line) => line.replace(/^[-•*]\s*/, "").trim())
+    .filter(Boolean);
+
+  return lines.length ? lines.join(" · ") : "Add a description";
+}
+
 export interface Suggestion {
   label: string;
   focus: string;
@@ -315,6 +331,26 @@ export default function SettingsForm({
   // Which row is being written, by index. One at a time: these are model calls
   // the business pays for, and a button that can be held down is a bill.
   const [writing, setWriting] = useState<number | null>(null);
+
+  // Which row's description is open in the editor, if any.
+  //
+  // A description is a list of several lines and reads as one; the row it lives
+  // in is one line high, because fifty rows have to stay scannable. Those two
+  // facts cannot both be served in the same box, so the row shows a preview and
+  // the writing happens somewhere with room in it.
+  const [editing, setEditing] = useState<number | null>(null);
+  const editorRef = useRef<HTMLDialogElement>(null);
+
+  function openEditor(index: number) {
+    setEditing(index);
+    // After the state lands, so the dialog exists with this row's text in it.
+    queueMicrotask(() => editorRef.current?.showModal());
+  }
+
+  function closeEditor() {
+    editorRef.current?.close();
+    setEditing(null);
+  }
 
   /**
    * Writes one row's description.
@@ -736,33 +772,37 @@ export default function SettingsForm({
                     placeholder="Rooms"
                     aria-label={`Topic ${index + 1} name`}
                   />
-                  {/* A textarea, not an input: this is a paragraph now, and
-                      a one-line box for a paragraph is a box people write one
-                      line into. Three rows is enough to see what you wrote and
-                      short enough that fifty of them still scroll. */}
-                  {/* Fixed height, and it scrolls. Descriptions are lists of
-                      different lengths, and a box that grows to fit pushes the
-                      row below it down the page — fifty of those and the form
-                      is a mile long with no two rows aligned. The height is one
-                      row's worth for every one of them, and .scrollpane keeps
-                      the platform scrollbar out of it. */}
-                  <textarea
-                    className="scrollpane"
+                  {/* The value the form posts. Hidden, because what is on
+                      screen here is a preview and the editing happens in the
+                      dialog below — but this still has to be present on every
+                      row, in order, since the server zips the three lists by
+                      index. */}
+                  <input type="hidden" name="catFocus" value={cat.focus} />
+
+                  <button
+                    type="button"
+                    onClick={() => openEditor(index)}
+                    aria-label={`Edit the description for topic ${index + 1}`}
                     style={{
                       ...input,
                       padding: "0.5rem 0.65rem",
-                      height: "5.5rem",
-                      resize: "vertical",
-                      lineHeight: 1.5,
+                      minHeight: "2.55rem",
+                      textAlign: "left",
+                      lineHeight: 1.45,
+                      cursor: "pointer",
+                      color: cat.focus.trim()
+                        ? "var(--ink)"
+                        : "var(--ink-soft)",
+                      // One line, cut with an ellipsis. The whole thing is a
+                      // few hundred characters and belongs in the editor; what
+                      // a row needs to say is which description this is.
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
-                    name="catFocus"
-                    rows={3}
-                    value={cat.focus}
-                    onChange={(e) => setCat(index, { focus: e.target.value })}
-                    maxLength={settings.limits.description ?? 600}
-                    placeholder="What a review about this can say — and nothing else will be said."
-                    aria-label={`Topic ${index + 1} description`}
-                  />
+                  >
+                    {preview(cat.focus)}
+                  </button>
                   <div style={{ display: "grid", gap: "0.3rem" }}>
                     {/* Always submitted, checked or not. A checkbox sends
                         nothing when unchecked, and these three lists are
@@ -793,34 +833,6 @@ export default function SettingsForm({
                       }}
                     >
                       {cat.locked ? "Locked" : "Lock"}
-                    </button>
-                    {/* Writes this row's description and nothing else. It uses
-                        the name, and whatever is already in the box as a
-                        steer — so it doubles as "generate from a keyword"
-                        without a second field to explain. */}
-                    <button
-                      type="button"
-                      className="btn btn-quiet"
-                      disabled={busy || Boolean(cat.locked)}
-                      onClick={() => onDescribe(index)}
-                      title={
-                        cat.locked
-                          ? "Locked. Unlock it to rewrite it."
-                          : cat.focus.trim()
-                          ? "Write this description, building on what is in the box"
-                          : "Write this description from the topic name"
-                      }
-                      style={{
-                        padding: "0.4rem 0.6rem",
-                        fontSize: "0.75rem",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {writing === index
-                        ? "Writing…"
-                        : cat.focus.trim()
-                          ? "Rewrite"
-                          : "Write"}
                     </button>
                     <button
                       type="button"
@@ -876,6 +888,86 @@ export default function SettingsForm({
               written under that button. A topic left blank falls back to its
               name alone, which still works.
             </span>
+
+            {/* One editor, moved between rows, rather than fifty in the
+                document. Rendered inside the form on purpose: a <dialog> is
+                still part of it, so nothing here needs its own plumbing to get
+                a value back out. */}
+            <dialog
+              ref={editorRef}
+              className="sheet"
+              aria-labelledby="description-editor-title"
+              onClose={() => setEditing(null)}
+              onClick={(e) => {
+                // A dialog's backdrop belongs to the dialog, so a click on it
+                // arrives with the dialog itself as the target.
+                if (e.target === editorRef.current) closeEditor();
+              }}
+            >
+              {editing !== null && cats[editing] && (
+                <>
+                  <div className="sheet-head">
+                    <h2 className="sheet-title" id="description-editor-title">
+                      {cats[editing].label.trim() || `Topic ${editing + 1}`}
+                    </h2>
+                    <button
+                      type="button"
+                      className="sheet-close"
+                      onClick={closeEditor}
+                    >
+                      Done
+                    </button>
+                  </div>
+
+                  <div style={{ display: "grid", gap: "0.6rem", minHeight: 0 }}>
+                    <textarea
+                      className="scrollpane"
+                      autoFocus
+                      style={{
+                        ...input,
+                        padding: "0.7rem 0.8rem",
+                        minHeight: "14rem",
+                        lineHeight: 1.6,
+                        resize: "vertical",
+                      }}
+                      value={cats[editing].focus}
+                      onChange={(e) =>
+                        setCat(editing, { focus: e.target.value })
+                      }
+                      maxLength={settings.limits.description ?? 600}
+                      placeholder={"- What a customer gets out of this\n- One line per thing\n- Nothing the page does not support"}
+                      aria-label="Description"
+                    />
+
+                    <div style={{ ...row, alignItems: "center" }}>
+                      <span style={{ ...hint, margin: 0 }}>
+                        {cats[editing].focus.length}/
+                        {settings.limits.description ?? 600} characters
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-quiet"
+                        disabled={busy || Boolean(cats[editing].locked)}
+                        onClick={() => onDescribe(editing)}
+                        title={
+                          cats[editing].locked
+                            ? "Locked. Unlock it to rewrite it."
+                            : cats[editing].focus.trim()
+                              ? "Rewrite this, building on what is here"
+                              : "Write this from the topic name"
+                        }
+                      >
+                        {writing === editing
+                          ? "Writing…"
+                          : cats[editing].focus.trim()
+                            ? "Rewrite"
+                            : "Write"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </dialog>
 
             <span style={hint}>
               <strong style={{ fontWeight: 500 }}>The padlock</strong> keeps a
