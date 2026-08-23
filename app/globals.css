@@ -449,3 +449,38 @@ img {
 .scrollpane:hover::-webkit-scrollbar-thumb {
   background: var(--jade-dim);
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* Description editor                                                         */
+/* -------------------------------------------------------------------------- */
+
+/* The dialog a topic's description is written in.
+
+   A <dialog> arrives with a user-agent look — white, bordered, centred, sized
+   to its contents — and none of that belongs on this page. Everything here is
+   the surface; the layout inside it is set where it is rendered.
+
+   Only what needs a stylesheet is here. ::backdrop cannot be reached from an
+   inline style, and neither can the display rule that keeps a closed dialog
+   closed once anything else sets display on it. */
+.editor {
+  width: min(42rem, calc(100vw - 2rem));
+  max-height: min(85vh, 46rem);
+  padding: 0;
+  border: 1px solid var(--jade-line);
+  border-radius: 14px;
+  background: var(--shade-soft);
+  color: var(--cream);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.editor:not([open]) {
+  display: none;
+}
+
+.editor::backdrop {
+  background: rgba(6, 17, 14, 0.72);
+  backdrop-filter: blur(2px);
+}

@@ -153,6 +153,52 @@ const input: React.CSSProperties = {
 };
 
 const label: React.CSSProperties = { fontSize: "0.85rem", fontWeight: 500 };
+
+/* The description editor. Its surface is in globals.css, because a backdrop
+   cannot be reached from here; everything below is the layout inside it. */
+const editorBody: React.CSSProperties = {
+  display: "grid",
+  gridTemplateRows: "auto minmax(0, 1fr) auto",
+  gap: "1rem",
+  padding: "1.25rem",
+  maxHeight: "inherit",
+};
+
+const editorHead: React.CSSProperties = {
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+  gap: "1rem",
+};
+
+const editorTitle: React.CSSProperties = {
+  margin: 0,
+  fontFamily: "var(--display)",
+  fontWeight: 400,
+  fontSize: "1.35rem",
+  lineHeight: 1.2,
+  color: "var(--cream)",
+};
+
+const editorDone: React.CSSProperties = {
+  flex: "0 0 auto",
+  padding: "0.5rem 1.1rem",
+  borderRadius: 999,
+  border: "1px solid var(--marigold)",
+  background: "var(--marigold)",
+  color: "var(--marigold-ink)",
+  fontFamily: "inherit",
+  fontSize: "0.85rem",
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
+const editorFoot: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "1rem",
+};
 const hint: React.CSSProperties = { fontSize: "0.8rem", color: "var(--ink-soft)" };
 const field: React.CSSProperties = { display: "grid", gap: "0.35rem" };
 const row: React.CSSProperties = { display: "flex", gap: "0.6rem", flexWrap: "wrap" };
@@ -758,9 +804,12 @@ export default function SettingsForm({
                   key={index}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "9rem 1fr auto",
+                    // Wider than the 9rem it was: "Family Junior Suite" is a
+                    // real topic name and it was being cut to "Family Junior
+                    // Su", which is not something you can check at a glance.
+                    gridTemplateColumns: "minmax(9rem, 13rem) minmax(0, 1fr) auto",
                     gap: "0.4rem",
-                    alignItems: "start",
+                    alignItems: "center",
                   }}
                 >
                   <input
@@ -790,9 +839,17 @@ export default function SettingsForm({
                       textAlign: "left",
                       lineHeight: 1.45,
                       cursor: "pointer",
+                      // --ink and --ink-soft are the colours for text on the
+                      // paper cards. This field is dark, so they rendered as
+                      // very nearly nothing — a row of boxes that looked empty
+                      // whatever was in them. On this surface the text colours
+                      // are the cream ones, the same as every input here.
+                      // The empty state is a call to action, not decoration,
+                      // so it takes the readable cream rather than the faint
+                      // one — which sat at 3.6:1 against this surface.
                       color: cat.focus.trim()
-                        ? "var(--ink)"
-                        : "var(--ink-soft)",
+                        ? "var(--paper)"
+                        : "var(--cream-soft)",
                       // One line, cut with an ellipsis. The whole thing is a
                       // few hundred characters and belongs in the editor; what
                       // a row needs to say is which description this is.
@@ -803,7 +860,7 @@ export default function SettingsForm({
                   >
                     {preview(cat.focus)}
                   </button>
-                  <div style={{ display: "grid", gap: "0.3rem" }}>
+                  <div style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
                     {/* Always submitted, checked or not. A checkbox sends
                         nothing when unchecked, and these three lists are
                         zipped by index on the server — one missing entry and
@@ -895,7 +952,7 @@ export default function SettingsForm({
                 a value back out. */}
             <dialog
               ref={editorRef}
-              className="sheet"
+              className="editor"
               aria-labelledby="description-editor-title"
               onClose={() => setEditing(null)}
               onClick={(e) => {
@@ -905,67 +962,78 @@ export default function SettingsForm({
               }}
             >
               {editing !== null && cats[editing] && (
-                <>
-                  <div className="sheet-head">
-                    <h2 className="sheet-title" id="description-editor-title">
-                      {cats[editing].label.trim() || `Topic ${editing + 1}`}
-                    </h2>
-                    <button
-                      type="button"
-                      className="sheet-close"
-                      onClick={closeEditor}
-                    >
+                <div style={editorBody}>
+                  <div style={editorHead}>
+                    <div style={{ display: "grid", gap: "0.15rem", minWidth: 0 }}>
+                      <h2 id="description-editor-title" style={editorTitle}>
+                        {cats[editing].label.trim() || `Topic ${editing + 1}`}
+                      </h2>
+                      <span style={{ ...hint, color: "var(--cream-soft)" }}>
+                        Everything a review about this may say
+                      </span>
+                    </div>
+                    <button type="button" onClick={closeEditor} style={editorDone}>
                       Done
                     </button>
                   </div>
 
-                  <div style={{ display: "grid", gap: "0.6rem", minHeight: 0 }}>
-                    <textarea
-                      className="scrollpane"
-                      autoFocus
-                      style={{
-                        ...input,
-                        padding: "0.7rem 0.8rem",
-                        minHeight: "14rem",
-                        lineHeight: 1.6,
-                        resize: "vertical",
-                      }}
-                      value={cats[editing].focus}
-                      onChange={(e) =>
-                        setCat(editing, { focus: e.target.value })
-                      }
-                      maxLength={settings.limits.description ?? 600}
-                      placeholder={"- What a customer gets out of this\n- One line per thing\n- Nothing the page does not support"}
-                      aria-label="Description"
-                    />
+                  <textarea
+                    className="scrollpane"
+                    autoFocus
+                    style={{
+                      ...input,
+                      padding: "0.85rem 1rem",
+                      minHeight: "16rem",
+                      lineHeight: 1.7,
+                      resize: "none",
+                    }}
+                    value={cats[editing].focus}
+                    onChange={(e) => setCat(editing, { focus: e.target.value })}
+                    maxLength={settings.limits.description ?? 600}
+                    placeholder={"- What a customer gets out of this\n- One line per thing\n- Nothing your website does not support"}
+                    aria-label="Description"
+                  />
 
-                    <div style={{ ...row, alignItems: "center" }}>
-                      <span style={{ ...hint, margin: 0 }}>
-                        {cats[editing].focus.length}/
-                        {settings.limits.description ?? 600} characters
-                      </span>
-                      <button
-                        type="button"
-                        className="btn btn-quiet"
-                        disabled={busy || Boolean(cats[editing].locked)}
-                        onClick={() => onDescribe(editing)}
-                        title={
-                          cats[editing].locked
-                            ? "Locked. Unlock it to rewrite it."
-                            : cats[editing].focus.trim()
-                              ? "Rewrite this, building on what is here"
-                              : "Write this from the topic name"
-                        }
-                      >
-                        {writing === editing
-                          ? "Writing…"
+                  <div style={editorFoot}>
+                    <span
+                      style={{
+                        ...hint,
+                        // cream-soft, not cream-faint: this is a number
+                        // somebody watches as they approach the limit, and the
+                        // faint one sits at 3.5:1 on this surface. It goes
+                        // marigold in the last forty characters.
+                        color:
+                          cats[editing].focus.length >
+                          (settings.limits.description ?? 600) - 40
+                            ? "var(--marigold)"
+                            : "var(--cream-soft)",
+                      }}
+                    >
+                      {cats[editing].focus.length} /{" "}
+                      {settings.limits.description ?? 600}
+                    </span>
+
+                    <button
+                      type="button"
+                      className="btn btn-quiet"
+                      disabled={busy || Boolean(cats[editing].locked)}
+                      onClick={() => onDescribe(editing)}
+                      title={
+                        cats[editing].locked
+                          ? "Locked. Unlock it to rewrite it."
                           : cats[editing].focus.trim()
-                            ? "Rewrite"
-                            : "Write"}
-                      </button>
-                    </div>
+                            ? "Rewrite this, building on what is here"
+                            : "Write this from the topic name and your website"
+                      }
+                    >
+                      {writing === editing
+                        ? "Writing…"
+                        : cats[editing].focus.trim()
+                          ? "Rewrite"
+                          : "Write"}
+                    </button>
                   </div>
-                </>
+                </div>
               )}
             </dialog>
 
