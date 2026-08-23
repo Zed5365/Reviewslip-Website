@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 
+import { PLATFORMS } from "@/lib/platforms.data";
+
 export interface ReviewRow {
   id: number;
   review_text: string;
@@ -11,6 +13,14 @@ export interface ReviewRow {
   /** What the writer was working from. Absent on rows written before this. */
   language?: string | null;
   length?: string | null;
+  /**
+   * Which listing the guest took it to, by platform id.
+   *
+   * Optional, and null on rows from before it was recorded — those were
+   * backfilled as proceeded because they predate the distinction, so there is
+   * no answer to give for them rather than a wrong one.
+   */
+  proceeded_to?: string | null;
 }
 
 /** Codes to names, mirroring config.js in the review app. */
@@ -54,6 +64,12 @@ function contextNote(review: ReviewRow): string {
   if (review.language && review.language !== "en") {
     parts.push(`in ${LANGUAGES[review.language] ?? review.language}`);
   }
+
+  // Where it went. Last in the line because it is the outcome rather than the
+  // input, and it is the thing an owner scans for: a review that reached Google
+  // is worth more to them than one that reached anywhere else.
+  const platform = PLATFORMS.find((p) => p.id === review.proceeded_to);
+  if (platform) parts.push(`to ${platform.label}`);
 
   return parts.join(" · ");
 }
