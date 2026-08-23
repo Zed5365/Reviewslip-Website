@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState, useTransition } from "react";
+import { useActionState, useLayoutEffect, useRef, useState, useTransition } from "react";
 
 import ThemeEditor from "@/components/dashboard/ThemeEditor";
 import { PLATFORMS } from "@/lib/platforms.data";
@@ -84,6 +84,63 @@ export interface BusinessState {
   ok?: boolean;
   /** A save that worked but is worth reading — a stale model slug, say. */
   warning?: string;
+}
+
+/**
+ * A textarea the height of its own contents.
+ *
+ * Descriptions are bullet lists now, and a list is a different length for every
+ * topic. A fixed box gives the long ones an inner scrollbar — the one piece of
+ * chrome on this page nobody styled, and the one that makes a form feel like a
+ * spreadsheet. Growing to fit means the scrollbar never appears.
+ *
+ * In a layout effect rather than on the change handler, because the value moves
+ * without anyone typing: Write fills a row in, Generate replaces every row, and
+ * both need the box to resize before the browser paints it.
+ *
+ * The height is cleared before it is read. scrollHeight is bounded below by the
+ * element's current height, so measuring without resetting first makes a box
+ * that can grow and never shrink.
+ */
+function GrowingTextarea({
+  measureOn,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  /**
+   * Anything that changes what this element can be measured against.
+   *
+   * The tab strip renders every panel and hides the inactive ones with
+   * `display: none`, so a box on a hidden tab has no layout and scrollHeight
+   * comes back as zero. Measured only on mount, every description on the Topics
+   * tab would keep the height of an empty one — and with the scrollbar turned
+   * off, that clips the text rather than scrolling it, which is worse than the
+   * scrollbar this replaced.
+   *
+   * A declared dependency rather than a ResizeObserver: the observer would fire
+   * on the height this effect itself sets, and guarding that loop is more
+   * moving parts than naming the one thing that actually matters.
+   */
+  measureOn?: unknown;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Cleared before it is read: scrollHeight is bounded below by the current
+    // height, so measuring without resetting gives a box that grows and never
+    // shrinks.
+    el.style.height = "auto";
+
+    // scrollHeight is content plus padding; height is the border box here, so
+    // the borders have to be added back or the box lands two pixels short and
+    // clips the last line — which, with the scrollbar off, is invisible.
+    const borders = el.offsetHeight - el.clientHeight;
+    el.style.height = `${el.scrollHeight + borders}px`;
+  }, [props.value, measureOn]);
+
+  return <textarea {...props} ref={ref} />;
 }
 
 export interface Suggestion {
@@ -742,15 +799,19 @@ export default function SettingsForm({
                       a one-line box for a paragraph is a box people write one
                       line into. Three rows is enough to see what you wrote and
                       short enough that fifty of them still scroll. */}
-                  <textarea
+                  <GrowingTextarea
                     style={{
                       ...input,
                       padding: "0.5rem 0.65rem",
                       minHeight: "4.5rem",
-                      resize: "vertical",
-                      lineHeight: 1.45,
+                      // No resize handle and no scrollbar: it is always exactly
+                      // as tall as what is in it.
+                      resize: "none",
+                      overflow: "hidden",
+                      lineHeight: 1.5,
                     }}
                     name="catFocus"
+                    measureOn={tab}
                     rows={3}
                     value={cat.focus}
                     onChange={(e) => setCat(index, { focus: e.target.value })}
@@ -772,21 +833,22 @@ export default function SettingsForm({
                       type="button"
                       onClick={() => setCat(index, { locked: !cat.locked })}
                       aria-pressed={Boolean(cat.locked)}
+                      aria-label={`${cat.locked ? "Unlock" : "Lock"} topic ${index + 1}`}
                       title={
                         cat.locked
                           ? "Locked — Generate from website will leave this one alone"
                           : "Lock this topic against Generate from website"
                       }
                       style={{
-                        ...remove,
-                        color: cat.locked ? "var(--jade)" : undefined,
-                        borderColor: cat.locked ? "var(--jade-line)" : undefined,
+                        ...lock,
+                        color: cat.locked ? "var(--ink)" : "var(--ink-soft)",
+                        background: cat.locked ? "var(--jade)" : "transparent",
+                        borderColor: cat.locked
+                          ? "var(--jade)"
+                          : "var(--jade-line)",
                       }}
                     >
-                      {cat.locked ? "🔒" : "🔓"}
-                      <span style={visually}>
-                        {cat.locked ? "Unlock" : "Lock"} topic {index + 1}
-                      </span>
+                      {cat.locked ? "Locked" : "Lock"}
                     </button>
                     {/* Writes this row's description and nothing else. It uses
                         the name, and whatever is already in the box as a
@@ -1012,20 +1074,26 @@ function tabStyle(on: boolean): React.CSSProperties {
 }
 
 /**
- * Off screen, still announced. The padlock reads as an emoji to a screen
- * reader — "locked" at best, and nothing at all in some — so the button
- * carries a real name for it that sighted people never see.
+ * The lock toggle. A word rather than a padlock: an emoji is guesswork at a
+ * glance and near-silent to a screen reader, and the two states of this one are
+ * worth being unambiguous about — pressing it decides whether the work in that
+ * row survives the next Generate.
+ *
+ * It says what it is, not what pressing it does. "Locked" is the state you can
+ * see, which is what a person scanning fifty rows is looking for; aria-label
+ * carries the action for anyone who cannot see the fill.
  */
-const visually: React.CSSProperties = {
-  position: "absolute",
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: "hidden",
-  clip: "rect(0 0 0 0)",
+const lock: React.CSSProperties = {
+  flex: "0 0 auto",
+  padding: "0.4rem 0.6rem",
+  borderRadius: 10,
+  border: "1px solid var(--jade-line)",
+  background: "transparent",
+  fontFamily: "inherit",
+  fontSize: "0.75rem",
+  fontWeight: 500,
+  cursor: "pointer",
   whiteSpace: "nowrap",
-  border: 0,
 };
 
 const remove: React.CSSProperties = {
