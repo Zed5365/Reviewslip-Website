@@ -18,9 +18,7 @@ import type {
 const LINK_FIELD: Record<string, string> = {
   google: "googleUrl",
   tripadvisor: "tripadvisorUrl",
-  line: "lineUrl",
   facebook: "facebookUrl",
-  xiaohongshu: "xiaohongshuUrl",
   wongnai: "wongnaiUrl",
 };
 

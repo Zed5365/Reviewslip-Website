@@ -94,9 +94,7 @@ export default async function BusinessSettingsPage({
           name: text("name"),
           googleUrl: text("googleUrl"),
           tripadvisorUrl: text("tripadvisorUrl"),
-          lineUrl: text("lineUrl"),
           facebookUrl: text("facebookUrl"),
-          xiaohongshuUrl: text("xiaohongshuUrl"),
           wongnaiUrl: text("wongnaiUrl"),
           websiteUrl: text("websiteUrl"),
           // Blanks dropped. Labels, descriptions and locks arrive as three
