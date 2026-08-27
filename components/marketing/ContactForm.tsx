@@ -1,9 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Script from "next/script";
 import type { Dictionary } from "@/lib/i18n/dictionaries/en";
-import { CONTACT_EMAIL, CONTACT_FORM_ENDPOINT } from "@/lib/site";
+import {
+  CONTACT_EMAIL,
+  CONTACT_RECIPIENT,
+  CONTACT_RELAY_URL,
+  CONTACT_SITE_NAME,
+  TURNSTILE_SITE_KEY,
+} from "@/lib/site";
 import styles from "./ContactForm.module.css";
+
+/**
+ * The slice of Turnstile this file uses.
+ *
+ * Declared rather than pulled from a package: the widget is loaded from
+ * Cloudflare's own script tag, so there is nothing installed here to take types
+ * from, and three methods is not worth a dependency.
+ */
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        el: HTMLElement,
+        options: { sitekey: string; theme?: string }
+      ) => string;
+      getResponse: (widgetId?: string) => string | undefined;
+      reset: (widgetId?: string) => void;
+      remove: (widgetId?: string) => void;
+    };
+  }
+}
 
 type Status = "idle" | "sending" | "success" | "error";
 
@@ -14,6 +42,20 @@ interface Fields {
   locations: string;
   message: string;
 }
+
+/**
+ * The honeypot's name, kept exactly as the relay's guide specifies it.
+ *
+ * Not a style choice. A honeypot silently discards any submission that fills it
+ * in, so a browser that autofills it makes every real message from that browser
+ * vanish with no error anywhere — and browsers autofill on the field's name and
+ * label matching a category they recognise, `autocomplete="off"` or not. Edge
+ * is the usual culprit and "company" the usual casualty.
+ *
+ * `hp_field` and "Leave this field blank" match nothing any browser fills in.
+ * Renaming either to something more natural is how this breaks.
+ */
+const HONEYPOT = "hp_field";
 
 const EMPTY: Fields = {
   name: "",
@@ -40,6 +82,29 @@ export default function ContactForm({
   submitLabel?: string;
 }) {
   const [fields, setFields] = useState<Fields>(EMPTY);
+  const turnstileBox = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string>("");
+  const [scriptReady, setScriptReady] = useState(false);
+
+  /**
+   * Renders the Turnstile widget once, when both the script and the box exist.
+   *
+   * Explicitly rather than letting Turnstile find `.cf-turnstile` itself. Its
+   * automatic pass runs when the script loads and scans the document once —
+   * which is a race against React mounting this component, and one that is lost
+   * silently, leaving no widget and no token. Rendering by hand removes the
+   * race and hands back an id, so getResponse and reset act on this widget
+   * rather than on whichever one the page happens to hold.
+   */
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !scriptReady) return;
+    if (!turnstileBox.current || widgetId.current) return;
+
+    widgetId.current = window.turnstile!.render(turnstileBox.current, {
+      sitekey: TURNSTILE_SITE_KEY,
+      theme: "dark",
+    });
+  }, [scriptReady]);
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>(
     {}
   );
@@ -76,31 +141,77 @@ export default function ContactForm({
     window.location.href = href;
   };
 
+  /**
+   * This form's fields, in the shape the relay accepts.
+   *
+   * The relay takes name, email, message and an optional company — and this
+   * form also asks how many locations a business has, which is the question
+   * whose answer decides what to quote them. Rather than drop it, it goes into
+   * the message under a heading: a field the relay has no column for is still
+   * something the person on the other end needs to read.
+   */
+  const relayPayload = () => {
+    const extra = fields.locations.trim()
+      ? `\n\nLocations: ${fields.locations.trim()}`
+      : "";
+
+    return {
+      site: CONTACT_SITE_NAME,
+      recipient: CONTACT_RECIPIENT,
+      name: fields.name.trim(),
+      email: fields.email.trim(),
+      company: fields.business.trim(),
+      message: `${fields.message.trim()}${extra}`,
+      turnstileToken: widgetId.current
+        ? window.turnstile?.getResponse(widgetId.current) ?? ""
+        : "",
+    };
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (status === "sending") return;
+
+    // Anything in the honeypot means a machine filled the form in. Silent by
+    // design — telling a bot why it failed is telling it how to pass — but
+    // logged, because the one thing that also lands here is a browser that
+    // autofilled the field, and that failure is otherwise invisible from both
+    // sides. See HONEYPOT above.
+    const form = e.currentTarget as HTMLFormElement;
+    const trap = form.elements.namedItem(HONEYPOT) as HTMLInputElement | null;
+    if (trap?.value) {
+      console.warn("Contact form: honeypot filled, submission not sent.");
+      return;
+    }
+
     if (!validate()) return;
 
     setStatus("sending");
     try {
-      if (CONTACT_FORM_ENDPOINT) {
-        const res = await fetch(CONTACT_FORM_ENDPOINT, {
+      if (CONTACT_RELAY_URL) {
+        const res = await fetch(CONTACT_RELAY_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify(fields),
+          body: JSON.stringify(relayPayload()),
         });
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
       } else {
-        // No backend configured: hand off to the visitor's email client.
+        // No relay configured: hand off to the visitor's email client, which is
+        // what this form did before there was any backend at all. Kept so the
+        // page is never a dead end on a deploy that has not been given the URL.
         sendViaMailto();
       }
       setStatus("success");
       setFields(EMPTY);
+      if (widgetId.current) window.turnstile?.reset(widgetId.current);
     } catch {
       setStatus("error");
+      // A used token is spent whether or not the send worked, so the widget has
+      // to go back to the start before a retry can pass.
+      if (widgetId.current) window.turnstile?.reset(widgetId.current);
     }
   };
 
@@ -119,6 +230,19 @@ export default function ContactForm({
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <h3 className={styles.heading}>{heading ?? f.heading}</h3>
+
+      {/* Off screen rather than display:none, and out of the tab order. Its
+          name and label are load-bearing — see HONEYPOT. */}
+      <div className={styles.honeypot} aria-hidden="true">
+        <label htmlFor="cf-hp">Leave this field blank</label>
+        <input
+          type="text"
+          id="cf-hp"
+          name={HONEYPOT}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
 
       {status === "error" && (
         <div className={styles.errorBanner} role="alert">
@@ -202,6 +326,17 @@ export default function ContactForm({
             <span className={styles.errorText}>{errors.message}</span>
           )}
         </div>
+      )}
+
+      {TURNSTILE_SITE_KEY && (
+        <>
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+            strategy="afterInteractive"
+            onReady={() => setScriptReady(true)}
+          />
+          <div ref={turnstileBox} className={styles.turnstile} />
+        </>
       )}
 
       <button

@@ -158,3 +158,27 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* The honeypot.
+
+   Taken off screen rather than hidden with display:none or the hidden
+   attribute: a bot that fills forms in reads the DOM, and skipping anything
+   the CSS hides is the first thing one learns to do. This is present, focusable
+   only by something that ignores tabindex, and invisible to a person. */
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Cloudflare's widget renders into this. It carries its own size, so this is
+   only the space around it. */
+.turnstile:not(:empty) {
+  margin: 0.25rem 0 0.5rem;
+}

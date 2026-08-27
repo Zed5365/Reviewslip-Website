@@ -27,19 +27,52 @@ export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURICompon
 )}`;
 
 /**
- * Where the contact form POSTs. The form sends a JSON body of
- * { name, email, business, locations, message }. Leave empty to fall back to
- * opening the visitor's email client with the message pre-filled.
+ * The shared relay the contact form posts to.
  *
- * Currently a Formspree endpoint — submissions land in the Formspree dashboard
- * and are forwarded to the email on that Formspree account. (Formspree accepts
- * this JSON shape directly, no code change needed.)
+ * One endpoint serves many sites. There is no per-site registration: each
+ * submission carries who it is from (`site`) and who should receive it
+ * (`recipient`), and the relay's operator forwards it. So everything about this
+ * integration lives in these four values and the form component.
  *
- * Alternative on file: Web3Forms access key 0a47a13a-5314-4eb8-b4ee-26b43fde9a3b
- * — to switch, POST to https://api.web3forms.com/submit with `access_key`
- * added to the body (a small change in ContactForm).
+ * All four come from the environment rather than being written here, because
+ * three of them differ between a preview deploy and production, and because the
+ * relay URL is not ours to hard-code into a repository.
+ *
+ * NEXT_PUBLIC_ on purpose, and worth understanding rather than copying. This
+ * posts from the browser, which is what the relay's own guide describes — so
+ * the relay address and the recipient address are both readable in the page
+ * source by anyone who looks. That is the relay's design: it accepts a
+ * recipient per request. If that address must not be public, the fix is not a
+ * different variable name but a route on this site that forwards to the relay
+ * server-side.
  */
-export const CONTACT_FORM_ENDPOINT = "https://formspree.io/f/mljrnyzy";
+export const CONTACT_RELAY_URL = process.env.NEXT_PUBLIC_CONTACT_RELAY_URL ?? "";
+
+/**
+ * Where this site's submissions go. Empty falls back to CONTACT_EMAIL, which
+ * is the address already published on every page of the site.
+ *
+ * The relay may require an address to be approved before it can deliver to it —
+ * that depends on how its sending is configured, and is a question for whoever
+ * operates it rather than something this side can check.
+ */
+export const CONTACT_RECIPIENT =
+  process.env.NEXT_PUBLIC_CONTACT_RECIPIENT || CONTACT_EMAIL;
+
+/** What the relay calls this site in the email subject. */
+export const CONTACT_SITE_NAME =
+  process.env.NEXT_PUBLIC_CONTACT_SITE_NAME ||
+  SITE_URL.replace(/^https?:\/\//, "");
+
+/**
+ * Cloudflare Turnstile, if the relay has verification switched on.
+ *
+ * A site key is public by design — it identifies the widget, and the secret
+ * that validates a token never leaves the relay. Empty means no widget is
+ * rendered and no token is sent, which the relay's guide says it handles.
+ */
+export const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 /**
  * Where the login / sign-up forms POST. Leave empty until there is a real auth
