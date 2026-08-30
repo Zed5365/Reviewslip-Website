@@ -117,6 +117,12 @@ export default async function DashboardPage({
           >
             Refer &amp; save 20%
           </Link>
+          <Link
+            className="btn btn-quiet"
+            href={localizedPath(lang, "/dashboard/support")}
+          >
+            Support
+          </Link>
         </p>
 
         {me.businesses.length === 0 ? (

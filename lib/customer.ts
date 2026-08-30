@@ -261,6 +261,50 @@ export interface Referrals {
   mail?: { enabled: boolean };
 }
 
+/* ----------------------------------------------------------------- support */
+
+export interface TicketMessage {
+  id: number;
+  body: string;
+  fromStaff: boolean;
+  createdAt: string;
+}
+
+export interface Ticket {
+  id: number;
+  title: string;
+  body: string;
+  status: "open" | "answered" | "closed";
+  /** open or answered. `answered` is still active — it is not finished. */
+  active: boolean;
+  venue: { slug: string; name: string } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TicketList {
+  tickets: Ticket[];
+  /** The one that is going, if any. At most one by design. */
+  active: Ticket | null;
+  canOpen: boolean;
+}
+
+export interface TicketThread {
+  ticket: Ticket;
+  messages: TicketMessage[];
+}
+
+/** A queue row: the ticket plus who it is from. */
+export interface StaffTicket extends Ticket {
+  account: { id: number; email: string };
+  messages: number;
+  lastMessage: string | null;
+}
+
+export interface StaffTicketThread extends TicketThread {
+  account: { id: number; email: string };
+}
+
 /* ------------------------------------------------------------------- staff */
 
 /** An account as the staff list shows it. */

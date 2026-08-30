@@ -69,6 +69,9 @@ export default async function AdminLayout({
             >
               Staff
             </Link>
+            <Link href="/tickets" style={{ color: "var(--jade)", fontSize: "0.9rem" }}>
+              Tickets
+            </Link>
             <Link href="/venues" style={{ color: "var(--jade)", fontSize: "0.9rem" }}>
               All venues
             </Link>
