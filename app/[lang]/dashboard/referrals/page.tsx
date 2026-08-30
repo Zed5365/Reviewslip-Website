@@ -40,6 +40,9 @@ export default async function ReferralsPage({
   const data = await call<Referrals>("/referrals", { token });
   const { referrals, progress } = data;
 
+  // Absent means an older review app, which certainly could not send.
+  const canEmail = data.mail?.enabled ?? false;
+
   const here = localizedPath(locale, "/dashboard/referrals");
 
   async function invite(formData: FormData) {
@@ -183,8 +186,9 @@ export default async function ReferralsPage({
           Invite someone
         </h2>
         <p style={{ color: "var(--cream-faint)", fontSize: "0.9rem", marginBottom: "1rem" }}>
-          You will get a link to send them yourself. We do not email anyone on
-          your behalf.
+          {canEmail
+            ? "We will email them an invitation once. If it does not arrive, copy the link below and send it yourself."
+            : "You will get a link to send them yourself. We do not email anyone on your behalf."}
         </p>
 
         <form

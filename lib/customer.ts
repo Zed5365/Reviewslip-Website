@@ -247,6 +247,18 @@ export interface ReferralProgress {
 export interface Referrals {
   referrals: Referral[];
   progress: ReferralProgress;
+  /**
+   * Whether this deployment can actually send an invitation.
+   *
+   * False when the review app has no SES configured, which is how referrals
+   * shipped. The page must describe the button by what it will really do —
+   * promising an email from a box that cannot send one is a lie the customer
+   * has no way to check until somebody tells them nothing arrived.
+   *
+   * Optional so a dashboard running ahead of the review app does not crash on
+   * a field that deploy has not got yet.
+   */
+  mail?: { enabled: boolean };
 }
 
 /** A setting as the review app describes it: the value, and where it came from. */
