@@ -95,7 +95,14 @@ export default async function DashboardPage({
           {me.plan.reviewAllowance.toLocaleString()} reviews this month
         </p>
 
-        <p style={{ marginBottom: "2rem" }}>
+        <p
+          style={{
+            marginBottom: "2rem",
+            display: "flex",
+            gap: "0.6rem",
+            flexWrap: "wrap",
+          }}
+        >
           {/* At the cap this still goes to the same page, which explains the
               limit and offers plans — better than a button that does nothing. */}
           <Link
@@ -103,6 +110,12 @@ export default async function DashboardPage({
             href={localizedPath(lang, "/dashboard/businesses/new")}
           >
             Add a business
+          </Link>
+          <Link
+            className="btn btn-quiet"
+            href={localizedPath(lang, "/dashboard/referrals")}
+          >
+            Refer &amp; save 20%
           </Link>
         </p>
 

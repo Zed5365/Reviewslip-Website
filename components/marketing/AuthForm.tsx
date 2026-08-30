@@ -34,12 +34,22 @@ export default function AuthForm({
   lang,
   auth,
   form,
+  referralCode = "",
 }: {
   mode: "login" | "signup";
   lang: Locale;
   auth: Dictionary["auth"];
   /** Shared field labels, so login/sign-up match the contact form wording. */
   form: Dictionary["contact"]["form"];
+  /**
+   * The invitation this signup arrived through, off `?ref=` in the URL.
+   *
+   * Passed along and otherwise ignored. It is not validated here and its
+   * absence changes nothing — whether it names a real invitation is a question
+   * only the review app can answer, and the answer must never be the reason
+   * somebody fails to get an account.
+   */
+  referralCode?: string;
 }) {
   const isSignup = mode === "signup";
   const copy = isSignup ? auth.signup : auth.login;
@@ -115,7 +125,11 @@ export default function AuthForm({
           email: fields.email.trim(),
           password: fields.password,
           ...(isSignup
-            ? { name: fields.name.trim(), business: fields.business.trim() }
+            ? {
+                name: fields.name.trim(),
+                business: fields.business.trim(),
+                referralCode,
+              }
             : { remember }),
         }),
       });

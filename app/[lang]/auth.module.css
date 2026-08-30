@@ -88,3 +88,18 @@
     justify-self: end;
   }
 }
+
+/* The line shown above the sign-up form when someone arrived through an
+   invitation. Marigold rather than the jade used elsewhere: it is the one
+   thing on this page that is about them being expected. */
+.invited {
+  margin: 0 0 1.1rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid rgba(233, 160, 59, 0.4);
+  border-left-width: 3px;
+  border-radius: 10px;
+  background: rgba(233, 160, 59, 0.1);
+  color: var(--cream);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}

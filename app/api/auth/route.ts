@@ -26,6 +26,7 @@ export async function POST(request: Request) {
   const password = String(body.password ?? "");
   const asked = typeof body.lang === "string" ? body.lang : "";
   const lang = isLocale(asked) ? asked : DEFAULT_LOCALE;
+  const referralCode = String(body.referralCode ?? "").trim().slice(0, 32);
 
   try {
     const session = await call<Session>(`/${mode}`, {
@@ -35,7 +36,13 @@ export async function POST(request: Request) {
           ? // No username field on the form; the review app derives one from
             // the email. `name` is the person, not the account, so it is not
             // sent as a username.
-            { email, password }
+            //
+            // The referral code rides along unvalidated on purpose. The review
+            // app is the only place that knows which codes exist, and a code it
+            // rejects must never stop an account being created — so there is
+            // nothing useful to check here, and checking would only add a way
+            // to fail.
+            { email, password, referralCode }
           : { identifier: email, password },
     });
 

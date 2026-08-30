@@ -18,9 +18,17 @@ export async function generateMetadata({
 
 export default async function SignupPage({
   params,
+  searchParams,
 }: PageProps<"/[lang]/signup">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
+
+  // ?ref= is how an invitation reaches this page. Read here rather than in the
+  // form because the form is a client component and this is the only thing on
+  // the page that needs the query string.
+  const query = await searchParams;
+  const raw = Array.isArray(query.ref) ? query.ref[0] : query.ref;
+  const referralCode = String(raw ?? "").trim().slice(0, 32);
 
   const t = getDictionary(lang);
   const a = t.auth.signup;
@@ -49,11 +57,19 @@ export default async function SignupPage({
         </div>
 
         <div className={styles.formCol}>
+          {referralCode ? (
+            <p className={styles.invited}>
+              You were invited by another Reviewslip customer. Finish signing up
+              and they get credit for it.
+            </p>
+          ) : null}
+
           <AuthForm
             mode="signup"
             lang={lang}
             auth={t.auth}
             form={t.contact.form}
+            referralCode={referralCode}
           />
         </div>
       </div>

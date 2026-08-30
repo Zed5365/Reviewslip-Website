@@ -209,6 +209,46 @@ export interface Me {
   businesses: BusinessSummary[];
 }
 
+/**
+ * One invitation, as the review app describes it.
+ *
+ * `state` is a word rather than three dates because three nullable timestamps
+ * have eight combinations and only these are real. Derived on the review app's
+ * side so both ends agree on which one a given row is in.
+ */
+export interface Referral {
+  id: number;
+  /** The address the referrer named. A label — signing up with another still counts. */
+  email: string;
+  code: string;
+  state: "invited" | "signed up" | "joined";
+  invitedAt: string;
+  signedUpAt: string | null;
+  qualifiedAt: string | null;
+}
+
+/**
+ * How far along the discount is.
+ *
+ * `percent` is 0 until `earned`, deliberately — the offer is all-or-nothing and
+ * a number that grew with each referral would read as a promise.
+ */
+export interface ReferralProgress {
+  qualified: number;
+  needed: number;
+  remaining: number;
+  earned: boolean;
+  /** What this account has now: zero until `earned`. */
+  percent: number;
+  /** What the offer is worth, so neither end hard-codes "20". */
+  worth: number;
+}
+
+export interface Referrals {
+  referrals: Referral[];
+  progress: ReferralProgress;
+}
+
 /** A setting as the review app describes it: the value, and where it came from. */
 export interface Setting<T> {
   value: T;

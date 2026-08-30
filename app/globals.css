@@ -547,3 +547,36 @@ img {
     min-height: 42px;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Referrals                                                                  */
+/* -------------------------------------------------------------------------- */
+
+/* One invitation: the address, its state, and what can still be done with it. */
+.referral-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.5rem 0.9rem;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--jade-line);
+}
+
+@media (max-width: 34rem) {
+  /* An email address is the longest thing here and cannot be wrapped usefully
+     into a narrow column, so it takes the first line to itself and the state
+     and buttons share the second. */
+  .referral-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .referral-row > span:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* The same floor as the topic controls: both platforms put the minimum
+     touch target around 44px, and these render near 30 without it. */
+  .referral-row button {
+    min-height: 42px;
+  }
+}
