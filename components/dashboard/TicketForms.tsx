@@ -30,28 +30,19 @@ const label: React.CSSProperties = {
   color: "var(--cream)",
 };
 
-/**
- * Restores what was typed after a refusal.
+/*
+ * Both forms below restore what was typed after a refusal.
  *
- * React resets an uncontrolled form once its action resolves, so without this
- * a rejected ticket empties every box and leaves a message about text that is
- * no longer on screen. Somebody who has just written four paragraphs about a
- * problem must not lose them to a validation error.
+ * React resets an uncontrolled form once its action resolves, so without it a
+ * rejected ticket empties every box and leaves a message about text no longer
+ * on screen. Somebody who has just written four paragraphs about a problem must
+ * not lose them to a validation error.
+ *
+ * Written out in each form rather than shared as a hook taking the refs. A hook
+ * assigning to refs handed to it is mutating its own arguments, which React's
+ * immutability rule refuses — rightly, since it makes the write invisible from
+ * the component that owns them. Each form writes only refs it declared itself.
  */
-function useRestore(
-  state: TicketState,
-  refs: { title?: React.RefObject<HTMLInputElement | null>; body: React.RefObject<HTMLTextAreaElement | null> }
-) {
-  useEffect(() => {
-    if (!state.error || !state.values) return;
-    if (refs.title?.current && state.values.title !== undefined) {
-      refs.title.current.value = state.values.title;
-    }
-    if (refs.body.current && state.values.body !== undefined) {
-      refs.body.current.value = state.values.body;
-    }
-  }, [state, refs]);
-}
 
 function Problem({ error }: { error?: string }) {
   return (
@@ -81,7 +72,16 @@ export function NewTicketForm({
   const [state, formAction, pending] = useActionState(action, EMPTY);
   const title = useRef<HTMLInputElement>(null);
   const body = useRef<HTMLTextAreaElement>(null);
-  useRestore(state, { title, body });
+
+  useEffect(() => {
+    if (!state.error || !state.values) return;
+    if (title.current && state.values.title !== undefined) {
+      title.current.value = state.values.title;
+    }
+    if (body.current && state.values.body !== undefined) {
+      body.current.value = state.values.body;
+    }
+  }, [state]);
 
   return (
     <form action={formAction} style={{ display: "grid", gap: "1rem" }}>
@@ -162,7 +162,13 @@ export function ReplyBox({
 }) {
   const [state, formAction, pending] = useActionState(action, EMPTY);
   const body = useRef<HTMLTextAreaElement>(null);
-  useRestore(state, { body });
+
+  useEffect(() => {
+    if (!state.error || !state.values) return;
+    if (body.current && state.values.body !== undefined) {
+      body.current.value = state.values.body;
+    }
+  }, [state]);
 
   return (
     <form action={formAction} style={{ display: "grid", gap: "0.75rem" }}>
