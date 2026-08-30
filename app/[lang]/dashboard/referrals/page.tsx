@@ -3,6 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import InviteForm, { type InviteState } from "@/components/dashboard/InviteForm";
 import ReferralList from "@/components/dashboard/ReferralList";
 import { call, currentUser, sessionToken, type Referrals } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
@@ -45,29 +46,41 @@ export default async function ReferralsPage({
 
   const here = localizedPath(locale, "/dashboard/referrals");
 
-  async function invite(formData: FormData) {
+  /**
+   * Returns the refusal rather than swallowing it.
+   *
+   * The review app owns the rules and its messages are the accurate ones — a
+   * malformed address, your own, one already invited, one that already belongs
+   * to a customer. Every one of those used to be logged and dropped, which on
+   * screen was indistinguishable from the button doing nothing.
+   */
+  async function invite(
+    _prev: InviteState,
+    formData: FormData
+  ): Promise<InviteState> {
     "use server";
 
     const t = await sessionToken();
     if (!t) redirect(localizedPath(locale, "/login"));
 
     const email = String(formData.get("email") ?? "").trim();
-    if (!email) return;
+    if (!email) return { error: "Enter an email address." };
 
-    // Swallowed on purpose. The review app owns the rules — a malformed
-    // address, your own address, one you already invited — and each comes back
-    // as a message this page has nowhere to put without turning into a client
-    // component. The list re-renders either way, so a refused invitation shows
-    // as one that did not appear.
-    //
-    // Worth revisiting the moment anyone asks why nothing happened.
     try {
       await call("/referrals", { method: "POST", body: { email }, token: t });
     } catch (err) {
-      console.error("Invite failed:", err);
+      return {
+        error:
+          err instanceof Error
+            ? err.message
+            : "Could not create the invitation.",
+        // Returned so the box can be refilled — see InviteForm.
+        email,
+      };
     }
 
     revalidatePath(here);
+    return { ok: true };
   }
 
   async function revoke(formData: FormData) {
@@ -185,37 +198,7 @@ export default async function ReferralsPage({
         <h2 style={{ fontSize: "1.15rem", marginBottom: "0.3rem" }}>
           Invite someone
         </h2>
-        <p style={{ color: "var(--cream-faint)", fontSize: "0.9rem", marginBottom: "1rem" }}>
-          {canEmail
-            ? "We will email them an invitation once. If it does not arrive, copy the link below and send it yourself."
-            : "You will get a link to send them yourself. We do not email anyone on your behalf."}
-        </p>
-
-        <form
-          action={invite}
-          style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginBottom: "2.5rem" }}
-        >
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="their@email.com"
-            aria-label="Email address to invite"
-            style={{
-              flex: "1 1 16rem",
-              padding: "0.7rem 0.9rem",
-              borderRadius: 10,
-              border: "1px solid var(--jade-line)",
-              background: "var(--shade-soft)",
-              color: "var(--cream)",
-              fontFamily: "inherit",
-              fontSize: "0.95rem",
-            }}
-          />
-          <button type="submit" className="btn btn-go">
-            Create invitation
-          </button>
-        </form>
+        <InviteForm action={invite} canEmail={canEmail} />
 
         {/* -------------------------------------------------------- the list */}
 
