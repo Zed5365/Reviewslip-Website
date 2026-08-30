@@ -48,7 +48,16 @@ export async function POST(request: Request) {
 
     await setSessionCookie(session.token);
 
-    return Response.json({ redirect: localizedPath(lang, "/dashboard") });
+    // Signing in on the staff host lands on the staff host's own root, not on
+    // /dashboard — which does not exist there, because proxy.ts maps every path
+    // on that host under /admin. The cookie just set is host-only, so this is
+    // also a session that exists only here.
+    const host = request.headers.get("host")?.split(":")[0].toLowerCase() ?? "";
+    const redirect = host.startsWith("admin.")
+      ? "/"
+      : localizedPath(lang, "/dashboard");
+
+    return Response.json({ redirect });
   } catch (err) {
     const status = (err as { status?: number }).status ?? 500;
     return Response.json(

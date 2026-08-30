@@ -261,6 +261,72 @@ export interface Referrals {
   mail?: { enabled: boolean };
 }
 
+/* ------------------------------------------------------------------- staff */
+
+/** An account as the staff list shows it. */
+export interface StaffAccount extends Account {
+  venues: number;
+  referrals: { total: number; qualified: number };
+  progress: ReferralProgress;
+}
+
+export interface StaffVenue {
+  slug: string;
+  name: string;
+  status: string;
+  url: string;
+  createdAt: string;
+  /** Null when the owning account was deleted — the venue keeps serving. */
+  owner: { id: number; email: string } | null;
+  reviews: number;
+  lastReview: string | null;
+}
+
+/** One account's venue, with the numbers the staff view cares about. */
+export interface StaffAccountVenue {
+  slug: string;
+  name: string;
+  status: string;
+  url: string;
+  createdAt: string;
+  ready: boolean;
+  reviews: number;
+  taken: number;
+  lastReview: string | null;
+}
+
+export interface StaffReferral extends Referral {
+  /** The address they actually signed up with, when it differs from `email`. */
+  joinedAs: string | null;
+}
+
+export interface StaffAccountDetail {
+  account: Account;
+  plan: {
+    id: string;
+    name: string;
+    venues: number | null;
+    reviewsPerBusiness: number;
+    tokensPerMonthPerBusiness: number;
+  };
+  venues: StaffAccountVenue[];
+  referrals: { invited: StaffReferral[]; progress: ReferralProgress };
+  referredBy: { id: number; email: string; qualified: boolean } | null;
+}
+
+/**
+ * The signed-in account, but only if it is staff.
+ *
+ * Returns null for a stranger, a signed-in customer, and a review app too old
+ * to send `isAdmin` — three situations the caller must not tell apart, because
+ * every one of them has to produce the same not-found page. A 403 anywhere here
+ * would confirm the pages exist.
+ */
+export async function currentStaff(): Promise<Me | null> {
+  const me = await currentUser();
+  return me?.account.isAdmin === true ? me : null;
+}
+
 /** A setting as the review app describes it: the value, and where it came from. */
 export interface Setting<T> {
   value: T;
