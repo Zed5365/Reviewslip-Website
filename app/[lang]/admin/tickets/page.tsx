@@ -12,27 +12,10 @@ function ago(iso: string | null): string {
   return days < 30 ? `${days}d` : `${Math.floor(days / 30)}mo`;
 }
 
-const cell: React.CSSProperties = {
-  padding: "0.7rem 0.75rem",
-  borderBottom: "1px solid var(--jade-line)",
-  fontSize: "0.9rem",
-  verticalAlign: "top",
-};
-
-const head: React.CSSProperties = {
-  ...cell,
-  color: "var(--cream-faint)",
-  fontSize: "0.78rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-  textAlign: "left",
-  whiteSpace: "nowrap",
-};
-
-const STATUS: Record<string, { label: string; colour: string }> = {
-  open: { label: "Open", colour: "var(--marigold)" },
-  answered: { label: "Answered", colour: "var(--jade)" },
-  closed: { label: "Closed", colour: "var(--cream-faint)" },
+const STATUS: Record<string, { label: string; colour: string; tint: string }> = {
+  open: { label: "Open", colour: "var(--marigold)", tint: "rgba(233,160,59,0.16)" },
+  answered: { label: "Answered", colour: "var(--jade)", tint: "rgba(130,180,155,0.16)" },
+  closed: { label: "Closed", colour: "var(--admin-muted)", tint: "rgba(243,236,220,0.08)" },
 };
 
 export default async function StaffTicketsPage() {
@@ -45,8 +28,8 @@ export default async function StaffTicketsPage() {
 
   return (
     <>
-      <h1 style={{ fontSize: "1.6rem", margin: "0 0 0.3rem" }}>Tickets</h1>
-      <p style={{ color: "var(--cream-faint)", fontSize: "0.9rem", margin: "0 0 1.75rem" }}>
+      <h1 className="admin-title">Tickets</h1>
+      <p className="admin-sub">
         {open.length === 0 ? (
           "Nothing waiting."
         ) : (
@@ -60,16 +43,18 @@ export default async function StaffTicketsPage() {
       </p>
 
       {tickets.length === 0 ? (
-        <p style={{ color: "var(--cream-faint)" }}>No tickets yet.</p>
+        <p className="admin-empty">
+          No tickets yet. They arrive here the moment a customer opens one.
+        </p>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "42rem" }}>
+        <div className="admin-scroll">
+          <table className="admin-table">
             <thead>
               <tr>
-                <th style={head}>Subject</th>
-                <th style={head}>From</th>
-                <th style={head}>Status</th>
-                <th style={{ ...head, textAlign: "right" }}>Waiting</th>
+                <th>Subject</th>
+                <th>From</th>
+                <th>Status</th>
+                <th className="num">Waiting</th>
               </tr>
             </thead>
             <tbody>
@@ -77,22 +62,20 @@ export default async function StaffTicketsPage() {
                 const state = STATUS[t.status] ?? {
                   label: t.status,
                   colour: "var(--cream)",
+                  tint: "rgba(243,236,220,0.08)",
                 };
                 return (
                   <tr key={t.id}>
-                    <td style={cell}>
-                      <Link
-                        href={`/tickets/${t.id}`}
-                        style={{ color: "var(--cream)", fontWeight: 500 }}
-                      >
+                    <td>
+                      <Link href={`/tickets/${t.id}`} className="primary">
                         {t.title}
                       </Link>
-                      <div style={{ color: "var(--cream-faint)", fontSize: "0.8rem" }}>
+                      <span className="sub">
                         {t.messages} message{t.messages === 1 ? "" : "s"}
                         {t.venue ? ` · ${t.venue.name}` : ""}
-                      </div>
+                      </span>
                     </td>
-                    <td style={{ ...cell, overflowWrap: "anywhere" }}>
+                    <td style={{ overflowWrap: "anywhere" }}>
                       <Link
                         href={`/accounts/${t.account.id}`}
                         style={{ color: "var(--jade)" }}
@@ -100,19 +83,21 @@ export default async function StaffTicketsPage() {
                         {t.account.email}
                       </Link>
                     </td>
-                    <td style={{ ...cell, color: state.colour, whiteSpace: "nowrap" }}>
-                      {state.label}
+                    <td>
+                      <span
+                        className="admin-chip"
+                        style={{ color: state.colour, background: state.tint }}
+                      >
+                        {state.label}
+                      </span>
                     </td>
                     <td
+                      className="num"
                       style={{
-                        ...cell,
-                        textAlign: "right",
-                        whiteSpace: "nowrap",
-                        fontVariantNumeric: "tabular-nums",
                         // How long since anything happened, not since it opened:
                         // a ticket answered an hour ago is not two weeks old.
                         color:
-                          t.status === "open" ? "var(--marigold)" : "var(--cream-faint)",
+                          t.status === "open" ? "var(--marigold)" : "var(--admin-muted)",
                       }}
                     >
                       {ago(t.lastMessage ?? t.createdAt)}

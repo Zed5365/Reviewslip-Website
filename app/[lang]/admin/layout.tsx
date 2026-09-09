@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import AdminNav from "@/components/dashboard/AdminNav";
 import { currentStaff, sessionToken } from "@/lib/customer";
 
 export const metadata: Metadata = {
@@ -44,40 +45,35 @@ export default async function AdminLayout({
   if (!me) notFound();
 
   return (
-    <section className="section">
+    <section className="section admin-shell">
       <div className="wrap" style={{ maxWidth: "72rem" }}>
         <header
           style={{
             display: "flex",
-            alignItems: "baseline",
+            alignItems: "center",
             justifyContent: "space-between",
-            gap: "1rem",
+            gap: "1rem 1.5rem",
             flexWrap: "wrap",
             marginBottom: "2rem",
             paddingBottom: "1rem",
             borderBottom: "1px solid var(--jade-line)",
           }}
         >
-          <nav style={{ display: "flex", gap: "1.25rem", alignItems: "baseline" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
             <Link
               href="/"
               style={{
                 fontFamily: "var(--display)",
-                fontSize: "1.2rem",
+                fontSize: "1.15rem",
                 color: "var(--cream)",
               }}
             >
-              Staff
+              Reviewslip <span style={{ color: "var(--jade)" }}>staff</span>
             </Link>
-            <Link href="/tickets" style={{ color: "var(--jade)", fontSize: "0.9rem" }}>
-              Tickets
-            </Link>
-            <Link href="/venues" style={{ color: "var(--jade)", fontSize: "0.9rem" }}>
-              All venues
-            </Link>
-          </nav>
+            <AdminNav />
+          </div>
 
-          <span style={{ color: "var(--cream-faint)", fontSize: "0.85rem" }}>
+          <span style={{ color: "var(--admin-muted)", fontSize: "0.85rem" }}>
             {me.account.email}
           </span>
         </header>

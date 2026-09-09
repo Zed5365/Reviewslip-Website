@@ -2,6 +2,16 @@ import Link from "next/link";
 
 import { call, sessionToken, type StaffAccount } from "@/lib/customer";
 
+interface Overview {
+  accounts: number;
+  venues: number;
+  orphans: number;
+  reviewsThisMonth: number;
+  takenThisMonth: number;
+  openTickets: number;
+  referralsJoined: number;
+}
+
 /** Numbers a person reads at a glance, not exact timestamps. */
 function since(iso: string | null): string {
   if (!iso) return "—";
@@ -14,94 +24,126 @@ function since(iso: string | null): string {
   return `${Math.floor(days / 365)}y ago`;
 }
 
-const cell: React.CSSProperties = {
-  padding: "0.7rem 0.75rem",
-  borderBottom: "1px solid var(--jade-line)",
-  fontSize: "0.9rem",
-  verticalAlign: "top",
-};
-
-const head: React.CSSProperties = {
-  ...cell,
-  color: "var(--cream-faint)",
-  fontSize: "0.78rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-  fontWeight: 500,
-  textAlign: "left",
-  whiteSpace: "nowrap",
-};
-
-const num: React.CSSProperties = {
-  ...cell,
-  textAlign: "right",
-  fontVariantNumeric: "tabular-nums",
-  whiteSpace: "nowrap",
-};
+/**
+ * One headline number.
+ *
+ * `attention` is reserved for a number that means somebody has to act *and*
+ * that returns to zero when they do — the ticket queue, and little else. Never
+ * "the fourth tile needs a colour", and never a standing condition either: a
+ * tint that is always on is decoration, and once it is decoration a real
+ * warning somewhere else on the page stops being visible.
+ */
+function Tile({
+  label,
+  value,
+  note,
+  attention,
+}: {
+  label: string;
+  value: number;
+  note?: string;
+  attention?: boolean;
+}) {
+  return (
+    <div className={`admin-tile${attention ? " admin-tile-attention" : ""}`}>
+      <span className="admin-tile-label">{label}</span>
+      <span className="admin-tile-value">{value.toLocaleString()}</span>
+      {note ? <span className="admin-tile-note">{note}</span> : null}
+    </div>
+  );
+}
 
 export default async function AdminAccountsPage() {
   const token = await sessionToken();
-  const { accounts } = await call<{ accounts: StaffAccount[] }>(
-    "/admin/accounts",
-    { token }
-  );
 
-  const withVenues = accounts.filter((a) => a.venues > 0).length;
+  // Two calls rather than one endpoint returning both: the tiles are platform
+  // totals and the table is a list, and folding them together would mean one
+  // slow query blocking the other. In parallel, so it costs one round trip.
+  const [overview, { accounts }] = await Promise.all([
+    call<Overview>("/admin/overview", { token }),
+    call<{ accounts: StaffAccount[] }>("/admin/accounts", { token }),
+  ]);
+
   const earned = accounts.filter((a) => a.progress.earned).length;
 
   return (
     <>
-      <h1 style={{ fontSize: "1.6rem", margin: "0 0 0.3rem" }}>Accounts</h1>
-      <p style={{ color: "var(--cream-faint)", fontSize: "0.9rem", margin: "0 0 1.75rem" }}>
-        {accounts.length} account{accounts.length === 1 ? "" : "s"} · {withVenues}{" "}
-        with at least one venue · {earned} at the referral discount
+      <h1 className="admin-title">Overview</h1>
+      <p className="admin-sub">Everything on the platform, right now.</p>
+
+      <div className="admin-tiles">
+        <Tile
+          label="Accounts"
+          value={overview.accounts}
+          note={`${accounts.filter((a) => a.venues > 0).length} with a venue`}
+        />
+        {/* Not marked for attention, even with orphans. Venues with no owner is
+            a standing condition that may never be cleared, so an amber tile
+            here would be amber for ever — and a warning colour that is always
+            on stops being a warning anywhere on the page. The count still says
+            it; the Venues tab is where it gets acted on. */}
+        <Tile
+          label="Venues"
+          value={overview.venues}
+          note={
+            overview.orphans > 0
+              ? `${overview.orphans} with no owner`
+              : "all owned"
+          }
+        />
+        <Tile
+          label="Reviews this month"
+          value={overview.reviewsThisMonth}
+          note={`${overview.takenThisMonth.toLocaleString()} taken to a listing`}
+        />
+        <Tile
+          label="Open tickets"
+          value={overview.openTickets}
+          note={overview.openTickets > 0 ? "waiting on us" : "nothing waiting"}
+          attention={overview.openTickets > 0}
+        />
+      </div>
+
+      <h2 style={{ fontSize: "1.05rem", margin: "0 0 0.25rem" }}>Accounts</h2>
+      <p className="admin-sub" style={{ marginBottom: "1rem" }}>
+        Newest first · {overview.referralsJoined} referral
+        {overview.referralsJoined === 1 ? "" : "s"} joined · {earned} at the
+        discount
       </p>
 
       {accounts.length === 0 ? (
-        <p style={{ color: "var(--cream-faint)" }}>No accounts yet.</p>
+        <p className="admin-empty">No accounts yet.</p>
       ) : (
-        /* Tables do not shrink below their content, so the scroll has to live
-           on a wrapper. Without it the page itself scrolls sideways and the
-           header goes with it. */
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "46rem" }}>
+        <div className="admin-scroll">
+          <table className="admin-table">
             <thead>
               <tr>
-                <th style={head}>Account</th>
-                <th style={head}>Plan</th>
-                <th style={{ ...head, textAlign: "right" }}>Venues</th>
-                <th style={{ ...head, textAlign: "right" }}>Referrals</th>
-                <th style={{ ...head, textAlign: "right" }}>Joined</th>
+                <th>Account</th>
+                <th>Plan</th>
+                <th className="num">Venues</th>
+                <th className="num">Referrals</th>
+                <th className="num">Joined</th>
               </tr>
             </thead>
             <tbody>
               {accounts.map((a) => (
                 <tr key={a.id}>
-                  <td style={cell}>
-                    <Link
-                      href={`/accounts/${a.id}`}
-                      style={{ color: "var(--cream)", fontWeight: 500 }}
-                    >
+                  <td>
+                    <Link href={`/accounts/${a.id}`} className="primary">
                       {a.email}
                     </Link>
-                    <div
-                      style={{
-                        color: "var(--cream-faint)",
-                        fontSize: "0.8rem",
-                        marginTop: "0.15rem",
-                      }}
-                    >
+                    <span className="sub">
                       {a.username}
                       {a.isAdmin ? " · staff" : ""}
                       {a.status !== "active" ? ` · ${a.status}` : ""}
-                    </div>
+                    </span>
                   </td>
-                  <td style={cell}>{a.plan}</td>
-                  <td style={num}>{a.venues}</td>
-                  <td style={num}>
-                    {/* Qualified over the bar, not over invitations sent —
-                        five is the number that means anything, and "3/7"
-                        would read as though sending more helped. */}
+                  <td>{a.plan}</td>
+                  <td className="num">{a.venues}</td>
+                  <td className="num">
+                    {/* Qualified over the bar, not over invitations sent. Five
+                        is the number that means anything, and "3/7" would read
+                        as though sending more helped. */}
                     <span
                       style={{
                         color: a.progress.earned ? "var(--marigold)" : "var(--cream)",
@@ -110,13 +152,13 @@ export default async function AdminAccountsPage() {
                       {a.referrals.qualified}/{a.progress.needed}
                     </span>
                     {a.referrals.total > a.referrals.qualified ? (
-                      <span style={{ color: "var(--cream-faint)" }}>
+                      <span style={{ color: "var(--admin-muted)" }}>
                         {" "}
                         ({a.referrals.total} sent)
                       </span>
                     ) : null}
                   </td>
-                  <td style={{ ...num, color: "var(--cream-faint)" }}>
+                  <td className="num" style={{ color: "var(--admin-muted)" }}>
                     {since(a.createdAt)}
                   </td>
                 </tr>

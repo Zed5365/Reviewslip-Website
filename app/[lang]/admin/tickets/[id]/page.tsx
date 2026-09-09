@@ -26,7 +26,7 @@ function when(iso: string): string {
 const STATUS: Record<string, { label: string; colour: string }> = {
   open: { label: "Waiting on us", colour: "var(--marigold)" },
   answered: { label: "Answered — waiting on them", colour: "var(--jade)" },
-  closed: { label: "Closed", colour: "var(--cream-faint)" },
+  closed: { label: "Closed", colour: "var(--admin-muted)" },
 };
 
 export default async function StaffTicketPage({
@@ -97,7 +97,7 @@ export default async function StaffTicketPage({
 
       <h1 style={{ fontSize: "1.4rem", margin: "1rem 0 0.4rem" }}>{ticket.title}</h1>
 
-      <p style={{ color: "var(--cream-faint)", fontSize: "0.85rem", margin: "0 0 1.75rem" }}>
+      <p style={{ color: "var(--admin-muted)", fontSize: "0.85rem", margin: "0 0 1.75rem" }}>
         <Link href={`/accounts/${account.id}`} style={{ color: "var(--jade)" }}>
           {account.email}
         </Link>
@@ -125,7 +125,7 @@ export default async function StaffTicketPage({
               Close it
             </button>
           </form>
-          <p style={{ color: "var(--cream-faint)", fontSize: "0.85rem", margin: "0.6rem 0 0" }}>
+          <p style={{ color: "var(--admin-muted)", fontSize: "0.85rem", margin: "0.6rem 0 0" }}>
             Closing frees their one ticket slot. A reply from them reopens it
             rather than starting a new thread.
           </p>

@@ -10,30 +10,6 @@ function when(iso: string | null): string {
     : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-const cell: React.CSSProperties = {
-  padding: "0.7rem 0.75rem",
-  borderBottom: "1px solid var(--jade-line)",
-  fontSize: "0.9rem",
-  verticalAlign: "top",
-};
-
-const head: React.CSSProperties = {
-  ...cell,
-  color: "var(--cream-faint)",
-  fontSize: "0.78rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-  textAlign: "left",
-  whiteSpace: "nowrap",
-};
-
-const num: React.CSSProperties = {
-  ...cell,
-  textAlign: "right",
-  fontVariantNumeric: "tabular-nums",
-  whiteSpace: "nowrap",
-};
-
 export default async function StaffVenuesPage() {
   const token = await sessionToken();
   const { venues } = await call<{ venues: StaffVenue[] }>("/admin/venues", {
@@ -44,8 +20,8 @@ export default async function StaffVenuesPage() {
 
   return (
     <>
-      <h1 style={{ fontSize: "1.6rem", margin: "0 0 0.3rem" }}>Venues</h1>
-      <p style={{ color: "var(--cream-faint)", fontSize: "0.9rem", margin: "0 0 1.75rem" }}>
+      <h1 className="admin-title">Venues</h1>
+      <p className="admin-sub">
         {venues.length} venue{venues.length === 1 ? "" : "s"}
         {orphans > 0 ? (
           <>
@@ -62,14 +38,13 @@ export default async function StaffVenuesPage() {
            removing the venue, so these keep serving guests with nobody able to
            reach them from a dashboard. Nothing else in the product shows them. */
         <p
+          className="admin-card"
           style={{
-            border: "1px solid rgba(233,160,59,0.4)",
+            borderColor: "rgba(233,160,59,0.4)",
             borderLeftWidth: 3,
-            borderRadius: 10,
-            background: "rgba(233,160,59,0.1)",
+            background: "rgba(233,160,59,0.08)",
             padding: "0.8rem 1rem",
             fontSize: "0.9rem",
-            margin: "0 0 1.5rem",
           }}
         >
           A venue whose account was deleted keeps serving its public page and
@@ -79,36 +54,34 @@ export default async function StaffVenuesPage() {
       ) : null}
 
       {venues.length === 0 ? (
-        <p style={{ color: "var(--cream-faint)" }}>No venues yet.</p>
+        <p className="admin-empty">No venues yet.</p>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "44rem" }}>
+        <div className="admin-scroll">
+          <table className="admin-table">
             <thead>
               <tr>
-                <th style={head}>Venue</th>
-                <th style={head}>Owner</th>
-                <th style={head}>State</th>
-                <th style={{ ...head, textAlign: "right" }}>Reviews</th>
-                <th style={{ ...head, textAlign: "right" }}>Last</th>
+                <th>Venue</th>
+                <th>Owner</th>
+                <th>State</th>
+                <th className="num">Reviews</th>
+                <th className="num">Last</th>
               </tr>
             </thead>
             <tbody>
               {venues.map((v) => (
                 <tr key={v.slug}>
-                  <td style={cell}>
+                  <td>
                     <a
                       href={v.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: "var(--cream)", fontWeight: 500 }}
+                      className="primary"
                     >
                       {v.name}
                     </a>
-                    <div style={{ color: "var(--cream-faint)", fontSize: "0.8rem" }}>
-                      {v.slug}
-                    </div>
+                    <span className="sub">{v.slug}</span>
                   </td>
-                  <td style={{ ...cell, overflowWrap: "anywhere" }}>
+                  <td style={{ overflowWrap: "anywhere" }}>
                     {v.owner ? (
                       <Link
                         href={`/accounts/${v.owner.id}`}
@@ -120,9 +93,9 @@ export default async function StaffVenuesPage() {
                       <span style={{ color: "var(--marigold)" }}>no owner</span>
                     )}
                   </td>
-                  <td style={cell}>{v.status}</td>
-                  <td style={num}>{v.reviews.toLocaleString()}</td>
-                  <td style={{ ...num, color: "var(--cream-faint)" }}>
+                  <td>{v.status}</td>
+                  <td className="num">{v.reviews.toLocaleString()}</td>
+                  <td className="num" style={{ color: "var(--admin-muted)" }}>
                     {when(v.lastReview)}
                   </td>
                 </tr>

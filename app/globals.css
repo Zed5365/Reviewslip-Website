@@ -580,3 +580,235 @@ img {
     min-height: 42px;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Staff pages                                                                */
+/* -------------------------------------------------------------------------- */
+
+/* Muted text on the staff pages.
+
+   --cream-faint is 42% alpha, which measures 3.54 on the page and 3.34 on a
+   tile — under the 4.5 that small text needs, and every label, column header
+   and sub-line here is small text. 55% measures 5.23 and 5.07 on those same two
+   grounds, which is the first step that clears both with headroom.
+
+   Scoped rather than a change to --cream-faint itself: that token is used
+   across the marketing site and the customer dashboard, and moving it there is
+   a bigger change than this one, needing its own look. Those pages have the
+   same problem and it is worth fixing separately. */
+:root {
+  --admin-muted: rgba(243, 236, 220, 0.55);
+}
+
+
+/* One place for the table look, rather than the same style objects retyped in
+   four page files — which is what these were, and how two of them had already
+   drifted a pixel apart. */
+
+.admin-nav {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.admin-nav a {
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: var(--cream-soft);
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.admin-nav a:hover {
+  background: rgba(130, 180, 155, 0.12);
+  color: var(--cream);
+}
+
+/* aria-current is the accessible fact; the styling follows it rather than a
+   second class that could disagree with it. */
+.admin-nav a[aria-current="page"] {
+  background: rgba(130, 180, 155, 0.16);
+  color: var(--cream);
+}
+
+/* --- stat tiles ---------------------------------------------------------- */
+
+.admin-tiles {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  margin-bottom: 2.25rem;
+}
+
+.admin-tile {
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-card);
+  padding: 1rem 1.1rem;
+  background: var(--shade-soft);
+}
+
+.admin-tile-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--admin-muted);
+  margin-bottom: 0.35rem;
+}
+
+/* Sans, not the display serif: a serif figure at this size reads as decoration
+   rather than as a number. Proportional figures too — tabular-nums gives every
+   digit the width of a zero, which looks loose on a standalone value and is
+   only worth it in a column that has to align. */
+.admin-tile-value {
+  font-family: var(--ui);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--cream);
+}
+
+.admin-tile-note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+  margin-top: 0.3rem;
+}
+
+/* Reserved for a tile whose number means somebody has to do something. Never
+   used for "the fourth tile". */
+.admin-tile-attention {
+  border-color: rgba(233, 160, 59, 0.45);
+  background: rgba(233, 160, 59, 0.08);
+}
+
+.admin-tile-attention .admin-tile-value {
+  color: var(--marigold);
+}
+
+/* --- tables -------------------------------------------------------------- */
+
+/* A table does not shrink below its content, so the scroll lives on a wrapper.
+   Without it the page scrolls sideways and takes the header with it. */
+.admin-scroll {
+  overflow-x: auto;
+  margin-inline: -0.75rem;
+  padding-inline: 0.75rem;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 42rem;
+}
+
+.admin-table th {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  white-space: nowrap;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  border-bottom: 1px solid var(--jade-line);
+}
+
+.admin-table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+}
+
+.admin-table tbody tr:hover td {
+  background: rgba(130, 180, 155, 0.05);
+}
+
+.admin-table .num {
+  text-align: right;
+  white-space: nowrap;
+  /* Here tabular-nums earns its keep: a column of figures has to line up. */
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-table .primary {
+  color: var(--cream);
+  font-weight: 500;
+}
+
+.admin-table .sub {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+}
+
+/* --- shared bits --------------------------------------------------------- */
+
+.admin-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.55rem;
+  margin: 0 0 0.25rem;
+}
+
+.admin-sub {
+  color: var(--admin-muted);
+  font-size: 0.9rem;
+  margin: 0 0 1.75rem;
+}
+
+.admin-card {
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-card h2 {
+  font-size: 1rem;
+  margin: 0 0 0.9rem;
+}
+
+.admin-empty {
+  border: 1px dashed var(--jade-line);
+  border-radius: var(--radius-card);
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--admin-muted);
+  font-size: 0.9rem;
+}
+
+.admin-chip {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 34rem) {
+  .admin-table { min-width: 34rem; }
+  .admin-tiles { grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); }
+  .admin-tile-value { font-size: 1.5rem; }
+}
+
+/* The staff host wears no marketing chrome.
+
+   :has() on the body rather than a header/footer check in the root layout,
+   which would have to read the Host header — and reading headers() there opts
+   every marketing page out of static rendering to hide a nav on one host. This
+   costs a selector and nothing else.
+
+   The pairing is: the staff layout renders .admin-shell, and these two rules
+   remove the public nav and footer wrapped around it. */
+body:has(.admin-shell) > header,
+body:has(.admin-shell) > footer,
+body:has(.admin-shell) > * > header,
+body:has(.admin-shell) > * > footer {
+  display: none;
+}
+
+/* Without the site header above it, the page needs its own top breathing room. */
+.admin-shell {
+  padding-top: 2.5rem;
+}

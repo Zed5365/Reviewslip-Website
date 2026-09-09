@@ -11,37 +11,6 @@ function when(iso: string | null): string {
     : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-const card: React.CSSProperties = {
-  border: "1px solid var(--jade-line)",
-  borderRadius: 14,
-  padding: "1.25rem",
-  marginBottom: "1.5rem",
-};
-
-const cell: React.CSSProperties = {
-  padding: "0.65rem 0.75rem",
-  borderBottom: "1px solid var(--jade-line)",
-  fontSize: "0.9rem",
-  verticalAlign: "top",
-};
-
-const head: React.CSSProperties = {
-  ...cell,
-  color: "var(--cream-faint)",
-  fontSize: "0.78rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-  textAlign: "left",
-  whiteSpace: "nowrap",
-};
-
-const num: React.CSSProperties = {
-  ...cell,
-  textAlign: "right",
-  fontVariantNumeric: "tabular-nums",
-  whiteSpace: "nowrap",
-};
-
 /** Same three words the customer's own referrals page uses. */
 const STATE: Record<string, { label: string; colour: string }> = {
   invited: { label: "Invited", colour: "var(--marigold)" },
@@ -74,19 +43,19 @@ export default async function StaffAccountPage({
         ← Accounts
       </Link>
 
-      <h1 style={{ fontSize: "1.5rem", margin: "1rem 0 0.3rem", overflowWrap: "anywhere" }}>
+      <h1 className="admin-title" style={{ marginTop: "1rem", overflowWrap: "anywhere" }}>
         {account.email}
       </h1>
-      <p style={{ color: "var(--cream-faint)", fontSize: "0.9rem", margin: "0 0 1.75rem" }}>
+      <p className="admin-sub">
         {account.username} · {plan.name} · {account.status}
         {account.isAdmin ? " · staff" : ""} · joined {when(account.createdAt)}
       </p>
 
       {/* ------------------------------------------------------------ plan */}
 
-      <div style={card}>
-        <h2 style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>Plan</h2>
-        <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--cream-faint)" }}>
+      <div className="admin-card">
+        <h2>Plan</h2>
+        <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--admin-muted)" }}>
           <strong style={{ color: "var(--cream)" }}>{plan.name}</strong> ·{" "}
           {venues.length} of {plan.venues === null ? "unlimited" : plan.venues} venues
           used · {plan.reviewsPerBusiness.toLocaleString()} reviews and{" "}
@@ -102,53 +71,47 @@ export default async function StaffAccountPage({
 
       {/* ---------------------------------------------------------- venues */}
 
-      <div style={card}>
-        <h2 style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>
-          Venues ({venues.length})
-        </h2>
+      <div className="admin-card">
+        <h2>Venues ({venues.length})</h2>
 
         {venues.length === 0 ? (
-          <p style={{ margin: 0, color: "var(--cream-faint)", fontSize: "0.9rem" }}>
-            None yet.
-          </p>
+          <p className="admin-empty" style={{ padding: "1.25rem" }}>None yet.</p>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "38rem" }}>
+          <div className="admin-scroll">
+            <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={head}>Venue</th>
-                  <th style={head}>State</th>
-                  <th style={{ ...head, textAlign: "right" }}>Reviews</th>
-                  <th style={{ ...head, textAlign: "right" }}>Taken</th>
-                  <th style={{ ...head, textAlign: "right" }}>Last</th>
+                  <th>Venue</th>
+                  <th>State</th>
+                  <th className="num">Reviews</th>
+                  <th className="num">Taken</th>
+                  <th className="num">Last</th>
                 </tr>
               </thead>
               <tbody>
                 {venues.map((v) => (
                   <tr key={v.slug}>
-                    <td style={cell}>
+                    <td>
                       <a
                         href={v.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: "var(--cream)", fontWeight: 500 }}
+                        className="primary"
                       >
                         {v.name}
                       </a>
-                      <div style={{ color: "var(--cream-faint)", fontSize: "0.8rem" }}>
-                        {v.slug}
-                      </div>
+                      <span className="sub">{v.slug}</span>
                     </td>
-                    <td style={{ ...cell, color: v.ready ? "var(--jade)" : "var(--marigold)" }}>
+                    <td style={{ color: v.ready ? "var(--jade)" : "var(--marigold)" }}>
                       {v.status !== "active" ? v.status : v.ready ? "live" : "no review link"}
                     </td>
-                    <td style={num}>{v.reviews.toLocaleString()}</td>
-                    <td style={num}>
+                    <td className="num">{v.reviews.toLocaleString()}</td>
+                    <td className="num">
                       {/* Drafts someone actually pressed Proceed on. The gap
                           between this and Reviews is the number worth watching. */}
                       {v.taken.toLocaleString()}
                     </td>
-                    <td style={{ ...num, color: "var(--cream-faint)" }}>
+                    <td className="num" style={{ color: "var(--admin-muted)" }}>
                       {when(v.lastReview)}
                     </td>
                   </tr>
@@ -161,8 +124,8 @@ export default async function StaffAccountPage({
 
       {/* ------------------------------------------------------- referrals */}
 
-      <div style={card}>
-        <h2 style={{ fontSize: "1rem", margin: "0 0 0.3rem" }}>Referrals</h2>
+      <div className="admin-card">
+        <h2 style={{ marginBottom: "0.3rem" }}>Referrals</h2>
         <p style={{ margin: "0 0 0.9rem", fontSize: "0.9rem" }}>
           <strong
             style={{
@@ -171,7 +134,7 @@ export default async function StaffAccountPage({
           >
             {referrals.progress.qualified} of {referrals.progress.needed} joined
           </strong>
-          <span style={{ color: "var(--cream-faint)" }}>
+          <span style={{ color: "var(--admin-muted)" }}>
             {" "}
             · {referrals.invited.length} invited
             {referrals.progress.earned
@@ -181,7 +144,7 @@ export default async function StaffAccountPage({
         </p>
 
         {referredBy ? (
-          <p style={{ margin: "0 0 0.9rem", fontSize: "0.9rem", color: "var(--cream-faint)" }}>
+          <p style={{ margin: "0 0 0.9rem", fontSize: "0.9rem", color: "var(--admin-muted)" }}>
             Referred by{" "}
             <Link href={`/accounts/${referredBy.id}`} style={{ color: "var(--jade)" }}>
               {referredBy.email}
@@ -191,18 +154,16 @@ export default async function StaffAccountPage({
         ) : null}
 
         {referrals.invited.length === 0 ? (
-          <p style={{ margin: 0, color: "var(--cream-faint)", fontSize: "0.9rem" }}>
-            None sent.
-          </p>
+          <p className="admin-empty" style={{ padding: "1.25rem" }}>None sent.</p>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "38rem" }}>
+          <div className="admin-scroll">
+            <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={head}>Invited</th>
-                  <th style={head}>State</th>
-                  <th style={head}>Sent</th>
-                  <th style={head}>Joined</th>
+                  <th>Invited</th>
+                  <th>State</th>
+                  <th>Sent</th>
+                  <th>Joined</th>
                 </tr>
               </thead>
               <tbody>
@@ -210,25 +171,23 @@ export default async function StaffAccountPage({
                   const state = STATE[r.state] ?? { label: r.state, colour: "var(--cream)" };
                   return (
                     <tr key={r.id}>
-                      <td style={{ ...cell, overflowWrap: "anywhere" }}>
+                      <td style={{ overflowWrap: "anywhere" }}>
                         {r.email}
                         {/* The invited address is only a label — signing up
                             with a different one still counts — so when they
                             differ, say so rather than showing one and
                             implying the other. */}
                         {r.joinedAs && r.joinedAs.toLowerCase() !== r.email.toLowerCase() ? (
-                          <div style={{ color: "var(--cream-faint)", fontSize: "0.8rem" }}>
-                            signed up as {r.joinedAs}
-                          </div>
+                          <span className="sub">signed up as {r.joinedAs}</span>
                         ) : null}
                       </td>
-                      <td style={{ ...cell, color: state.colour, whiteSpace: "nowrap" }}>
+                      <td style={{ color: state.colour, whiteSpace: "nowrap" }}>
                         {state.label}
                       </td>
-                      <td style={{ ...cell, color: "var(--cream-faint)", whiteSpace: "nowrap" }}>
+                      <td style={{ color: "var(--admin-muted)", whiteSpace: "nowrap" }}>
                         {when(r.invitedAt)}
                       </td>
-                      <td style={{ ...cell, color: "var(--cream-faint)", whiteSpace: "nowrap" }}>
+                      <td style={{ color: "var(--admin-muted)", whiteSpace: "nowrap" }}>
                         {when(r.qualifiedAt)}
                       </td>
                     </tr>
