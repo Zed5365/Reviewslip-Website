@@ -261,6 +261,100 @@ export interface Referrals {
   mail?: { enabled: boolean };
 }
 
+/* ------------------------------------------------------------ reservations */
+
+/**
+ * Dates here are calendar dates, always 'YYYY-MM-DD', never Date objects.
+ *
+ * The review app stores them as Postgres `date` and hands them over as strings
+ * deliberately — a night is a day at the property, not an instant, and turning
+ * one into a Date at local midnight is how it becomes the day before. Keep them
+ * strings; format for display, never for storage.
+ */
+export type NightDate = string;
+
+/** A room type: the thing that is sold. */
+export interface RoomGroup {
+  id: number;
+  name: string;
+  capacity: number;
+  sort: number;
+  /** How many physical rooms are in it. */
+  rooms: number;
+}
+
+/** A physical room. */
+export interface Room {
+  id: number;
+  groupId: number;
+  groupName: string | null;
+  name: string;
+  status: string;
+  sort: number;
+}
+
+export type BookingStatus =
+  | "confirmed"
+  | "in_house"
+  | "checked_out"
+  | "cancelled"
+  | "no_show";
+
+export interface Booking {
+  id: number;
+  groupId: number;
+  groupName: string | null;
+  /** Null while nobody has assigned it — which is normal, not an error. */
+  roomId: number | null;
+  roomName: string | null;
+  guestName: string;
+  guestEmail: string | null;
+  guestPhone: string | null;
+  adults: number;
+  children: number;
+  arrival: NightDate;
+  departure: NightDate;
+  nights: number;
+  status: BookingStatus;
+  source: string;
+  notes: string | null;
+  createdAt: string;
+}
+
+/** One room-night that is spoken for. */
+export interface TakenNight {
+  roomId: number;
+  night: NightDate;
+  bookingId: number;
+  guestName: string;
+  status: BookingStatus;
+  arrival: NightDate;
+  departure: NightDate;
+  source: string;
+}
+
+/**
+ * A window of the diary.
+ *
+ * `taken` is a flat list rather than a grid: the API sends one row per
+ * room-night, and the page builds the grid. Sending it pre-shaped would repeat
+ * each booking once per night it covers.
+ */
+export interface CalendarWindow {
+  start: NightDate;
+  nights: NightDate[];
+  rooms: Room[];
+  taken: TakenNight[];
+  unassigned: Booking[];
+}
+
+export interface DayView {
+  date: NightDate;
+  arrivals: Booking[];
+  departures: Booking[];
+  inHouse: Booking[];
+}
+
 /* ----------------------------------------------------------------- support */
 
 export interface TicketMessage {

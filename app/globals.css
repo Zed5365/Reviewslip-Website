@@ -812,3 +812,104 @@ body:has(.admin-shell) > * > footer {
 .admin-shell {
   padding-top: 2.5rem;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Reservations calendar                                                      */
+/* -------------------------------------------------------------------------- */
+
+/* Rooms down the side, nights across. Fixed layout so a long guest name cannot
+   widen its column and shove every night after it out of alignment — the one
+   thing that makes a grid like this unreadable. */
+.cal {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  /* 11rem for the room label plus a column per night. Narrower than this and
+     the day numbers start to collide. */
+  min-width: 11rem;
+}
+
+.cal th,
+.cal td {
+  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+}
+
+/* The room column stays put while the nights scroll under it. Without this you
+   lose track of which row you are reading two weeks in. */
+.cal-room {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 11rem;
+  min-width: 11rem;
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--cream);
+  /* Opaque, not translucent: the cells sliding underneath must not show
+     through it. */
+  background: #0c1f19;
+  border-right: 1px solid var(--jade-line);
+}
+
+.cal-type {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--admin-muted);
+}
+
+.cal-night {
+  width: 3rem;
+  min-width: 3rem;
+  padding: 0.4rem 0.2rem;
+  text-align: center;
+  font-weight: 500;
+  background: #0c1f19;
+}
+
+.cal-weekday {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--admin-muted);
+}
+
+.cal-day {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--cream);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-night.weekend {
+  background: rgba(243, 236, 220, 0.04);
+}
+
+.cal-cell {
+  height: 2.6rem;
+  padding: 0;
+  /* A hairline between nights, so a five-night stay reads as five nights
+     rather than one long bar. Counting them is the point of the grid. */
+  border-left: 1px solid rgba(12, 31, 25, 0.6);
+}
+
+.cal-cell.taken {
+  position: relative;
+}
+
+/* The guest name overflows its own night into the ones after it, which is what
+   makes a stay read as one block. pointer-events off so it never covers the
+   cell behind it for a click. */
+.cal-guest {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: flex;
+  align-items: center;
+  padding-left: 0.4rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
