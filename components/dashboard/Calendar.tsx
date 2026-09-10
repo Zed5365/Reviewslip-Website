@@ -1,22 +1,34 @@
-import Link from "next/link";
-import type { CalendarWindow, TakenNight } from "@/lib/customer";
+"use client";
+
+import { useState } from "react";
+import type { Booking, CalendarWindow, Room, TakenNight } from "@/lib/customer";
 
 /**
- * The diary: rooms down the side, nights across the top.
+ * The diary: rooms down the side, nights across.
  *
- * Server-rendered and read-only for now. Dragging a booking between rooms is
- * the next slice; the API call it will make (`/bookings/:id/assign`) already
- * exists and is already transactional, so that slice is a client component and
- * no schema change.
+ * Dragging a stay changes which room it is in, and nothing else. Not its dates
+ * — a horizontal drag that silently moved somebody's arrival would be the most
+ * expensive gesture in the product, and the easiest to make by accident. Dates
+ * change in the panel, where it takes a deliberate edit and shows the new night
+ * count before it saves.
  *
- * The grid is built here from the flat list of room-nights the API sends. It
- * arrives flat on purpose: one row per room-night, so a booking's details are
- * sent once rather than once per night it covers.
+ * Drag is the quick path, not the only one. The panel has a room selector that
+ * does the same thing, because HTML5 drag and drop does not work under a finger
+ * and a front desk runs on a tablet as often as a laptop.
  */
 
-/** Day-of-month and a one-letter weekday, which is all a column header fits. */
+export interface MoveResult {
+  error?: string;
+}
+
+const TONE: Record<string, { fill: string; ink: string }> = {
+  confirmed: { fill: "rgba(130,180,155,0.30)", ink: "var(--cream)" },
+  in_house: { fill: "rgba(233,160,59,0.32)", ink: "var(--cream)" },
+  checked_out: { fill: "rgba(243,236,220,0.10)", ink: "var(--admin-muted)" },
+};
+
 function head(night: string) {
-  const d = new Date(`${night}T12:00:00Z`); // midday, so no zone can shift the day
+  const d = new Date(`${night}T12:00:00Z`); // midday: no zone can shift the day
   return {
     day: d.getUTCDate(),
     weekday: ["S", "M", "T", "W", "T", "F", "S"][d.getUTCDay()],
@@ -24,27 +36,48 @@ function head(night: string) {
   };
 }
 
-/** How a stay's own nights read on the grid. */
-const TONE: Record<string, { fill: string; ink: string }> = {
-  confirmed: { fill: "rgba(130,180,155,0.30)", ink: "var(--cream)" },
-  in_house: { fill: "rgba(233,160,59,0.32)", ink: "var(--cream)" },
-  checked_out: { fill: "rgba(243,236,220,0.10)", ink: "var(--admin-muted)" },
-};
+/** The nights a stay occupies. Departure day is not one. */
+function nightsOf(arrival: string, departure: string): string[] {
+  const a = Date.parse(`${arrival}T00:00:00Z`);
+  const d = Date.parse(`${departure}T00:00:00Z`);
+  if (!Number.isFinite(a) || !Number.isFinite(d) || d <= a) return [];
+  const out: string[] = [];
+  for (let t = a; t < d; t += 86_400_000) {
+    out.push(new Date(t).toISOString().slice(0, 10));
+  }
+  return out;
+}
 
 export default function Calendar({
   data,
-  slug,
-  lang,
+  move,
+  onOpen,
 }: {
   data: CalendarWindow;
-  slug: string;
-  lang: string;
+  /** Server action: put a booking in a room, or null to unassign. */
+  move: (bookingId: number, roomId: number | null) => Promise<MoveResult>;
+  onOpen: (booking: Booking | TakenNight) => void;
 }) {
-  const { nights, rooms, taken, unassigned } = data;
+  const { nights, rooms } = data;
 
-  // room id -> night -> what is in it. Built once; the grid then reads each
-  // cell in constant time rather than scanning the list per cell, which at
-  // fifty rooms across a fortnight would be seven hundred scans of it.
+  // The grid is held locally so a drop can land before the round trip. The
+  // server is still the truth: a refusal puts it back and says why.
+  const [taken, setTaken] = useState<TakenNight[]>(data.taken);
+  const [unassigned, setUnassigned] = useState<Booking[]>(data.unassigned);
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [over, setOver] = useState<number | null>(null);
+  const [problem, setProblem] = useState<string>("");
+  const [busy, setBusy] = useState(false);
+
+  // Re-seed when the server sends a new window (paging, or a revalidate).
+  const [seen, setSeen] = useState(data);
+  if (data !== seen) {
+    setSeen(data);
+    setTaken(data.taken);
+    setUnassigned(data.unassigned);
+    setProblem("");
+  }
+
   const byRoom = new Map<number, Map<string, TakenNight>>();
   for (const t of taken) {
     let row = byRoom.get(t.roomId);
@@ -55,51 +88,174 @@ export default function Calendar({
     row.set(t.night, t);
   }
 
-  if (rooms.length === 0) {
-    return (
-      <p className="admin-empty">
-        No rooms yet.{" "}
-        <Link href={`/${lang}/dashboard/${slug}/rooms`} style={{ color: "var(--jade)" }}>
-          Set up room types and rooms
-        </Link>{" "}
-        and the calendar will draw itself.
-      </p>
-    );
+  /** Everything known about the stay being dragged, from either source. */
+  function stayOf(bookingId: number) {
+    const night = taken.find((t) => t.bookingId === bookingId);
+    if (night) {
+      return {
+        id: bookingId,
+        guestName: night.guestName,
+        arrival: night.arrival,
+        departure: night.departure,
+        status: night.status,
+        source: night.source,
+      };
+    }
+    const pending = unassigned.find((b) => b.id === bookingId);
+    return pending
+      ? {
+          id: bookingId,
+          guestName: pending.guestName,
+          arrival: pending.arrival,
+          departure: pending.departure,
+          status: pending.status,
+          source: pending.source,
+        }
+      : null;
   }
+
+  /**
+   * Would this stay clash in that room?
+   *
+   * Checked here so an impossible drop refuses instantly instead of after a
+   * round trip. It is not the enforcement — the unique index on (room_id,
+   * night) is, and it sees nights outside this window that the browser has
+   * never been sent.
+   */
+  function clashes(bookingId: number, roomId: number, wanted: string[]) {
+    const row = byRoom.get(roomId);
+    if (!row) return false;
+    return wanted.some((n) => {
+      const held = row.get(n);
+      return held !== undefined && held.bookingId !== bookingId;
+    });
+  }
+
+  async function drop(roomId: number | null) {
+    const bookingId = dragging;
+    setDragging(null);
+    setOver(null);
+    if (bookingId === null || busy) return;
+
+    const stay = stayOf(bookingId);
+    if (!stay) return;
+
+    const wanted = nightsOf(stay.arrival, stay.departure);
+
+    if (roomId !== null && clashes(bookingId, roomId, wanted)) {
+      setProblem(
+        `${stay.guestName} cannot go there — the room is taken on one of those nights.`
+      );
+      return;
+    }
+
+    // Snapshot before touching anything, so a refusal restores exactly what was
+    // on screen rather than something reconstructed from the new state.
+    const before = { taken, unassigned };
+    setProblem("");
+    setBusy(true);
+
+    const withoutIt = taken.filter((t) => t.bookingId !== bookingId);
+    if (roomId === null) {
+      setTaken(withoutIt);
+      setUnassigned([...unassigned.filter((b) => b.id !== bookingId), {
+        ...(unassigned.find((b) => b.id === bookingId) ?? ({} as Booking)),
+        id: bookingId,
+        guestName: stay.guestName,
+        arrival: stay.arrival,
+        departure: stay.departure,
+      } as Booking]);
+    } else {
+      setTaken([
+        ...withoutIt,
+        ...wanted
+          .filter((n) => nights.includes(n))
+          .map((night) => ({
+            roomId,
+            night,
+            bookingId,
+            guestName: stay.guestName,
+            status: stay.status,
+            arrival: stay.arrival,
+            departure: stay.departure,
+            source: stay.source,
+          })),
+      ]);
+      setUnassigned(unassigned.filter((b) => b.id !== bookingId));
+    }
+
+    const result = await move(bookingId, roomId);
+    setBusy(false);
+
+    if (result.error) {
+      // Put it back where it was, visibly, and say why. Reverting silently
+      // would leave somebody believing the move worked.
+      setTaken(before.taken);
+      setUnassigned(before.unassigned);
+      setProblem(result.error);
+    }
+  }
+
+  if (rooms.length === 0) return null;
 
   return (
     <>
-      {unassigned.length > 0 ? (
-        <div
-          className="admin-card"
-          style={{
-            borderColor: "rgba(233,160,59,0.4)",
-            borderLeftWidth: 3,
-            background: "rgba(233,160,59,0.08)",
-          }}
-        >
-          <h2 style={{ marginBottom: "0.5rem" }}>
-            {unassigned.length} booking{unassigned.length === 1 ? "" : "s"} with no
-            room
-          </h2>
-          <p style={{ margin: "0 0 0.9rem", fontSize: "0.9rem", color: "var(--admin-muted)" }}>
-            These hold no room yet, so they are not on the grid below and nothing
-            is stopping the room being sold twice.
+      {problem ? (
+        <p className="cal-problem" role="alert">
+          {problem}
+        </p>
+      ) : null}
+
+      {/* --------------------------------------------------- unassigned strip */}
+
+      <div
+        className={`cal-tray${over === -1 ? " over" : ""}`}
+        onDragOver={(e) => {
+          if (dragging === null) return;
+          e.preventDefault();
+          setOver(-1);
+        }}
+        onDragLeave={() => setOver((o) => (o === -1 ? null : o))}
+        onDrop={(e) => {
+          e.preventDefault();
+          void drop(null);
+        }}
+      >
+        <h2 className="cal-tray-title">
+          Not in a room{unassigned.length ? ` (${unassigned.length})` : ""}
+        </h2>
+
+        {unassigned.length === 0 ? (
+          <p className="cal-tray-empty">
+            Everything has a room. Drag a stay here to take it out of one.
           </p>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.5rem" }}>
+        ) : (
+          <ul className="cal-tray-list">
             {unassigned.map((b) => (
-              <li key={b.id} style={{ fontSize: "0.9rem" }}>
-                <strong style={{ color: "var(--cream)" }}>{b.guestName}</strong>
-                <span style={{ color: "var(--admin-muted)" }}>
-                  {" "}
-                  · {b.groupName} · {b.arrival} → {b.departure} ({b.nights} night
-                  {b.nights === 1 ? "" : "s"})
-                </span>
+              <li key={b.id}>
+                <button
+                  type="button"
+                  draggable={!busy}
+                  onDragStart={() => setDragging(b.id)}
+                  onDragEnd={() => {
+                    setDragging(null);
+                    setOver(null);
+                  }}
+                  onClick={() => onOpen(b)}
+                  className={`cal-chip${dragging === b.id ? " dragging" : ""}`}
+                >
+                  <strong>{b.guestName}</strong>
+                  <span>
+                    {b.groupName} · {b.arrival} → {b.departure}
+                  </span>
+                </button>
               </li>
             ))}
           </ul>
-        </div>
-      ) : null}
+        )}
+      </div>
+
+      {/* ---------------------------------------------------------- the grid */}
 
       <div className="admin-scroll">
         <table className="cal">
@@ -109,7 +265,10 @@ export default function Calendar({
               {nights.map((night) => {
                 const h = head(night);
                 return (
-                  <th key={night} className={h.weekend ? "cal-night weekend" : "cal-night"}>
+                  <th
+                    key={night}
+                    className={h.weekend ? "cal-night weekend" : "cal-night"}
+                  >
                     <span className="cal-weekday">{h.weekday}</span>
                     <span className="cal-day">{h.day}</span>
                   </th>
@@ -118,10 +277,25 @@ export default function Calendar({
             </tr>
           </thead>
           <tbody>
-            {rooms.map((room) => {
+            {rooms.map((room: Room) => {
               const row = byRoom.get(room.id);
+              const target = over === room.id;
+
               return (
-                <tr key={room.id}>
+                <tr
+                  key={room.id}
+                  className={target ? "cal-row over" : "cal-row"}
+                  onDragOver={(e) => {
+                    if (dragging === null) return;
+                    e.preventDefault();
+                    setOver(room.id);
+                  }}
+                  onDragLeave={() => setOver((o) => (o === room.id ? null : o))}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    void drop(room.id);
+                  }}
+                >
                   <th scope="row" className="cal-room">
                     {room.name}
                     <span className="cal-type">{room.groupName}</span>
@@ -129,15 +303,9 @@ export default function Calendar({
 
                   {nights.map((night) => {
                     const stay = row?.get(night);
-                    if (!stay) {
-                      return <td key={night} className="cal-cell" />;
-                    }
+                    if (!stay) return <td key={night} className="cal-cell" />;
 
                     const tone = TONE[stay.status] ?? TONE.confirmed;
-                    // The name goes on the first night of the stay that is
-                    // visible in this window — so a stay running in from before
-                    // the window still says whose it is, rather than showing a
-                    // week of unlabelled colour.
                     const first =
                       stay.night === stay.arrival || stay.night === nights[0];
 
@@ -146,10 +314,24 @@ export default function Calendar({
                         key={night}
                         className="cal-cell taken"
                         style={{ background: tone.fill, color: tone.ink }}
-                        title={`${stay.guestName} · ${stay.arrival} → ${stay.departure}`}
                       >
                         {first ? (
-                          <span className="cal-guest">{stay.guestName}</span>
+                          <button
+                            type="button"
+                            draggable={!busy}
+                            onDragStart={() => setDragging(stay.bookingId)}
+                            onDragEnd={() => {
+                              setDragging(null);
+                              setOver(null);
+                            }}
+                            onClick={() => onOpen(stay)}
+                            className={`cal-guest${
+                              dragging === stay.bookingId ? " dragging" : ""
+                            }`}
+                            title={`${stay.guestName} · ${stay.arrival} → ${stay.departure}`}
+                          >
+                            {stay.guestName}
+                          </button>
                         ) : null}
                       </td>
                     );

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
-import Calendar from "@/components/dashboard/Calendar";
+import Diary from "@/components/dashboard/Diary";
 import NewBooking, { type BookingState } from "@/components/dashboard/NewBooking";
 import { call, currentUser, sessionToken, type CalendarWindow } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
@@ -117,6 +117,79 @@ export default async function CalendarPage({
     return { ok: true };
   }
 
+  /**
+   * The three things that can be done to a booking, as server actions.
+   *
+   * They return `{ error }` rather than throwing, because the caller is a
+   * dragged block that has already moved on screen and has to decide whether to
+   * put itself back. A thrown error there is an error boundary and a lost grid.
+   */
+  async function move(bookingId: number, roomId: number | null) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/bookings/${bookingId}/assign`, {
+        method: "POST",
+        body: { roomId },
+        token: t,
+      });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not move that.",
+      };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
+  async function save(id: number, patch: Record<string, unknown>) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/bookings/${id}`, {
+        method: "PATCH",
+        body: patch,
+        token: t,
+      });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not save that.",
+      };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
+  async function setStatus(id: number, status: string) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/bookings/${id}/status`, {
+        method: "POST",
+        body: { status },
+        token: t,
+      });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not change that.",
+      };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
   const groups = Array.from(
     new Map(data.rooms.map((r) => [r.groupId, r.groupName ?? ""])).entries()
   ).map(([id, name]) => ({ id, name }));
@@ -156,7 +229,26 @@ export default async function CalendarPage({
           </nav>
         </div>
 
-        <Calendar data={data} slug={slug} lang={lang} />
+        {data.rooms.length === 0 ? (
+          <p className="admin-empty">
+            No rooms yet.{" "}
+            <Link
+              href={localizedPath(lang, `/dashboard/${slug}/rooms`)}
+              style={{ color: "var(--jade)" }}
+            >
+              Set up room types and rooms
+            </Link>{" "}
+            and the calendar will draw itself.
+          </p>
+        ) : (
+          <Diary
+            data={data}
+            move={move}
+            save={save}
+            assign={move}
+            setStatus={setStatus}
+          />
+        )}
 
         {groups.length > 0 ? (
           <div style={{ marginTop: "2.5rem" }}>

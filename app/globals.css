@@ -913,3 +913,123 @@ body:has(.admin-shell) > * > footer {
   pointer-events: none;
   z-index: 1;
 }
+
+/* --- the diary's interactive bits ---------------------------------------- */
+
+/* A refusal, above the grid. role="alert" carries it to a screen reader; this
+   is what carries it to everyone else. */
+.cal-problem {
+  border: 1px solid rgba(233, 160, 59, 0.45);
+  border-left-width: 3px;
+  border-radius: var(--radius-card);
+  background: rgba(233, 160, 59, 0.1);
+  color: var(--marigold);
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+/* Stays with no room. Also a drop target, which is how a stay comes back out
+   of one. */
+.cal-tray {
+  border: 1px dashed var(--jade-line);
+  border-radius: var(--radius-card);
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.25rem;
+  transition: background 0.12s var(--ease), border-color 0.12s var(--ease);
+}
+
+.cal-tray.over {
+  border-color: var(--marigold);
+  border-style: solid;
+  background: rgba(233, 160, 59, 0.08);
+}
+
+.cal-tray-title {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+}
+
+.cal-tray-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--admin-muted);
+}
+
+.cal-tray-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* A draggable stay off the grid. A button, so it is reachable and openable
+   from the keyboard even though the drag itself is pointer-only. */
+.cal-chip {
+  display: block;
+  text-align: left;
+  cursor: grab;
+  border: 1px solid var(--jade-line);
+  border-radius: 10px;
+  background: var(--shade-soft);
+  color: var(--cream);
+  font-family: inherit;
+  padding: 0.5rem 0.75rem;
+}
+
+.cal-chip:hover {
+  border-color: var(--jade);
+}
+
+.cal-chip strong {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.cal-chip span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--admin-muted);
+}
+
+/* Half-there while it is being carried, so the row it lands on is readable
+   underneath it. */
+.cal-chip.dragging,
+.cal-guest.dragging {
+  opacity: 0.4;
+}
+
+/* The row under the cursor. An inset shadow rather than a background, because
+   the cells already carry their own colours and a background would fight
+   them. */
+.cal-row.over td,
+.cal-row.over th {
+  box-shadow: inset 0 0 0 1px var(--marigold);
+}
+
+/* The guest name on the grid is now a button. Stripped back to looking like
+   text: the affordance is the block it sits in, and a bordered control in
+   every cell would turn the grid into a wall of chrome. */
+.cal-guest {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: flex;
+  align-items: center;
+  padding: 0 0.4rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  cursor: grab;
+  z-index: 1;
+}
+
+.cal-guest:focus-visible {
+  outline: 2px solid var(--marigold);
+  outline-offset: -2px;
+}
