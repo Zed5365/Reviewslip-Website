@@ -54,6 +54,13 @@ export default function Diary({
       status: source.status,
       source: source.source,
       notes: null,
+      // The grid is not sent the money — a room-night carries the guest and
+      // the dates, and nothing else. Null here reads as "unpriced" in the
+      // panel, which is honest: this is a partial record, and the panel does
+      // not show a total it was never given.
+      ratePlanId: null,
+      totalMinor: null,
+      total: null,
       createdAt: "",
     };
   }

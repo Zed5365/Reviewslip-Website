@@ -235,6 +235,12 @@ export default async function BusinessPage({
           </Link>
           <Link
             className="btn btn-quiet"
+            href={localizedPath(lang, `/dashboard/${business.slug}/rates`)}
+          >
+            Rates
+          </Link>
+          <Link
+            className="btn btn-quiet"
             href={localizedPath(lang, `/dashboard/${business.slug}/poster`)}
           >
             Table card

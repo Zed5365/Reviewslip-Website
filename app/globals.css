@@ -1033,3 +1033,104 @@ body:has(.admin-shell) > * > footer {
   outline: 2px solid var(--marigold);
   outline-offset: -2px;
 }
+
+/* --- rates ---------------------------------------------------------------- */
+
+/* Wider than the diary's night columns: these hold "1,200", not a shaded
+   block. */
+.rate-grid .cal-night,
+.rate-grid .rate-cell {
+  width: 4.25rem;
+  min-width: 4.25rem;
+}
+
+.rate-cell {
+  position: relative;
+  height: 2.6rem;
+  padding: 0 0.3rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  border-left: 1px solid rgba(12, 31, 25, 0.6);
+  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+}
+
+/* The base price is the quiet default — most of the year is this, and if it
+   drew attention the seasons would stop standing out. */
+.rate-cell.base {
+  color: var(--admin-muted);
+}
+
+/* A night priced deliberately. Jade because it is a fact, not a warning. */
+.rate-cell.override {
+  color: var(--cream);
+  background: rgba(130, 180, 155, 0.14);
+}
+
+/* Not selling. Struck through as well as dimmed: colour alone would leave a
+   closed night and a cheap one looking similar in grayscale or to a
+   colourblind reader. */
+.rate-cell.closed {
+  color: var(--admin-muted);
+  background: rgba(243, 236, 220, 0.05);
+  text-decoration: line-through;
+}
+
+/* No price at all. Marigold, because it is the one state here somebody has to
+   go and fix — a night that cannot be quoted cannot be sold. */
+.rate-cell.unpriced {
+  color: var(--marigold);
+  background: rgba(233, 160, 59, 0.08);
+  font-weight: 600;
+}
+
+/* A corner mark for a restriction, so "1,200 with a two-night minimum" is not
+   indistinguishable from plain "1,200". The title attribute says which. */
+.rate-flag {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--marigold);
+}
+
+.rate-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  align-items: center;
+  margin: 0 0 1.75rem;
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+}
+
+.rate-legend .swatch {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 3px;
+  margin-right: 0.35rem;
+  vertical-align: -2px;
+  border: 1px solid var(--jade-line);
+}
+
+.rate-legend .swatch.base { background: transparent; }
+.rate-legend .swatch.override { background: rgba(130, 180, 155, 0.35); }
+.rate-legend .swatch.closed { background: rgba(243, 236, 220, 0.12); }
+.rate-legend .swatch.unpriced { background: rgba(233, 160, 59, 0.35); }
+.rate-legend .swatch.flagged {
+  background: transparent;
+  position: relative;
+}
+.rate-legend .swatch.flagged::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--marigold);
+}

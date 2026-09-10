@@ -318,6 +318,10 @@ export interface Booking {
   status: BookingStatus;
   source: string;
   notes: string | null;
+  ratePlanId: number | null;
+  /** What it was quoted, frozen at the time. Null means unpriced, not free. */
+  totalMinor: number | null;
+  total: string | null;
   createdAt: string;
 }
 
@@ -397,6 +401,62 @@ export interface StaffTicket extends Ticket {
 
 export interface StaffTicketThread extends TicketThread {
   account: { id: number; email: string };
+}
+
+/* ------------------------------------------------------------------- rates */
+
+/**
+ * Money crosses the wire twice: `*Minor` as a whole number of satang for
+ * arithmetic, and a formatted string for display.
+ *
+ * Never a float in either direction. The minor value is the truth; the string
+ * is what a person reads. Doing the formatting once, on the side that owns the
+ * currency, is also what stops two screens disagreeing about whether to show
+ * the decimals.
+ */
+export interface RatePlan {
+  id: number;
+  groupId: number;
+  groupName: string | null;
+  name: string;
+  /** Null when nobody has priced it yet — which is not the same as free. */
+  baseMinor: number | null;
+  base: string | null;
+}
+
+export interface RateNight {
+  night: NightDate;
+  amountMinor: number | null;
+  amount: string | null;
+  minNights: number | null;
+  closed: boolean;
+  closedToArrival: boolean;
+  /** True when this night is priced differently from the plan's base. */
+  override: boolean;
+}
+
+export interface RateCalendar {
+  nights: NightDate[];
+  plans: (RatePlan & { byNight: RateNight[] })[];
+}
+
+export interface Quote {
+  planId: number;
+  planName: string;
+  nights: number;
+  totalMinor: number | null;
+  total: string | null;
+  perNight: { night: NightDate; amountMinor: number | null; amount: string | null }[];
+  /** False when a restriction forbids it — closed, closed to arrival, min stay. */
+  sellable: boolean;
+  reason: string | null;
+}
+
+export interface Availability {
+  arrival: NightDate;
+  departure: NightDate;
+  nights: number;
+  groups: { groupId: number; name: string; rooms: number; free: number }[];
 }
 
 /* ------------------------------------------------------------------- staff */
