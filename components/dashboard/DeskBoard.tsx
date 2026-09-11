@@ -19,6 +19,7 @@ import type { Booking, DayView, Room } from "@/lib/customer";
 export default function DeskBoard({
   day,
   rooms,
+  slug,
   checkIn,
   checkOut,
   setHousekeeping,
@@ -28,6 +29,7 @@ export default function DeskBoard({
 }: {
   day: DayView;
   rooms: Room[];
+  slug: string;
   checkIn: (id: number) => Promise<DeskResult>;
   checkOut: (id: number) => Promise<DeskResult>;
   setHousekeeping: (roomId: number, state: string) => Promise<DeskResult>;
@@ -49,6 +51,7 @@ export default function DeskBoard({
       <BookingPanel
         booking={open}
         rooms={rooms}
+        slug={slug}
         onClose={() => setOpen(null)}
         save={save}
         assign={assign}

@@ -14,12 +14,14 @@ import type { Booking, CalendarWindow, TakenNight } from "@/lib/customer";
  */
 export default function Diary({
   data,
+  slug,
   move,
   save,
   assign,
   setStatus,
 }: {
   data: CalendarWindow;
+  slug: string;
   move: (bookingId: number, roomId: number | null) => Promise<MoveResult>;
   save: (id: number, patch: Record<string, unknown>) => Promise<EditResult>;
   assign: (id: number, roomId: number | null) => Promise<EditResult>;
@@ -75,6 +77,7 @@ export default function Diary({
       <BookingPanel
         booking={open}
         rooms={data.rooms}
+        slug={slug}
         onClose={() => setOpen(null)}
         save={save}
         assign={assign}

@@ -258,6 +258,7 @@ export default async function CalendarPage({
         ) : (
           <Diary
             data={data}
+            slug={slug}
             move={move}
             save={save}
             assign={move}

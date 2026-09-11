@@ -232,6 +232,7 @@ export default async function TodayPage({
         <DeskBoard
           day={day}
           rooms={rooms.rooms}
+          slug={slug}
           checkIn={checkIn}
           checkOut={checkOut}
           setHousekeeping={setHousekeeping}

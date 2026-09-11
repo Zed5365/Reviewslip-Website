@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Booking, Room } from "@/lib/customer";
+import GuestList from "./GuestList";
+import type { Booking, BookingGuest, Room } from "@/lib/customer";
 
 export interface EditResult {
   error?: string;
@@ -54,6 +55,7 @@ const STATUS: { id: Booking["status"]; label: string }[] = [
 export default function BookingPanel({
   booking,
   rooms,
+  slug,
   onClose,
   save,
   assign,
@@ -61,6 +63,8 @@ export default function BookingPanel({
 }: {
   booking: Booking | null;
   rooms: Room[];
+  /** Which venue, for the guest endpoint. */
+  slug: string;
   onClose: () => void;
   save: (id: number, patch: Record<string, unknown>) => Promise<EditResult>;
   /** Separate from `save` because it rewrites the night ledger, not a column. */
@@ -76,6 +80,50 @@ export default function BookingPanel({
   const [problem, setProblem] = useState("");
   const [busy, setBusy] = useState(false);
 
+  // Guests load when a booking opens, not with the page. A calendar listing
+  // fifty stays would otherwise fetch fifty guest lists to show none of them.
+  const [guests, setGuests] = useState<BookingGuest[]>([]);
+  const [canStorePassports, setCanStorePassports] = useState(true);
+
+  async function loadGuests(id: number) {
+    try {
+      const res = await fetch(`/api/guests/${slug}/${id}`, { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      setGuests(data.guests ?? []);
+      setCanStorePassports(data.canStorePassports !== false);
+    } catch {
+      // A guest list that will not load must not stop somebody changing the
+      // dates. The section renders empty and everything else on the panel works.
+    }
+  }
+
+  async function addGuest(guest: Record<string, string>) {
+    if (!booking) return { error: "No booking." };
+    const res = await fetch(`/api/guests/${slug}/${booking.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(guest),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { error: data.error ?? "Could not add that guest." };
+    await loadGuests(booking.id);
+    return {};
+  }
+
+  async function removeGuest(id: number) {
+    if (!booking) return { error: "No booking." };
+    const res = await fetch(`/api/guests/${slug}/${booking.id}?guestId=${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return { error: data.error ?? "Could not remove that guest." };
+    }
+    await loadGuests(booking.id);
+    return {};
+  }
+
   // Re-seed the fields when a different booking is opened. Adjusted during
   // render rather than in an effect, so the panel never paints last booking's
   // guest under this one's title.
@@ -83,11 +131,16 @@ export default function BookingPanel({
   if (booking !== seen) {
     setSeen(booking);
     setProblem("");
+    setGuests([]);
     if (booking) {
       setGuestName(booking.guestName);
       setArrival(booking.arrival);
       setDeparture(booking.departure);
       setRoomId(booking.roomId ? String(booking.roomId) : "");
+      // Fired from render deliberately — it sets no state synchronously, and
+      // an effect would mean the panel paints once with the previous booking's
+      // guests before clearing them.
+      void loadGuests(booking.id);
     }
   }
 
@@ -294,6 +347,13 @@ export default function BookingPanel({
         <p role="alert" style={{ margin: 0, fontSize: "0.9rem", color: "var(--marigold)" }}>
           {problem}
         </p>
+
+        <GuestList
+          guests={guests}
+          canStorePassports={canStorePassports}
+          add={addGuest}
+          remove={removeGuest}
+        />
       </div>
     </dialog>
   );

@@ -438,6 +438,53 @@ export interface StaffTicketThread extends TicketThread {
   account: { id: number; email: string };
 }
 
+/* ------------------------------------------------------------------ guests */
+
+/**
+ * Somebody on a booking, for Thailand's TM30 notification.
+ *
+ * The passport number is never in this shape. `passportTail` is the last four
+ * characters — enough to confirm the right document is in hand at a desk, and
+ * enough for nobody to do anything else with. The whole number exists only
+ * inside the export file, which is a download somebody deliberately asks for.
+ */
+export interface BookingGuest {
+  id: number;
+  bookingId: number;
+  familyName: string;
+  firstName: string;
+  middleName: string | null;
+  nationality: string | null;
+  dateOfBirth: NightDate | null;
+  phone: string | null;
+  /** When they entered Thailand, which is not when they reached this property. */
+  arrivedInThailand: NightDate | null;
+  passportTail: string | null;
+  hasPassport: boolean;
+  notifiedAt: string | null;
+  /** False for Thai nationals — section 38 is a foreigner notification. */
+  reportable: boolean;
+  /** Whether the record has everything the notification asks for. */
+  ready: boolean;
+  missing: string[];
+}
+
+export interface GuestList {
+  guests: BookingGuest[];
+  /** False when the server has no encryption key, so passports are refused. */
+  canStorePassports: boolean;
+}
+
+export interface Tm30Pending {
+  pending: (BookingGuest & {
+    arrival: NightDate;
+    departure: NightDate;
+    roomName: string | null;
+  })[];
+  ready: number;
+  incomplete: number;
+}
+
 /* ------------------------------------------------------------------- rates */
 
 /**
