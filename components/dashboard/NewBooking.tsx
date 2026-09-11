@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { Room } from "@/lib/customer";
+import type { RatePlan, Room } from "@/lib/customer";
 
 export interface BookingState {
   error?: string;
@@ -54,10 +54,13 @@ export default function NewBooking({
   action,
   groups,
   rooms,
+  plans,
 }: {
   action: (state: BookingState, formData: FormData) => Promise<BookingState>;
   groups: { id: number; name: string }[];
   rooms: Room[];
+  /** Rate plans, so a booking taken at the desk carries its money. */
+  plans: RatePlan[];
 }) {
   const [state, formAction, pending] = useActionState(action, EMPTY);
   const [groupId, setGroupId] = useState<number>(groups[0]?.id ?? 0);
@@ -94,6 +97,25 @@ export default function NewBooking({
 
   const count = nightsBetween(arrival, departure);
   const forGroup = rooms.filter((r) => r.groupId === groupId);
+  const plansFor = plans.filter((p) => p.groupId === groupId);
+
+  /*
+   * A guide price, not the quote.
+   *
+   * The base rate times the nights, which is right whenever no night has been
+   * priced differently and wrong the moment one has. The server does the real
+   * arithmetic against every night's own rate and stores that; this exists so
+   * somebody typing the dates sees roughly what they are about to charge
+   * before pressing, rather than after.
+   *
+   * Labelled "about" for exactly that reason. A number presented as exact and
+   * then quietly replaced by a different one is worse than no number.
+   */
+  const plan = plansFor[0];
+  const guide =
+    plan?.baseMinor != null && count > 0
+      ? (plan.baseMinor * count) / 100
+      : null;
 
   return (
     <form action={formAction} style={{ display: "grid", gap: "1rem", maxWidth: "42rem" }}>
@@ -206,6 +228,27 @@ export default function NewBooking({
           </select>
         </div>
 
+        {plansFor.length > 0 ? (
+          <div>
+            <label htmlFor="b-rate" style={label}>
+              Rate
+            </label>
+            <select
+              id="b-rate"
+              name="ratePlanId"
+              disabled={pending}
+              style={{ ...field, appearance: "auto" }}
+            >
+              {plansFor.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                  {p.base ? ` — ${p.base}/night` : " — no price"}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+
         <div>
           <label htmlFor="b-adults" style={label}>
             Adults
@@ -228,11 +271,21 @@ export default function NewBooking({
           {pending ? "Saving…" : "Take booking"}
         </button>
         <span style={{ fontSize: "0.9rem", color: "var(--admin-muted)" }}>
-          {count > 0
-            ? `${count} night${count === 1 ? "" : "s"}`
-            : arrival && departure
-              ? "Departure has to be after arrival"
-              : ""}
+          {count > 0 ? (
+            <>
+              {count} night{count === 1 ? "" : "s"}
+              {guide !== null ? (
+                <span style={{ color: "var(--cream)" }}>
+                  {" · about ฿"}
+                  {guide.toLocaleString("en-US")}
+                </span>
+              ) : null}
+            </>
+          ) : arrival && departure ? (
+            "Departure has to be after arrival"
+          ) : (
+            ""
+          )}
         </span>
       </div>
 

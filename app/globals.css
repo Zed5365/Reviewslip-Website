@@ -1134,3 +1134,144 @@ body:has(.admin-shell) > * > footer {
   border-radius: 50%;
   background: var(--marigold);
 }
+
+/* --- the front desk day --------------------------------------------------- */
+
+.desk-tiles {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  margin-bottom: 2rem;
+}
+
+.desk-card {
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-card);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.desk-card h2 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 1.05rem;
+  margin: 0 0 0.9rem;
+}
+
+.desk-count {
+  font-family: var(--ui);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--admin-muted);
+}
+
+.desk-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--admin-muted);
+}
+
+.desk-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A row is a name and one action. The action column is fixed so every button
+   lines up down the list — a front desk scans that column and presses without
+   reading, and a ragged edge makes that impossible. */
+.desk-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+}
+
+.desk-row:last-child {
+  border-bottom: 0;
+}
+
+/* The name opens the booking. A button, so it is reachable from a keyboard,
+   but stripped of chrome — the row is already the affordance. */
+.desk-who {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.desk-who strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--cream);
+  overflow-wrap: anywhere;
+}
+
+.desk-who span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+}
+
+.desk-who:focus-visible {
+  outline: 2px solid var(--marigold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Already done. Quiet: the eye should skip these and land on the rows that
+   still need something. */
+.desk-done {
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  color: var(--admin-muted);
+  white-space: nowrap;
+}
+
+/* Why the button is not there. Marigold because it is a thing to go and fix —
+   an unassigned arrival or an uncleaned room is what blocks the morning. */
+.desk-blocked {
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  color: var(--marigold);
+  white-space: nowrap;
+}
+
+.desk-quiet-link {
+  flex: 0 0 auto;
+  border: 0;
+  background: none;
+  padding: 0.4rem 0;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--admin-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.desk-quiet-link:hover {
+  color: var(--cream);
+}
+
+@media (max-width: 30rem) {
+  /* The action drops under the name rather than squeezing beside it — a
+     44px target and a long guest name do not share 375 pixels. */
+  .desk-row {
+    flex-wrap: wrap;
+  }
+  .desk-row .btn {
+    min-height: 44px;
+  }
+}

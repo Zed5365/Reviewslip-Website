@@ -223,6 +223,12 @@ export default async function BusinessPage({
           </Link>
           <Link
             className="btn btn-quiet"
+            href={localizedPath(lang, `/dashboard/${business.slug}/today`)}
+          >
+            Today
+          </Link>
+          <Link
+            className="btn btn-quiet"
             href={localizedPath(lang, `/dashboard/${business.slug}/calendar`)}
           >
             Calendar

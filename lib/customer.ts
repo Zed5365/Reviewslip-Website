@@ -289,7 +289,16 @@ export interface Room {
   groupId: number;
   groupName: string | null;
   name: string;
+  /** Whether the room exists to be sold: active, or out_of_service. */
   status: string;
+  /**
+   * Whether it can be given to somebody today: clean or dirty.
+   *
+   * Separate from `status` on purpose. A room being refurbished is out of
+   * service; a room somebody left this morning is dirty. One is a decision, the
+   * other is a chore.
+   */
+  housekeeping: "clean" | "dirty";
   sort: number;
 }
 
@@ -352,11 +361,37 @@ export interface CalendarWindow {
   unassigned: Booking[];
 }
 
+/** A room as the day view lists it — identity and state, no group id. */
+export interface DeskRoom {
+  id: number;
+  name: string;
+  groupName: string | null;
+  status: string;
+  housekeeping: "clean" | "dirty";
+}
+
 export interface DayView {
   date: NightDate;
   arrivals: Booking[];
   departures: Booking[];
   inHouse: Booking[];
+  rooms: DeskRoom[];
+  /**
+   * The numbers a morning is actually run from.
+   *
+   * `toCheckIn` and `toCheckOut` count what is still outstanding, not what
+   * exists — an arrivals list of eight with seven already in is a quiet
+   * morning, and a count that said eight would not say so.
+   */
+  counts: {
+    arrivals: number;
+    departures: number;
+    inHouse: number;
+    toCheckIn: number;
+    toCheckOut: number;
+    dirty: number;
+    unassignedArrivals: number;
+  };
 }
 
 /* ----------------------------------------------------------------- support */

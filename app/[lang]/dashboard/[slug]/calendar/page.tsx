@@ -5,7 +5,13 @@ import { notFound, redirect } from "next/navigation";
 
 import Diary from "@/components/dashboard/Diary";
 import NewBooking, { type BookingState } from "@/components/dashboard/NewBooking";
-import { call, currentUser, sessionToken, type CalendarWindow } from "@/lib/customer";
+import {
+  call,
+  currentUser,
+  sessionToken,
+  type CalendarWindow,
+  type RatePlan,
+} from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
@@ -65,11 +71,15 @@ export default async function CalendarPage({
   const token = await sessionToken();
 
   let data: CalendarWindow;
+  let plans: { plans: RatePlan[] };
   try {
-    data = await call<CalendarWindow>(
-      `/businesses/${slug}/calendar?start=${start}&days=${DAYS}`,
-      { token }
-    );
+    [data, plans] = await Promise.all([
+      call<CalendarWindow>(
+        `/businesses/${slug}/calendar?start=${start}&days=${DAYS}`,
+        { token }
+      ),
+      call<{ plans: RatePlan[] }>(`/businesses/${slug}/rates`, { token }),
+    ]);
   } catch (err) {
     if ((err as { status?: number }).status === 404) notFound();
     throw err;
@@ -99,6 +109,11 @@ export default async function CalendarPage({
           ...values,
           groupId: Number(formData.get("groupId")),
           roomId: formData.get("roomId") ? Number(formData.get("roomId")) : null,
+          // Sent when a rate exists for the chosen type. The server quotes it
+          // against every night and freezes the total on the booking.
+          ratePlanId: formData.get("ratePlanId")
+            ? Number(formData.get("ratePlanId"))
+            : null,
           adults: Number(formData.get("adults") ?? 1),
           guestEmail: String(formData.get("guestEmail") ?? "").trim() || null,
         },
@@ -258,7 +273,12 @@ export default async function CalendarPage({
             <p className="admin-sub" style={{ marginBottom: "1rem" }}>
               Leave the room blank and it sits unassigned until you pick one.
             </p>
-            <NewBooking action={book} groups={groups} rooms={data.rooms} />
+            <NewBooking
+              action={book}
+              groups={groups}
+              rooms={data.rooms}
+              plans={plans.plans}
+            />
           </div>
         ) : (
           <p style={{ marginTop: "2rem" }}>

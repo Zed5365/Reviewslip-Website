@@ -1,0 +1,245 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { revalidatePath } from "next/cache";
+import { notFound, redirect } from "next/navigation";
+
+import DeskBoard from "@/components/dashboard/DeskBoard";
+import {
+  call,
+  currentUser,
+  sessionToken,
+  type DayView,
+  type Room,
+  type RoomGroup,
+} from "@/lib/customer";
+import { isLocale, type Locale } from "@/lib/i18n/config";
+import { localizedPath } from "@/lib/i18n/routing";
+
+export const metadata: Metadata = {
+  title: "Today",
+  robots: { index: false, follow: false },
+};
+
+/** Today at the property, not in UTC — see the calendar page. */
+function todayAt(timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+function shift(date: string, days: number): string {
+  const t = Date.parse(`${date}T00:00:00Z`);
+  return new Date(t + days * 86_400_000).toISOString().slice(0, 10);
+}
+
+/** "Thursday 11 September" — what somebody checks they are on the right day by. */
+function longDate(date: string): string {
+  const d = new Date(`${date}T12:00:00Z`);
+  return d.toLocaleDateString("en-GB", {
+    timeZone: "UTC",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
+export default async function TodayPage({
+  params,
+  searchParams,
+}: PageProps<"/[lang]/dashboard/[slug]/today">) {
+  const { lang, slug } = await params;
+  if (!isLocale(lang)) notFound();
+  const locale: Locale = lang;
+
+  const me = await currentUser();
+  if (!me) redirect(localizedPath(lang, "/login"));
+
+  const query = await searchParams;
+  const asked = Array.isArray(query.date) ? query.date[0] : query.date;
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(String(asked ?? ""))
+    ? String(asked)
+    : todayAt("Asia/Bangkok");
+
+  const token = await sessionToken();
+
+  let day: DayView;
+  let rooms: { groups: RoomGroup[]; rooms: Room[] };
+  try {
+    [day, rooms] = await Promise.all([
+      call<DayView>(`/businesses/${slug}/day?date=${date}`, { token }),
+      call<{ groups: RoomGroup[]; rooms: Room[] }>(`/businesses/${slug}/rooms`, {
+        token,
+      }),
+    ]);
+  } catch (err) {
+    if ((err as { status?: number }).status === 404) notFound();
+    throw err;
+  }
+
+  const here = localizedPath(locale, `/dashboard/${slug}/today`);
+  const link = (d: string) => (d === todayAt("Asia/Bangkok") ? here : `${here}?date=${d}`);
+
+  async function mark(id: number, status: string) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/bookings/${id}/status`, {
+        method: "POST",
+        body: { status },
+        token: t,
+      });
+    } catch (err) {
+      // Returned rather than thrown: the caller is a button in a list that has
+      // to say what happened without taking the page down with it.
+      return { error: err instanceof Error ? err.message : "Could not do that." };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
+  async function checkIn(id: number) {
+    "use server";
+    return mark(id, "in_house");
+  }
+
+  async function checkOut(id: number) {
+    "use server";
+    return mark(id, "checked_out");
+  }
+
+  async function setHousekeeping(roomId: number, state: string) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/rooms/${roomId}/housekeeping`, {
+        method: "POST",
+        body: { state },
+        token: t,
+      });
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Could not do that." };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
+  async function save(id: number, patch: Record<string, unknown>) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/bookings/${id}`, {
+        method: "PATCH",
+        body: patch,
+        token: t,
+      });
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Could not save that." };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
+  async function assign(id: number, roomId: number | null) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/bookings/${id}/assign`, {
+        method: "POST",
+        body: { roomId },
+        token: t,
+      });
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Could not move that." };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
+  return (
+    <section className="section">
+      <div className="wrap" style={{ maxWidth: "52rem" }}>
+        <Link
+          href={localizedPath(lang, `/dashboard/${slug}`)}
+          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
+        >
+          ← Back
+        </Link>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: "1rem",
+            flexWrap: "wrap",
+            margin: "1.25rem 0 0.3rem",
+          }}
+        >
+          <h1 style={{ margin: 0 }}>{longDate(date)}</h1>
+          {/* Wraps. Three buttons labelled Yesterday / Today / Tomorrow come to
+              377px, which is two pixels wider than a 375px phone — and the
+              overflow takes the whole page sideways, not just the nav. */}
+          <nav style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <Link className="btn btn-quiet" href={link(shift(date, -1))}>
+              ← Yesterday
+            </Link>
+            <Link className="btn btn-quiet" href={here}>
+              Today
+            </Link>
+            <Link className="btn btn-quiet" href={link(shift(date, 1))}>
+              Tomorrow →
+            </Link>
+          </nav>
+        </div>
+
+        <p className="admin-sub" style={{ marginBottom: "2rem" }}>
+          {day.counts.unassignedArrivals > 0 ? (
+            <span style={{ color: "var(--marigold)" }}>
+              {day.counts.unassignedArrivals} arrival
+              {day.counts.unassignedArrivals === 1 ? "" : "s"} with no room —
+              give them one on the{" "}
+              <Link
+                href={localizedPath(lang, `/dashboard/${slug}/calendar`)}
+                style={{ color: "var(--marigold)", textDecoration: "underline" }}
+              >
+                calendar
+              </Link>
+            </span>
+          ) : (
+            "Everything arriving today has a room."
+          )}
+        </p>
+
+        <DeskBoard
+          day={day}
+          rooms={rooms.rooms}
+          checkIn={checkIn}
+          checkOut={checkOut}
+          setHousekeeping={setHousekeeping}
+          save={save}
+          assign={assign}
+          markStatus={mark}
+        />
+      </div>
+    </section>
+  );
+}
