@@ -63,7 +63,12 @@ export default function NewBooking({
   plans: RatePlan[];
 }) {
   const [state, formAction, pending] = useActionState(action, EMPTY);
-  const [groupId, setGroupId] = useState<number>(groups[0]?.id ?? 0);
+  // Corrected during render for the reason set out in RatesEditor: room types
+  // can arrive after this mounted, and a stale zero is sent as a room type
+  // nobody has.
+  const groupIds = groups.map((g) => g.id);
+  const [groupId, setGroupId] = useState<number>(groupIds[0] ?? 0);
+  if (groupIds.length > 0 && !groupIds.includes(groupId)) setGroupId(groupIds[0]);
   const [guestName, setGuestName] = useState("");
   const [arrival, setArrival] = useState("");
   const [departure, setDeparture] = useState("");

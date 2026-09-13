@@ -78,7 +78,25 @@ export default function RatesEditor({
   const [problem, setProblem] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const [planId, setPlanId] = useState<number>(calendar.plans[0]?.id ?? 0);
+  /*
+   * The chosen rate, and a correction for the case that used to lose a whole
+   * afternoon of pricing.
+   *
+   * Adding the first rate refreshes this page's data through a Server Action,
+   * which re-renders the editor with the new plan in `calendar.plans` — but
+   * does not remount it, so the initialiser below does not run again and
+   * `planId` stays 0. The select still *looks* right, because a controlled
+   * select whose value matches no option leaves the browser showing the first
+   * one. Then Apply reads 0, returns at the guard, and nothing happens: no
+   * price, no error, not even a cleared field. The only way out was a reload,
+   * and nothing on the page said so.
+   *
+   * Corrected during render rather than in an effect — the same reason as the
+   * form restore in NewBooking: an effect would render the broken state first.
+   */
+  const planIds = calendar.plans.map((p) => p.id);
+  const [planId, setPlanId] = useState<number>(planIds[0] ?? 0);
+  if (planIds.length > 0 && !planIds.includes(planId)) setPlanId(planIds[0]);
   const [from, setFrom] = useState(calendar.nights[0] ?? "");
   const [to, setTo] = useState(calendar.nights[calendar.nights.length - 1] ?? "");
   const [amount, setAmount] = useState("");
@@ -86,12 +104,23 @@ export default function RatesEditor({
   const [closed, setClosed] = useState(false);
   const [cta, setCta] = useState(false);
 
-  const [newGroup, setNewGroup] = useState<number>(groups[0]?.id ?? 0);
+  // The same correction, for the same reason: room types can arrive after
+  // this mounted, and a zero here makes Add do nothing quietly.
+  const groupIds = groups.map((g) => g.id);
+  const [newGroup, setNewGroup] = useState<number>(groupIds[0] ?? 0);
+  if (groupIds.length > 0 && !groupIds.includes(newGroup)) setNewGroup(groupIds[0]);
   const [newName, setNewName] = useState("Standard");
   const [newBase, setNewBase] = useState("");
 
   async function apply() {
-    if (busy || !planId) return;
+    if (busy) return;
+    // Should be unreachable now that planId is corrected during render. Kept
+    // as a backstop that says something, because the bug this replaces was
+    // invisible: a button that does nothing teaches people the page is broken.
+    if (!planId) {
+      setProblem("Pick a rate first — reload the page if the list looks empty.");
+      return;
+    }
     setBusy(true);
     setProblem("");
 
@@ -122,7 +151,11 @@ export default function RatesEditor({
   }
 
   async function addPlan() {
-    if (busy || !newGroup) return;
+    if (busy) return;
+    if (!newGroup) {
+      setProblem("Add a room type on the Rooms page first — a rate belongs to one.");
+      return;
+    }
     setBusy(true);
     setProblem("");
     const result = await createPlan(newGroup, newName.trim(), newBase.trim());
