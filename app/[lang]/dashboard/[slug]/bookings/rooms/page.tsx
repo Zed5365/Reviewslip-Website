@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default async function RoomsPage({
   params,
-}: PageProps<"/[lang]/dashboard/[slug]/rooms">) {
+}: PageProps<"/[lang]/dashboard/[slug]/bookings/rooms">) {
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
@@ -41,7 +41,7 @@ export default async function RoomsPage({
     throw err;
   }
 
-  const here = localizedPath(locale, `/dashboard/${slug}/rooms`);
+  const here = localizedPath(locale, `/dashboard/${slug}/bookings/rooms`);
 
   async function addGroup(
     _prev: RoomsState,
@@ -129,37 +129,28 @@ export default async function RoomsPage({
   }
 
   return (
-    <section className="section">
-      <div className="wrap" style={{ maxWidth: "46rem" }}>
-        <Link
-          href={localizedPath(lang, `/dashboard/${slug}`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Back
-        </Link>
+    <>
+    <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Rooms</h1>
+    <p className="lede" style={{ marginBottom: "2.5rem" }}>
+      Set these up once. The calendar and every booking read from them.
+    </p>
 
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Rooms</h1>
-        <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          Set these up once. The calendar and every booking read from them.
-        </p>
+    <RoomsSetup
+      groups={data.groups}
+      rooms={data.rooms}
+      addGroup={addGroup}
+      addRoom={addRoom}
+      remove={remove}
+    />
 
-        <RoomsSetup
-          groups={data.groups}
-          rooms={data.rooms}
-          addGroup={addGroup}
-          addRoom={addRoom}
-          remove={remove}
-        />
-
-        <p style={{ marginTop: "1.5rem" }}>
-          <Link
-            className="btn btn-go"
-            href={localizedPath(lang, `/dashboard/${slug}/calendar`)}
-          >
-            Open the calendar
-          </Link>
-        </p>
-      </div>
-    </section>
+    <p style={{ marginTop: "1.5rem" }}>
+      <Link
+        className="btn btn-go"
+        href={localizedPath(lang, `/dashboard/${slug}/bookings/calendar`)}
+      >
+        Open the calendar
+      </Link>
+    </p>
+  </>
   );
 }

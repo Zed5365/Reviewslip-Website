@@ -438,6 +438,28 @@ export interface StaffTicketThread extends TicketThread {
   account: { id: number; email: string };
 }
 
+/**
+ * Today's rooms, for the widget on the venue page.
+ *
+ * A summary, not a screen — every number here has a page behind it. The last
+ * three are the ones that need somebody: a stay with no room, a room that needs
+ * cleaning, a guest not yet notified to Immigration.
+ */
+export interface BookingSummary {
+  date: NightDate;
+  rooms: number;
+  /** Rooms sold tonight as a percentage. Zero when no rooms are set up. */
+  occupancy: number;
+  staying: number;
+  arrivals: number;
+  toCheckIn: number;
+  departures: number;
+  toCheckOut: number;
+  unassigned: number;
+  dirty: number;
+  tm30Pending: number;
+}
+
 /* ------------------------------------------------------------------ guests */
 
 /**

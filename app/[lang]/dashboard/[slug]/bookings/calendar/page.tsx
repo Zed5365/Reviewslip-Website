@@ -50,7 +50,7 @@ function shift(date: string, days: number): string {
 export default async function CalendarPage({
   params,
   searchParams,
-}: PageProps<"/[lang]/dashboard/[slug]/calendar">) {
+}: PageProps<"/[lang]/dashboard/[slug]/bookings/calendar">) {
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
@@ -85,7 +85,7 @@ export default async function CalendarPage({
     throw err;
   }
 
-  const here = localizedPath(locale, `/dashboard/${slug}/calendar`);
+  const here = localizedPath(locale, `/dashboard/${slug}/bookings/calendar`);
 
   async function book(
     _prev: BookingState,
@@ -210,88 +210,79 @@ export default async function CalendarPage({
   ).map(([id, name]) => ({ id, name }));
 
   return (
-    <section className="section">
-      <div className="wrap" style={{ maxWidth: "72rem" }}>
-        <Link
-          href={localizedPath(lang, `/dashboard/${slug}`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Back
+    <>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+        gap: "1rem",
+        flexWrap: "wrap",
+        margin: "1.25rem 0 2rem",
+      }}
+    >
+      <h1 style={{ margin: 0 }}>Calendar</h1>
+
+      <nav style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, -DAYS)}`}>
+          ← Earlier
         </Link>
+        <Link className="btn btn-quiet" href={here}>
+          Today
+        </Link>
+        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, DAYS)}`}>
+          Later →
+        </Link>
+      </nav>
+    </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
-            margin: "1.25rem 0 2rem",
-          }}
+    {data.rooms.length === 0 ? (
+      <p className="admin-empty">
+        No rooms yet.{" "}
+        <Link
+          href={localizedPath(lang, `/dashboard/${slug}/bookings/rooms`)}
+          style={{ color: "var(--jade)" }}
         >
-          <h1 style={{ margin: 0 }}>Calendar</h1>
+          Set up room types and rooms
+        </Link>{" "}
+        and the calendar will draw itself.
+      </p>
+    ) : (
+      <Diary
+        data={data}
+        slug={slug}
+        move={move}
+        save={save}
+        assign={move}
+        setStatus={setStatus}
+      />
+    )}
 
-          <nav style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-            <Link className="btn btn-quiet" href={`${here}?start=${shift(start, -DAYS)}`}>
-              ← Earlier
-            </Link>
-            <Link className="btn btn-quiet" href={here}>
-              Today
-            </Link>
-            <Link className="btn btn-quiet" href={`${here}?start=${shift(start, DAYS)}`}>
-              Later →
-            </Link>
-          </nav>
-        </div>
-
-        {data.rooms.length === 0 ? (
-          <p className="admin-empty">
-            No rooms yet.{" "}
-            <Link
-              href={localizedPath(lang, `/dashboard/${slug}/rooms`)}
-              style={{ color: "var(--jade)" }}
-            >
-              Set up room types and rooms
-            </Link>{" "}
-            and the calendar will draw itself.
-          </p>
-        ) : (
-          <Diary
-            data={data}
-            slug={slug}
-            move={move}
-            save={save}
-            assign={move}
-            setStatus={setStatus}
-          />
-        )}
-
-        {groups.length > 0 ? (
-          <div style={{ marginTop: "2.5rem" }}>
-            <h2 style={{ fontSize: "1.1rem", marginBottom: "0.3rem" }}>
-              Take a booking
-            </h2>
-            <p className="admin-sub" style={{ marginBottom: "1rem" }}>
-              Leave the room blank and it sits unassigned until you pick one.
-            </p>
-            <NewBooking
-              action={book}
-              groups={groups}
-              rooms={data.rooms}
-              plans={plans.plans}
-            />
-          </div>
-        ) : (
-          <p style={{ marginTop: "2rem" }}>
-            <Link
-              className="btn btn-go"
-              href={localizedPath(lang, `/dashboard/${slug}/rooms`)}
-            >
-              Set up rooms
-            </Link>
-          </p>
-        )}
+    {groups.length > 0 ? (
+      <div style={{ marginTop: "2.5rem" }}>
+        <h2 style={{ fontSize: "1.1rem", marginBottom: "0.3rem" }}>
+          Take a booking
+        </h2>
+        <p className="admin-sub" style={{ marginBottom: "1rem" }}>
+          Leave the room blank and it sits unassigned until you pick one.
+        </p>
+        <NewBooking
+          action={book}
+          groups={groups}
+          rooms={data.rooms}
+          plans={plans.plans}
+        />
       </div>
-    </section>
+    ) : (
+      <p style={{ marginTop: "2rem" }}>
+        <Link
+          className="btn btn-go"
+          href={localizedPath(lang, `/dashboard/${slug}/bookings/rooms`)}
+        >
+          Set up rooms
+        </Link>
+      </p>
+    )}
+  </>
   );
 }

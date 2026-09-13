@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import BookingsWidget from "@/components/dashboard/BookingsWidget";
 import ReviewList, { type ReviewRow } from "@/components/dashboard/ReviewList";
-import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
+import {
+  call,
+  sessionToken,
+  type BookingSummary,
+  type BusinessDetail,
+} from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
@@ -56,6 +62,37 @@ export default async function BusinessPage({
     // that does not exist — deliberately, and it stays that way here.
     if ((err as { status?: number }).status === 404) notFound();
     throw err;
+  }
+
+  /*
+   * Tonight's rooms, for the widget — and on the same reasoning as the reviews
+   * below: its own call, its own failure. A venue not using the reservations
+   * module at all, or a review app deployed a few minutes behind this one,
+   * should still get the page. Null renders the widget's "nothing set up yet"
+   * and nothing else notices.
+   *
+   * Today is worked out here rather than asked for, because the API would
+   * answer in UTC — which in Bangkok is still yesterday until seven in the
+   * morning. An occupancy figure for the wrong night is worse than no figure.
+   */
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
+  let summary: BookingSummary | null = null;
+  try {
+    summary = await call<BookingSummary>(
+      `/businesses/${slug}/summary?today=${today}`,
+      { token }
+    );
+  } catch (err) {
+    // Left null — the widget has something to say about that. Logged, because
+    // a venue that does have rooms and shows the setup prompt is a bug, and
+    // this line is the only place it would ever be visible.
+    console.error(`Could not load the bookings summary for ${slug}:`, err);
   }
 
   // A separate call so a slow or failed review list cannot take the stats page
@@ -150,6 +187,11 @@ export default async function BusinessPage({
           />
         </div>
 
+        <BookingsWidget
+          summary={summary}
+          base={localizedPath(lang, `/dashboard/${business.slug}/bookings`)}
+        />
+
         <div
           style={{
             display: "grid",
@@ -223,33 +265,9 @@ export default async function BusinessPage({
           </Link>
           <Link
             className="btn btn-quiet"
-            href={localizedPath(lang, `/dashboard/${business.slug}/today`)}
+            href={localizedPath(lang, `/dashboard/${business.slug}/bookings`)}
           >
-            Today
-          </Link>
-          <Link
-            className="btn btn-quiet"
-            href={localizedPath(lang, `/dashboard/${business.slug}/calendar`)}
-          >
-            Calendar
-          </Link>
-          <Link
-            className="btn btn-quiet"
-            href={localizedPath(lang, `/dashboard/${business.slug}/rooms`)}
-          >
-            Rooms
-          </Link>
-          <Link
-            className="btn btn-quiet"
-            href={localizedPath(lang, `/dashboard/${business.slug}/rates`)}
-          >
-            Rates
-          </Link>
-          <Link
-            className="btn btn-quiet"
-            href={localizedPath(lang, `/dashboard/${business.slug}/tm30`)}
-          >
-            TM30
+            Bookings
           </Link>
           <Link
             className="btn btn-quiet"

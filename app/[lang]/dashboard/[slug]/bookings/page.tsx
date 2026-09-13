@@ -49,7 +49,7 @@ function longDate(date: string): string {
 export default async function TodayPage({
   params,
   searchParams,
-}: PageProps<"/[lang]/dashboard/[slug]/today">) {
+}: PageProps<"/[lang]/dashboard/[slug]/bookings">) {
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
@@ -79,7 +79,7 @@ export default async function TodayPage({
     throw err;
   }
 
-  const here = localizedPath(locale, `/dashboard/${slug}/today`);
+  const here = localizedPath(locale, `/dashboard/${slug}/bookings`);
   const link = (d: string) => (d === todayAt("Asia/Bangkok") ? here : `${here}?date=${d}`);
 
   async function mark(id: number, status: string) {
@@ -175,72 +175,63 @@ export default async function TodayPage({
   }
 
   return (
-    <section className="section">
-      <div className="wrap" style={{ maxWidth: "52rem" }}>
-        <Link
-          href={localizedPath(lang, `/dashboard/${slug}`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Back
+    <>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+        gap: "1rem",
+        flexWrap: "wrap",
+        margin: "1.25rem 0 0.3rem",
+      }}
+    >
+      <h1 style={{ margin: 0 }}>{longDate(date)}</h1>
+      {/* Wraps. Three buttons labelled Yesterday / Today / Tomorrow come to
+          377px, which is two pixels wider than a 375px phone — and the
+          overflow takes the whole page sideways, not just the nav. */}
+      <nav style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <Link className="btn btn-quiet" href={link(shift(date, -1))}>
+          ← Yesterday
         </Link>
+        <Link className="btn btn-quiet" href={here}>
+          Today
+        </Link>
+        <Link className="btn btn-quiet" href={link(shift(date, 1))}>
+          Tomorrow →
+        </Link>
+      </nav>
+    </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
-            margin: "1.25rem 0 0.3rem",
-          }}
-        >
-          <h1 style={{ margin: 0 }}>{longDate(date)}</h1>
-          {/* Wraps. Three buttons labelled Yesterday / Today / Tomorrow come to
-              377px, which is two pixels wider than a 375px phone — and the
-              overflow takes the whole page sideways, not just the nav. */}
-          <nav style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <Link className="btn btn-quiet" href={link(shift(date, -1))}>
-              ← Yesterday
-            </Link>
-            <Link className="btn btn-quiet" href={here}>
-              Today
-            </Link>
-            <Link className="btn btn-quiet" href={link(shift(date, 1))}>
-              Tomorrow →
-            </Link>
-          </nav>
-        </div>
+    <p className="admin-sub" style={{ marginBottom: "2rem" }}>
+      {day.counts.unassignedArrivals > 0 ? (
+        <span style={{ color: "var(--marigold)" }}>
+          {day.counts.unassignedArrivals} arrival
+          {day.counts.unassignedArrivals === 1 ? "" : "s"} with no room —
+          give them one on the{" "}
+          <Link
+            href={localizedPath(lang, `/dashboard/${slug}/bookings/calendar`)}
+            style={{ color: "var(--marigold)", textDecoration: "underline" }}
+          >
+            calendar
+          </Link>
+        </span>
+      ) : (
+        "Everything arriving today has a room."
+      )}
+    </p>
 
-        <p className="admin-sub" style={{ marginBottom: "2rem" }}>
-          {day.counts.unassignedArrivals > 0 ? (
-            <span style={{ color: "var(--marigold)" }}>
-              {day.counts.unassignedArrivals} arrival
-              {day.counts.unassignedArrivals === 1 ? "" : "s"} with no room —
-              give them one on the{" "}
-              <Link
-                href={localizedPath(lang, `/dashboard/${slug}/calendar`)}
-                style={{ color: "var(--marigold)", textDecoration: "underline" }}
-              >
-                calendar
-              </Link>
-            </span>
-          ) : (
-            "Everything arriving today has a room."
-          )}
-        </p>
-
-        <DeskBoard
-          day={day}
-          rooms={rooms.rooms}
-          slug={slug}
-          checkIn={checkIn}
-          checkOut={checkOut}
-          setHousekeeping={setHousekeeping}
-          save={save}
-          assign={assign}
-          markStatus={mark}
-        />
-      </div>
-    </section>
+    <DeskBoard
+      day={day}
+      rooms={rooms.rooms}
+      slug={slug}
+      checkIn={checkIn}
+      checkOut={checkOut}
+      setHousekeeping={setHousekeeping}
+      save={save}
+      assign={assign}
+      markStatus={mark}
+    />
+  </>
   );
 }

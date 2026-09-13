@@ -40,7 +40,7 @@ function shift(date: string, days: number): string {
 export default async function RatesPage({
   params,
   searchParams,
-}: PageProps<"/[lang]/dashboard/[slug]/rates">) {
+}: PageProps<"/[lang]/dashboard/[slug]/bookings/rates">) {
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
@@ -73,7 +73,7 @@ export default async function RatesPage({
     throw err;
   }
 
-  const here = localizedPath(locale, `/dashboard/${slug}/rates`);
+  const here = localizedPath(locale, `/dashboard/${slug}/bookings/rates`);
 
   async function createPlan(groupId: number, name: string, base: string) {
     "use server";
@@ -120,50 +120,41 @@ export default async function RatesPage({
   }
 
   return (
-    <section className="section">
-      <div className="wrap" style={{ maxWidth: "72rem" }}>
-        <Link
-          href={localizedPath(lang, `/dashboard/${slug}`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Back
+    <>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+        gap: "1rem",
+        flexWrap: "wrap",
+        margin: "1.25rem 0 0.4rem",
+      }}
+    >
+      <h1 style={{ margin: 0 }}>Rates</h1>
+      <nav style={{ display: "flex", gap: "0.5rem" }}>
+        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, -DAYS)}`}>
+          ← Earlier
         </Link>
+        <Link className="btn btn-quiet" href={here}>
+          Today
+        </Link>
+        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, DAYS)}`}>
+          Later →
+        </Link>
+      </nav>
+    </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
-            margin: "1.25rem 0 0.4rem",
-          }}
-        >
-          <h1 style={{ margin: 0 }}>Rates</h1>
-          <nav style={{ display: "flex", gap: "0.5rem" }}>
-            <Link className="btn btn-quiet" href={`${here}?start=${shift(start, -DAYS)}`}>
-              ← Earlier
-            </Link>
-            <Link className="btn btn-quiet" href={here}>
-              Today
-            </Link>
-            <Link className="btn btn-quiet" href={`${here}?start=${shift(start, DAYS)}`}>
-              Later →
-            </Link>
-          </nav>
-        </div>
+    <p className="lede" style={{ marginBottom: "2rem" }}>
+      What a night costs, and when you are not selling.
+    </p>
 
-        <p className="lede" style={{ marginBottom: "2rem" }}>
-          What a night costs, and when you are not selling.
-        </p>
-
-        <RatesEditor
-          calendar={calendar}
-          groups={rooms.groups}
-          createPlan={createPlan}
-          setRange={setRange}
-        />
-      </div>
-    </section>
+    <RatesEditor
+      calendar={calendar}
+      groups={rooms.groups}
+      createPlan={createPlan}
+      setRange={setRange}
+    />
+  </>
   );
 }

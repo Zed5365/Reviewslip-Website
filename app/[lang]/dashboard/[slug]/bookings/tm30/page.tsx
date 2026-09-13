@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
@@ -30,7 +29,7 @@ function shift(date: string, days: number): string {
 export default async function Tm30Page({
   params,
   searchParams,
-}: PageProps<"/[lang]/dashboard/[slug]/tm30">) {
+}: PageProps<"/[lang]/dashboard/[slug]/bookings/tm30">) {
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
   const locale: Locale = lang;
@@ -63,7 +62,7 @@ export default async function Tm30Page({
     throw err;
   }
 
-  const here = localizedPath(locale, `/dashboard/${slug}/tm30`);
+  const here = localizedPath(locale, `/dashboard/${slug}/bookings/tm30`);
 
   async function markNotified(ids: number[]) {
     "use server";
@@ -86,38 +85,29 @@ export default async function Tm30Page({
   }
 
   return (
-    <section className="section">
-      <div className="wrap" style={{ maxWidth: "52rem" }}>
-        <Link
-          href={localizedPath(lang, `/dashboard/${slug}`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Back
-        </Link>
+    <>
+    <h1 style={{ margin: "1.25rem 0 0.4rem" }}>TM30</h1>
+    <p className="lede" style={{ marginBottom: "1.5rem" }}>
+      Foreign guests have to be notified to Immigration within 24 hours of
+      arriving. Download the file, upload it at{" "}
+      <a
+        href="https://tm30.immigration.go.th"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "var(--jade)" }}
+      >
+        tm30.immigration.go.th
+      </a>
+      , then mark them done here.
+    </p>
 
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>TM30</h1>
-        <p className="lede" style={{ marginBottom: "1.5rem" }}>
-          Foreign guests have to be notified to Immigration within 24 hours of
-          arriving. Download the file, upload it at{" "}
-          <a
-            href="https://tm30.immigration.go.th"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "var(--jade)" }}
-          >
-            tm30.immigration.go.th
-          </a>
-          , then mark them done here.
-        </p>
-
-        <Tm30Board
-          data={data}
-          from={from}
-          to={to}
-          downloadUrl={`/api/tm30/${slug}?from=${from}&to=${to}`}
-          markNotified={markNotified}
-        />
-      </div>
-    </section>
+    <Tm30Board
+      data={data}
+      from={from}
+      to={to}
+      downloadUrl={`/api/tm30/${slug}?from=${from}&to=${to}`}
+      markNotified={markNotified}
+    />
+  </>
   );
 }

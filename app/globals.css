@@ -1275,3 +1275,102 @@ body:has(.admin-shell) > * > footer {
     min-height: 44px;
   }
 }
+
+/* --- the bookings widget, on the venue page ------------------------------- */
+
+.bw {
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.bw-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.bw-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.bw-open {
+  font-size: 0.88rem;
+  color: var(--jade);
+  white-space: nowrap;
+}
+
+.bw-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--admin-muted);
+}
+
+.bw-empty a {
+  color: var(--jade);
+}
+
+.bw-figures {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+}
+
+.bw-figure {
+  display: grid;
+  gap: 0.2rem;
+}
+
+/* Sans and proportional figures, not the display serif and not tabular. A
+   serif at this size reads as decoration, and tabular-nums gives every digit
+   the width of a zero — which looks loose on a standalone number and only
+   earns its keep in a column that has to line up. */
+.bw-value {
+  font-family: var(--ui);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--cream);
+}
+
+.bw-label {
+  font-size: 0.78rem;
+  color: var(--admin-muted);
+}
+
+/* Present only when something needs doing — see the component. */
+.bw-attention {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--jade-line);
+}
+
+.bw-needs {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(233, 160, 59, 0.45);
+  background: rgba(233, 160, 59, 0.1);
+  color: var(--marigold);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.bw-needs:hover {
+  background: rgba(233, 160, 59, 0.18);
+}
+
+@media (max-width: 30rem) {
+  /* Two up rather than one: three figures stacked pushes everything that
+     matters below the fold on a phone. */
+  .bw-figures { grid-template-columns: repeat(2, 1fr); }
+  .bw-value { font-size: 1.4rem; }
+}
