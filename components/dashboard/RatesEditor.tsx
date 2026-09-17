@@ -61,6 +61,21 @@ function cellOf(n: RateNight) {
  * and setting a minimum stay does exactly that, and does not wipe the price it
  * did not mention.
  */
+/**
+ * What a restriction control is asking for.
+ *
+ * Three states, not two, and this is the whole fix for a real bug. A checkbox
+ * has an off that means both "leave whatever is there" and "take it off", and
+ * the code could only tell them apart by watching whether somebody had touched
+ * it — which fails the moment the form resets after a save. So once a night was
+ * marked not-selling there was no way back to selling it, and because the grid
+ * draws closed before price, a night you had just priced still showed "—".
+ *
+ * A form that edits a *range* cannot show the current state of those nights —
+ * they may all differ. So each control states its intention instead.
+ */
+type Wish = "keep" | "on" | "off";
+
 export default function RatesEditor({
   calendar,
   groups,
@@ -97,12 +112,36 @@ export default function RatesEditor({
   const planIds = calendar.plans.map((p) => p.id);
   const [planId, setPlanId] = useState<number>(planIds[0] ?? 0);
   if (planIds.length > 0 && !planIds.includes(planId)) setPlanId(planIds[0]);
-  const [from, setFrom] = useState(calendar.nights[0] ?? "");
-  const [to, setTo] = useState(calendar.nights[calendar.nights.length - 1] ?? "");
+  const first = calendar.nights[0] ?? "";
+  const last = calendar.nights[calendar.nights.length - 1] ?? "";
+  const [from, setFrom] = useState(first);
+  const [to, setTo] = useState(last);
+
   const [amount, setAmount] = useState("");
+  const [stay, setStay] = useState<Wish>("keep");
   const [minNights, setMinNights] = useState("");
-  const [closed, setClosed] = useState(false);
-  const [cta, setCta] = useState(false);
+  const [closed, setClosed] = useState<Wish>("keep");
+  const [cta, setCta] = useState<Wish>("keep");
+
+  /*
+   * Re-seed the dates when the server sends a different window.
+   *
+   * "Earlier" and "Later" change only `?start=`, and a navigation that changes
+   * nothing but the search params does not remount this component — the router
+   * cache key drops them deliberately. So the props arrive with next month's
+   * nights while `from` and `to` still hold last month's, and Apply writes the
+   * price to a month nobody is looking at. It saves, the grid on screen does
+   * not move, and there is no error to explain why: the single most convincing
+   * way to make a working feature look broken.
+   *
+   * Calendar.tsx re-seeds for exactly this reason. This is the same fix.
+   */
+  const [seen, setSeen] = useState(first);
+  if (first !== seen) {
+    setSeen(first);
+    setFrom(first);
+    setTo(last);
+  }
 
   // The same correction, for the same reason: room types can arrive after
   // this mounted, and a zero here makes Add do nothing quietly.
@@ -124,14 +163,28 @@ export default function RatesEditor({
     setBusy(true);
     setProblem("");
 
-    // Only what was actually filled in. An empty price field means "leave the
-    // price alone", not "set it to nothing" — the difference between adjusting
-    // a season and wiping one.
+    /*
+     * Only what was asked for.
+     *
+     * An empty price means "leave the price alone", not "set it to nothing" —
+     * the difference between adjusting a season and wiping one. The API reads
+     * an absent key the same way, and an explicit null as "clear it", so this
+     * maps one to one onto what the three selects say.
+     */
     const patch: Record<string, unknown> = { from, to };
     if (amount.trim() !== "") patch.amount = amount.trim();
-    if (minNights.trim() !== "") patch.minNights = Number(minNights);
-    if (closed) patch.closed = true;
-    if (cta) patch.closedToArrival = true;
+    if (stay === "off") patch.minNights = null;
+    if (stay === "on" && minNights.trim() !== "") {
+      patch.minNights = Number(minNights);
+    }
+    if (closed !== "keep") patch.closed = closed === "on";
+    if (cta !== "keep") patch.closedToArrival = cta === "on";
+
+    if (stay === "on" && minNights.trim() === "") {
+      setBusy(false);
+      setProblem("How many nights is the minimum?");
+      return;
+    }
 
     if (Object.keys(patch).length === 2) {
       setBusy(false);
@@ -139,14 +192,24 @@ export default function RatesEditor({
       return;
     }
 
-    const result = await setRange(planId, patch);
-    setBusy(false);
-    if (result.error) setProblem(result.error);
-    else {
-      setAmount("");
-      setMinNights("");
-      setClosed(false);
-      setCta(false);
+    try {
+      const result = await setRange(planId, patch);
+      if (result.error) setProblem(result.error);
+      else {
+        setAmount("");
+        setStay("keep");
+        setMinNights("");
+        setClosed("keep");
+        setCta("keep");
+      }
+    } catch {
+      // A rejected action rather than a refused one: a tab left open across a
+      // deploy, or the server gone. Without this the `finally` never ran, busy
+      // stayed true, and every field on the card was disabled for good with the
+      // button reading "Applying…" — which looks exactly like a hung save.
+      setProblem("Could not reach the server. Reload the page and try again.");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -158,10 +221,15 @@ export default function RatesEditor({
     }
     setBusy(true);
     setProblem("");
-    const result = await createPlan(newGroup, newName.trim(), newBase.trim());
-    setBusy(false);
-    if (result.error) setProblem(result.error);
-    else setNewBase("");
+    try {
+      const result = await createPlan(newGroup, newName.trim(), newBase.trim());
+      if (result.error) setProblem(result.error);
+      else setNewBase("");
+    } catch {
+      setProblem("Could not reach the server. Reload the page and try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -241,7 +309,8 @@ export default function RatesEditor({
           <h2>Set a range</h2>
           <p className="admin-sub" style={{ marginBottom: "1rem" }}>
             Both dates are nights, and the last one is included. Leave a field
-            blank to leave it as it is.
+            blank to keep the price that is already there, and the rest on
+            &ldquo;Leave as it is&rdquo; to change nothing but the price.
           </p>
 
           <div
@@ -317,47 +386,77 @@ export default function RatesEditor({
               <label htmlFor="r-min" style={label}>
                 Minimum stay
               </label>
-              <input
-                id="r-min"
-                type="number"
-                min={1}
-                max={90}
-                value={minNights}
-                disabled={busy}
-                placeholder="—"
-                onChange={(e) => setMinNights(e.target.value)}
-                style={{ ...field, width: "100%" }}
-              />
+              <div style={{ display: "flex", gap: "0.4rem" }}>
+                <select
+                  id="r-min-wish"
+                  aria-label="Minimum stay"
+                  value={stay}
+                  disabled={busy}
+                  onChange={(e) => setStay(e.target.value as Wish)}
+                  style={{ ...field, flex: "1 1 0", minWidth: 0, appearance: "auto" }}
+                >
+                  <option value="keep">Leave as it is</option>
+                  <option value="on">At least</option>
+                  <option value="off">No minimum</option>
+                </select>
+                {stay === "on" ? (
+                  <input
+                    id="r-min"
+                    type="number"
+                    min={1}
+                    max={90}
+                    value={minNights}
+                    disabled={busy}
+                    aria-label="Nights"
+                    onChange={(e) => setMinNights(e.target.value)}
+                    style={{ ...field, width: "4.5rem" }}
+                  />
+                ) : null}
+              </div>
             </div>
           </div>
 
           <div
             style={{
-              display: "flex",
-              gap: "1.25rem",
-              flexWrap: "wrap",
-              alignItems: "center",
+              display: "grid",
+              gap: "1rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(11rem, 1fr))",
               margin: "1rem 0",
             }}
           >
-            <label style={{ fontSize: "0.9rem", display: "flex", gap: "0.4rem" }}>
-              <input
-                type="checkbox"
-                checked={closed}
+            <div>
+              <label htmlFor="r-closed" style={label}>
+                Selling
+              </label>
+              <select
+                id="r-closed"
+                value={closed}
                 disabled={busy}
-                onChange={(e) => setClosed(e.target.checked)}
-              />
-              Not selling these nights
-            </label>
-            <label style={{ fontSize: "0.9rem", display: "flex", gap: "0.4rem" }}>
-              <input
-                type="checkbox"
-                checked={cta}
+                onChange={(e) => setClosed(e.target.value as Wish)}
+                style={{ ...field, width: "100%", appearance: "auto" }}
+              >
+                <option value="keep">Leave as it is</option>
+                <option value="on">Not selling these nights</option>
+                <option value="off">Selling these nights</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="r-cta" style={label}>
+                Arrivals
+              </label>
+              <select
+                id="r-cta"
+                value={cta}
                 disabled={busy}
-                onChange={(e) => setCta(e.target.checked)}
-              />
-              No arrivals on these nights
-            </label>
+                onChange={(e) => setCta(e.target.value as Wish)}
+                style={{ ...field, width: "100%", appearance: "auto" }}
+              >
+                <option value="keep">Leave as it is</option>
+                <option value="on">No arrivals on these nights</option>
+                <option value="off">Arrivals allowed</option>
+              </select>
+            </div>
           </div>
 
           <button
