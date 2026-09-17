@@ -16,26 +16,12 @@ import {
 } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
+import { shift, todayAt } from "@/lib/nights";
 
 export const metadata: Metadata = {
   title: "Today",
   robots: { index: false, follow: false },
 };
-
-/** Today at the property, not in UTC — see the calendar page. */
-function todayAt(timeZone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
-
-function shift(date: string, days: number): string {
-  const t = Date.parse(`${date}T00:00:00Z`);
-  return new Date(t + days * 86_400_000).toISOString().slice(0, 10);
-}
 
 /** "Thursday 11 September" — what somebody checks they are on the right day by. */
 function longDate(date: string): string {

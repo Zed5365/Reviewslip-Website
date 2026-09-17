@@ -6,25 +6,12 @@ import Tm30Board from "@/components/dashboard/Tm30Board";
 import { call, currentUser, sessionToken, type Tm30Pending } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
+import { shift, todayAt } from "@/lib/nights";
 
 export const metadata: Metadata = {
   title: "TM30",
   robots: { index: false, follow: false, nocache: true },
 };
-
-function todayAt(timeZone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
-
-function shift(date: string, days: number): string {
-  const t = Date.parse(`${date}T00:00:00Z`);
-  return new Date(t + days * 86_400_000).toISOString().slice(0, 10);
-}
 
 export default async function Tm30Page({
   params,
