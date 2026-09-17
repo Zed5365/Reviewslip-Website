@@ -42,17 +42,23 @@ export default function GuestList({
   guests,
   canStorePassports,
   add,
+  update,
   remove,
 }: {
   guests: BookingGuest[];
   /** False when the server has no encryption key — the field is disabled. */
   canStorePassports: boolean;
   add: (guest: Record<string, string>) => Promise<GuestResult>;
+  update: (id: number, patch: Record<string, unknown>) => Promise<GuestResult>;
   remove: (id: number) => Promise<GuestResult>;
 }) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState("");
+  // Which row is mid-save, so only that select goes quiet rather than the
+  // whole list. A front desk with six guests on a booking should not have the
+  // other five freeze because one is saving.
+  const [saving, setSaving] = useState<number | null>(null);
 
   const [familyName, setFamilyName] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -88,6 +94,31 @@ export default function GuestList({
     setPassportNumber("");
     setArrivedInThailand("");
     setOpen(false);
+  }
+
+  /**
+   * Record whether TM30 applies to this guest.
+   *
+   * Three values, not a checkbox. The column is nullable on purpose — null
+   * means "decide from nationality", and an unticked box would be
+   * indistinguishable from it, which turns a legal question into a guess. The
+   * empty-string case is the select's way of spelling null; it is the only
+   * value that goes back to the rule.
+   */
+  async function setRequired(id: number, choice: string) {
+    if (saving !== null) return;
+    setSaving(id);
+    setProblem("");
+    try {
+      const result = await update(id, {
+        tm30Required: choice === "" ? null : choice === "yes",
+      });
+      if (result.error) setProblem(result.error);
+    } catch {
+      setProblem("Could not reach the server. Reload the page and try again.");
+    } finally {
+      setSaving(null);
+    }
   }
 
   return (
@@ -146,19 +177,44 @@ export default function GuestList({
                 >
                   {g.nationality ?? "no nationality"}
                   {g.passportTail ? ` · passport ••••${g.passportTail}` : ""}
-                  {!g.ready ? ` · needs ${g.missing.join(", ")}` : ""}
+                  {!g.ready && g.reportable ? ` · needs ${g.missing.join(", ")}` : ""}
                   {g.notifiedAt ? " · notified" : ""}
                 </span>
               </span>
 
-              <button
-                type="button"
-                className="btn btn-quiet"
-                disabled={busy}
-                onClick={() => void remove(g.id)}
-              >
-                Remove
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <select
+                  aria-label={`TM30 for ${g.firstName} ${g.familyName}`}
+                  value={g.tm30Required === null ? "" : g.tm30Required ? "yes" : "no"}
+                  disabled={saving !== null}
+                  onChange={(e) => void setRequired(g.id, e.target.value)}
+                  style={{
+                    ...field,
+                    width: "auto",
+                    padding: "0.3rem 0.45rem",
+                    fontSize: "0.78rem",
+                    appearance: "auto",
+                  }}
+                >
+                  {/* What the rule decides, said out loud — otherwise "Auto"
+                      tells you there is a decision without telling you which
+                      way it went. */}
+                  <option value="">
+                    TM30: {g.reportable ? "yes" : "no"}, by nationality
+                  </option>
+                  <option value="yes">TM30: always</option>
+                  <option value="no">TM30: exempt</option>
+                </select>
+
+                <button
+                  type="button"
+                  className="btn btn-quiet"
+                  disabled={busy || saving !== null}
+                  onClick={() => void remove(g.id)}
+                >
+                  Remove
+                </button>
+              </div>
             </li>
           ))}
         </ul>

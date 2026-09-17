@@ -111,6 +111,22 @@ export default function BookingPanel({
     return {};
   }
 
+  async function updateGuest(id: number, patch: Record<string, unknown>) {
+    if (!booking) return { error: "No booking." };
+    const res = await fetch(`/api/guests/${slug}/${booking.id}?guestId=${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { error: data.error ?? "Could not save that guest." };
+    // Reloaded rather than patched in place: `reportable`, `ready` and
+    // `missing` are all worked out on the server, and guessing at them here
+    // would mean two answers to "does this guest need notifying".
+    await loadGuests(booking.id);
+    return {};
+  }
+
   async function removeGuest(id: number) {
     if (!booking) return { error: "No booking." };
     const res = await fetch(`/api/guests/${slug}/${booking.id}?guestId=${id}`, {
@@ -352,6 +368,7 @@ export default function BookingPanel({
           guests={guests}
           canStorePassports={canStorePassports}
           add={addGuest}
+          update={updateGuest}
           remove={removeGuest}
         />
       </div>

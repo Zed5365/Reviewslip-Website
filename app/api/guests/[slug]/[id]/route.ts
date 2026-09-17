@@ -96,3 +96,47 @@ export async function DELETE(
     );
   }
 }
+
+/**
+ * Correct one guest.
+ *
+ * Addressed by `?guestId=` like DELETE, for the same reason: the review app
+ * scopes a guest by venue, so the booking in the path is not part of where it
+ * lives. Whatever is in the body is forwarded as sent — `tm30Required: null` is
+ * a real value here, meaning "go back to deciding from nationality", and
+ * dropping it would make that impossible to express.
+ */
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
+  const token = await sessionToken();
+  if (!token) return Response.json({ error: "Sign in first." }, { status: 401 });
+
+  const guestId = new URL(request.url).searchParams.get("guestId") ?? "";
+  if (!/^\d+$/.test(guestId)) {
+    return Response.json({ error: "Bad request." }, { status: 400 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Bad request." }, { status: 400 });
+  }
+
+  try {
+    const data = await call(
+      `/businesses/${encodeURIComponent(slug)}/guests/${guestId}`,
+      { method: "PATCH", body, token }
+    );
+    return Response.json(data, { headers: { "Cache-Control": "no-store" } });
+  } catch (err) {
+    const status = (err as { status?: number }).status ?? 500;
+    return Response.json(
+      { error: err instanceof Error ? err.message : "Could not save that guest." },
+      { status }
+    );
+  }
+}

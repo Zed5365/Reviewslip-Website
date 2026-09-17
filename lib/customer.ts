@@ -484,7 +484,22 @@ export interface BookingGuest {
   passportTail: string | null;
   hasPassport: boolean;
   notifiedAt: string | null;
-  /** False for Thai nationals — section 38 is a foreigner notification. */
+  /**
+   * Whether somebody has overruled the nationality rule for this guest.
+   *
+   * Null is the ordinary case and means "decide from nationality" — not
+   * "exempt". True reports them regardless, false leaves them out. Three states
+   * because the rule has no way to know about a Thai-passport holder the
+   * immigration office asked to be reported, or a resident who was not.
+   */
+  tm30Required: boolean | null;
+  /**
+   * Whether this guest goes on the notification, after the override.
+   *
+   * Thai nationals are out — section 38 is a foreigner notification — and a
+   * guest with no nationality recorded is in, because omitting somebody is a
+   * fine and including somebody is a line Immigration ignores.
+   */
   reportable: boolean;
   /** Whether the record has everything the notification asks for. */
   ready: boolean;
