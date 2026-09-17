@@ -8,7 +8,9 @@ import {
   call,
   currentUser,
   sessionToken,
+  type Booking,
   type DayView,
+  type RatePlan,
   type Room,
   type RoomGroup,
 } from "@/lib/customer";
@@ -67,12 +69,14 @@ export default async function TodayPage({
 
   let day: DayView;
   let rooms: { groups: RoomGroup[]; rooms: Room[] };
+  let plans: { plans: RatePlan[] };
   try {
-    [day, rooms] = await Promise.all([
+    [day, rooms, plans] = await Promise.all([
       call<DayView>(`/businesses/${slug}/day?date=${date}`, { token }),
       call<{ groups: RoomGroup[]; rooms: Room[] }>(`/businesses/${slug}/rooms`, {
         token,
       }),
+      call<{ plans: RatePlan[] }>(`/businesses/${slug}/rates`, { token }),
     ]);
   } catch (err) {
     if ((err as { status?: number }).status === 404) notFound();
@@ -80,6 +84,35 @@ export default async function TodayPage({
   }
 
   const here = localizedPath(locale, `/dashboard/${slug}/bookings`);
+
+  /**
+   * Take a booking from the desk.
+   *
+   * The same action the calendar has, because somebody walking in without a
+   * reservation is the commonest way a booking starts, and the desk is where
+   * they are standing. Returns the booking so the panel can stay open on it and
+   * the passport can go in straight away.
+   */
+  async function book(values: Record<string, unknown>) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      const made = await call<{ booking: Booking }>(`/businesses/${slug}/bookings`, {
+        method: "POST",
+        body: values,
+        token: t,
+      });
+      revalidatePath(here);
+      return { booking: made.booking };
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not take that booking.",
+      };
+    }
+  }
   const link = (d: string) => (d === todayAt("Asia/Bangkok") ? here : `${here}?date=${d}`);
 
   async function mark(id: number, status: string) {
@@ -224,7 +257,10 @@ export default async function TodayPage({
     <DeskBoard
       day={day}
       rooms={rooms.rooms}
+      groups={rooms.groups.map((g) => ({ id: g.id, name: g.name }))}
+      plans={plans.plans}
       slug={slug}
+      create={book}
       checkIn={checkIn}
       checkOut={checkOut}
       setHousekeeping={setHousekeeping}

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { Booking, CalendarWindow, Room, TakenNight } from "@/lib/customer";
+import { isWeekStart } from "@/lib/nights";
 
 /**
  * The diary: rooms down the side, nights across.
@@ -50,15 +51,44 @@ function nightsOf(arrival: string, departure: string): string[] {
 
 export default function Calendar({
   data,
+  groupId = null,
   move,
   onOpen,
+  onEmpty,
 }: {
   data: CalendarWindow;
+  /** Show only this room type, or every one. Display only — see below. */
+  groupId?: number | null;
   /** Server action: put a booking in a room, or null to unassign. */
   move: (bookingId: number, roomId: number | null) => Promise<MoveResult>;
   onOpen: (booking: Booking | TakenNight) => void;
+  /** An empty cell: the offer to take a booking in that room, that night. */
+  onEmpty?: (prefill: { roomId: number; groupId: number; arrival: string }) => void;
 }) {
-  const { nights, rooms } = data;
+  const { nights } = data;
+
+  /*
+   * The filter hides rows; it does not narrow the data.
+   *
+   * `taken` stays whole on purpose, so `clashes()` below still sees nights in
+   * rooms that are currently off screen. Filtering the source instead would
+   * make a drop look free because the stay blocking it happens to be in a room
+   * type nobody is looking at — a double-booking created by a view setting.
+   */
+  const rooms = groupId === null
+    ? data.rooms
+    : data.rooms.filter((r) => r.groupId === groupId);
+
+  /** Rooms in the order they are drawn, with a heading before each new type. */
+  const ordered = [...rooms].sort(
+    (a, b) =>
+      (a.groupName ?? "").localeCompare(b.groupName ?? "") ||
+      a.name.localeCompare(b.name, undefined, { numeric: true })
+  );
+
+  // Narrow columns once a month is on screen: 31 × 3rem plus the room column
+  // is most of a second screen's worth of scrolling.
+  const dense = nights.length > 16;
 
   // The grid is held locally so a drop can land before the round trip. The
   // server is still the truth: a refusal puts it back and says why.
@@ -258,17 +288,31 @@ export default function Calendar({
       {/* ---------------------------------------------------------- the grid */}
 
       <div className="admin-scroll">
-        <table className="cal">
+        <table
+          className="cal"
+          style={
+            {
+              "--cal-night-w": dense ? "2rem" : "3rem",
+              "--cal-room-w": dense ? "9rem" : "11rem",
+            } as React.CSSProperties
+          }
+        >
           <thead>
             <tr>
               <th className="cal-room">Room</th>
               {nights.map((night) => {
                 const h = head(night);
+                const marks = [
+                  "cal-night",
+                  h.weekend ? "weekend" : "",
+                  // A heavier line where the week turns. Reading "is that the
+                  // second or third Friday" off thirty-one identical columns is
+                  // the thing a month view is otherwise worse at than a
+                  // fortnight.
+                  isWeekStart(night) ? "week-start" : "",
+                ].filter(Boolean);
                 return (
-                  <th
-                    key={night}
-                    className={h.weekend ? "cal-night weekend" : "cal-night"}
-                  >
+                  <th key={night} className={marks.join(" ")}>
                     <span className="cal-weekday">{h.weekday}</span>
                     <span className="cal-day">{h.day}</span>
                   </th>
@@ -277,13 +321,28 @@ export default function Calendar({
             </tr>
           </thead>
           <tbody>
-            {rooms.map((room: Room) => {
+            {ordered.map((room: Room, at) => {
               const row = byRoom.get(room.id);
               const target = over === room.id;
+              // A heading row when the type changes, so the filter reads as a
+              // zoom into something rather than a hiding of everything else.
+              const opensGroup =
+                at === 0 || ordered[at - 1].groupName !== room.groupName;
 
               return (
+                <Fragment key={`g${room.id}`}>
+                {opensGroup ? (
+                  <tr className="cal-group-row">
+                    {/* The sticky cell is never the spanned one: a cell that is
+                        both `colspan` and `position: sticky; left: 0` is where
+                        sticky tables come apart. */}
+                    <th scope="rowgroup" className="cal-room cal-group">
+                      {room.groupName}
+                    </th>
+                    <td className="cal-group-fill" colSpan={nights.length} />
+                  </tr>
+                ) : null}
                 <tr
-                  key={room.id}
                   className={target ? "cal-row over" : "cal-row"}
                   onDragOver={(e) => {
                     if (dragging === null) return;
@@ -298,12 +357,41 @@ export default function Calendar({
                 >
                   <th scope="row" className="cal-room">
                     {room.name}
-                    <span className="cal-type">{room.groupName}</span>
                   </th>
 
                   {nights.map((night) => {
                     const stay = row?.get(night);
-                    if (!stay) return <td key={night} className="cal-cell" />;
+                    const edge = isWeekStart(night) ? " week-start" : "";
+
+                    if (!stay) {
+                      // An empty cell is an offer. One tap on the night and the
+                      // room somebody is already looking at beats a form that
+                      // asks them to type both back in.
+                      return onEmpty ? (
+                        <td key={night} className={`cal-cell empty${edge}`}>
+                          <button
+                            type="button"
+                            className="cal-take"
+                            disabled={busy}
+                            title={`Take a booking · ${room.name} · ${night}`}
+                            onClick={() =>
+                              onEmpty({
+                                roomId: room.id,
+                                groupId: room.groupId,
+                                arrival: night,
+                              })
+                            }
+                          >
+                            <span aria-hidden="true">+</span>
+                            <span className="visually-hidden">
+                              Take a booking in {room.name} on {night}
+                            </span>
+                          </button>
+                        </td>
+                      ) : (
+                        <td key={night} className={`cal-cell${edge}`} />
+                      );
+                    }
 
                     const tone = TONE[stay.status] ?? TONE.confirmed;
                     const first =
@@ -312,7 +400,7 @@ export default function Calendar({
                     return (
                       <td
                         key={night}
-                        className="cal-cell taken"
+                        className={`cal-cell taken${edge}`}
                         style={{ background: tone.fill, color: tone.ink }}
                       >
                         {first ? (
@@ -337,6 +425,7 @@ export default function Calendar({
                     );
                   })}
                 </tr>
+                </Fragment>
               );
             })}
           </tbody>

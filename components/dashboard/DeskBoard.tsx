@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Desk, { type DeskResult } from "./Desk";
-import BookingPanel, { type EditResult } from "./BookingPanel";
-import type { Booking, DayView, Room } from "@/lib/customer";
+import BookingPanel, { type CreateResult, type EditResult } from "./BookingPanel";
+import type { Booking, DayView, RatePlan, Room } from "@/lib/customer";
 
 /**
  * Holds which booking is open, and joins the day list to the panel.
@@ -19,7 +19,10 @@ import type { Booking, DayView, Room } from "@/lib/customer";
 export default function DeskBoard({
   day,
   rooms,
+  groups,
+  plans,
   slug,
+  create,
   checkIn,
   checkOut,
   setHousekeeping,
@@ -29,7 +32,10 @@ export default function DeskBoard({
 }: {
   day: DayView;
   rooms: Room[];
+  groups: { id: number; name: string }[];
+  plans: RatePlan[];
   slug: string;
+  create: (values: Record<string, unknown>) => Promise<CreateResult>;
   checkIn: (id: number) => Promise<DeskResult>;
   checkOut: (id: number) => Promise<DeskResult>;
   setHousekeeping: (roomId: number, state: string) => Promise<DeskResult>;
@@ -37,10 +43,20 @@ export default function DeskBoard({
   assign: (id: number, roomId: number | null) => Promise<EditResult>;
   markStatus: (id: number, status: string) => Promise<EditResult>;
 }) {
-  const [open, setOpen] = useState<Booking | null>(null);
+  const [open, setOpen] = useState<Booking | "new" | null>(null);
 
   return (
     <>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+        <button
+          type="button"
+          className="btn btn-go"
+          onClick={() => setOpen("new")}
+        >
+          Take a booking
+        </button>
+      </div>
+
       <Desk
         day={day}
         checkIn={checkIn}
@@ -51,8 +67,12 @@ export default function DeskBoard({
       <BookingPanel
         booking={open}
         rooms={rooms}
+        groups={groups}
+        plans={plans}
         slug={slug}
         onClose={() => setOpen(null)}
+        onCreated={(made) => setOpen(made)}
+        create={create}
         save={save}
         assign={assign}
         setStatus={markStatus}

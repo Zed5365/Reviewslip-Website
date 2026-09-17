@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import Calendar, { type MoveResult } from "./Calendar";
-import BookingPanel, { type EditResult } from "./BookingPanel";
-import type { Booking, CalendarWindow, TakenNight } from "@/lib/customer";
+import BookingPanel, {
+  type CreateResult,
+  type EditResult,
+  type Prefill,
+} from "./BookingPanel";
+import type { Booking, CalendarWindow, RatePlan, TakenNight } from "@/lib/customer";
 
 /**
  * Holds which booking is open, and joins the grid to the panel.
@@ -14,26 +18,41 @@ import type { Booking, CalendarWindow, TakenNight } from "@/lib/customer";
  */
 export default function Diary({
   data,
+  groupId = null,
   slug,
+  groups,
+  plans,
   move,
+  create,
   save,
   assign,
   setStatus,
 }: {
   data: CalendarWindow;
+  groupId?: number | null;
   slug: string;
+  groups: { id: number; name: string }[];
+  plans: RatePlan[];
   move: (bookingId: number, roomId: number | null) => Promise<MoveResult>;
+  create: (values: Record<string, unknown>) => Promise<CreateResult>;
   save: (id: number, patch: Record<string, unknown>) => Promise<EditResult>;
   assign: (id: number, roomId: number | null) => Promise<EditResult>;
   setStatus: (id: number, status: string) => Promise<EditResult>;
 }) {
-  const [open, setOpen] = useState<Booking | null>(null);
+  const [open, setOpen] = useState<Booking | "new" | null>(null);
+  const [prefill, setPrefill] = useState<Prefill | undefined>(undefined);
 
   /**
+   * What the grid knows about a stay, shaped as a booking.
+   *
    * A grid cell knows a stay by its room-night, which carries the guest and the
-   * dates but not the room type or the headcount. The full record is in the
-   * unassigned list, or is rebuilt from the room it is sitting in — enough for
-   * the panel, which re-reads nothing it does not show.
+   * dates but not the headcount, the email or the money. This is the instant
+   * paint; the panel fetches the rest and fills it in.
+   *
+   * The fields that are genuinely unknown are left null rather than guessed.
+   * This used to say `adults: 1` and `nights: 0`, which are not unknowns, they
+   * are wrong answers — and a panel showing "1 adult" for a family of four is
+   * worse than one showing a dash for half a second.
    */
   function toBooking(source: Booking | TakenNight): Booking {
     if ("id" in source) return source;
@@ -48,7 +67,7 @@ export default function Diary({
       guestName: source.guestName,
       guestEmail: null,
       guestPhone: null,
-      adults: 1,
+      adults: 0,
       children: 0,
       arrival: source.arrival,
       departure: source.departure,
@@ -56,10 +75,6 @@ export default function Diary({
       status: source.status,
       source: source.source,
       notes: null,
-      // The grid is not sent the money — a room-night carries the guest and
-      // the dates, and nothing else. Null here reads as "unpriced" in the
-      // panel, which is honest: this is a partial record, and the panel does
-      // not show a total it was never given.
       ratePlanId: null,
       totalMinor: null,
       total: null,
@@ -71,14 +86,27 @@ export default function Diary({
     <>
       <Calendar
         data={data}
+        groupId={groupId}
         move={move}
-        onOpen={(source) => setOpen(toBooking(source))}
+        onOpen={(source) => {
+          setPrefill(undefined);
+          setOpen(toBooking(source));
+        }}
+        onEmpty={(where) => {
+          setPrefill(where);
+          setOpen("new");
+        }}
       />
       <BookingPanel
         booking={open}
+        prefill={prefill}
         rooms={data.rooms}
+        groups={groups}
+        plans={plans}
         slug={slug}
         onClose={() => setOpen(null)}
+        onCreated={(made) => setOpen(made)}
+        create={create}
         save={save}
         assign={assign}
         setStatus={setStatus}

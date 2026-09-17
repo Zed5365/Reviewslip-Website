@@ -4,14 +4,23 @@ import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
 import Diary from "@/components/dashboard/Diary";
-import NewBooking, { type BookingState } from "@/components/dashboard/NewBooking";
+import RoomTypeFilter from "@/components/dashboard/RoomTypeFilter";
+import ViewToggle from "@/components/dashboard/ViewToggle";
 import {
   call,
   currentUser,
   sessionToken,
+  type Booking,
   type CalendarWindow,
   type RatePlan,
 } from "@/lib/customer";
+import {
+  addMonths,
+  daysInMonth,
+  monthLabel,
+  monthStart,
+  todayAt,
+} from "@/lib/nights";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
@@ -19,33 +28,6 @@ export const metadata: Metadata = {
   title: "Calendar",
   robots: { index: false, follow: false },
 };
-
-const DAYS = 14;
-
-/**
- * Today, as a calendar date, in the property's timezone.
- *
- * Not `new Date().toISOString()`, which is UTC and therefore yesterday in
- * Bangkok until 07:00 — the exact off-by-one this whole module is built to
- * avoid, and it would land on the default view of the busiest page.
- *
- * `en-CA` because its short date format is already YYYY-MM-DD; the alternative
- * is assembling the parts by hand from formatToParts.
- */
-function todayAt(timeZone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
-
-/** Shift a YYYY-MM-DD by whole days without going near a local timezone. */
-function shift(date: string, days: number): string {
-  const t = Date.parse(`${date}T00:00:00Z`);
-  return new Date(t + days * 86_400_000).toISOString().slice(0, 10);
-}
 
 export default async function CalendarPage({
   params,
@@ -64,9 +46,23 @@ export default async function CalendarPage({
   // TODO: read the venue's own timezone once the settings page exposes it. The
   // column exists; until it is editable, the market this is built for is the
   // right default and is better than UTC by seven hours.
-  const start = /^\d{4}-\d{2}-\d{2}$/.test(String(asked ?? ""))
-    ? String(asked)
-    : todayAt("Asia/Bangkok");
+  /*
+   * A whole month, snapped to the 1st.
+   *
+   * Snapped rather than taken literally, so a hand-typed or stale
+   * `?start=2026-02-17` draws February instead of a ragged window running into
+   * March — which would put the same night in two different views depending on
+   * how somebody arrived.
+   */
+  const start =
+    monthStart(String(asked ?? "")) ?? monthStart(todayAt("Asia/Bangkok"))!;
+  const days = daysInMonth(start);
+
+  // Which room type, if any. Zero and nonsense both mean "all", because a
+  // broken link should show the calendar rather than nothing.
+  const askedType = Array.isArray(query.type) ? query.type[0] : query.type;
+  const typeId = Number(askedType);
+  const groupId = Number.isSafeInteger(typeId) && typeId > 0 ? typeId : null;
 
   const token = await sessionToken();
 
@@ -75,7 +71,7 @@ export default async function CalendarPage({
   try {
     [data, plans] = await Promise.all([
       call<CalendarWindow>(
-        `/businesses/${slug}/calendar?start=${start}&days=${DAYS}`,
+        `/businesses/${slug}/calendar?start=${start}&days=${days}`,
         { token }
       ),
       call<{ plans: RatePlan[] }>(`/businesses/${slug}/rates`, { token }),
@@ -87,49 +83,36 @@ export default async function CalendarPage({
 
   const here = localizedPath(locale, `/dashboard/${slug}/bookings/calendar`);
 
-  async function book(
-    _prev: BookingState,
-    formData: FormData
-  ): Promise<BookingState> {
+  /**
+   * Take a booking.
+   *
+   * Returns the booking rather than just success, so the panel can stay open on
+   * what was taken and let somebody put the passport in while the guest is
+   * still at the desk. Errors come back as values, not throws — the caller is a
+   * dialog that has to show them, and a thrown error there is an error boundary
+   * over the whole calendar.
+   */
+  async function book(values: Record<string, unknown>) {
     "use server";
 
     const t = await sessionToken();
     if (!t) redirect(localizedPath(locale, "/login"));
 
-    const values = {
-      guestName: String(formData.get("guestName") ?? "").trim(),
-      arrival: String(formData.get("arrival") ?? ""),
-      departure: String(formData.get("departure") ?? ""),
-    };
-
     try {
-      await call(`/businesses/${slug}/bookings`, {
+      const made = await call<{ booking: Booking }>(`/businesses/${slug}/bookings`, {
         method: "POST",
-        body: {
-          ...values,
-          groupId: Number(formData.get("groupId")),
-          roomId: formData.get("roomId") ? Number(formData.get("roomId")) : null,
-          // Sent when a rate exists for the chosen type. The server quotes it
-          // against every night and freezes the total on the booking.
-          ratePlanId: formData.get("ratePlanId")
-            ? Number(formData.get("ratePlanId"))
-            : null,
-          adults: Number(formData.get("adults") ?? 1),
-          guestEmail: String(formData.get("guestEmail") ?? "").trim() || null,
-        },
+        body: values,
         token: t,
       });
+      revalidatePath(here);
+      return { booking: made.booking };
     } catch (err) {
+      // The review app owns the rules — the dates, the capacity and the clash —
+      // and its wording is the accurate one.
       return {
-        // The review app owns the rules — the dates, the capacity, and the
-        // clash — and its wording is the accurate one.
         error: err instanceof Error ? err.message : "Could not take that booking.",
-        values,
       };
     }
-
-    revalidatePath(here);
-    return { ok: true };
   }
 
   /**
@@ -205,9 +188,30 @@ export default async function CalendarPage({
     return {};
   }
 
+  /**
+   * The room types, with how many rooms each holds.
+   *
+   * Taken from the rooms that came back rather than fetched separately — which
+   * does mean a type with no rooms in it cannot be booked from this page, and
+   * should not be: there is nothing to put anybody in.
+   */
   const groups = Array.from(
-    new Map(data.rooms.map((r) => [r.groupId, r.groupName ?? ""])).entries()
-  ).map(([id, name]) => ({ id, name }));
+    data.rooms.reduce((seen, r) => {
+      const at = seen.get(r.groupId);
+      if (at) at.rooms += 1;
+      else seen.set(r.groupId, { id: r.groupId, name: r.groupName ?? "", capacity: 0, sort: 0, rooms: 1 });
+      return seen;
+    }, new Map<number, { id: number; name: string; capacity: number; sort: number; rooms: number }>()).values()
+  ).sort((a, b) => a.name.localeCompare(b.name));
+
+  /** This page at another month, keeping the room-type filter. */
+  function month(at: string): string {
+    const next = new URLSearchParams();
+    if (at) next.set("start", at);
+    if (groupId) next.set("type", String(groupId));
+    const q = next.toString();
+    return q ? `${here}?${q}` : here;
+  }
 
   return (
     <>
@@ -221,20 +225,28 @@ export default async function CalendarPage({
         margin: "1.25rem 0 2rem",
       }}
     >
-      <h1 style={{ margin: 0 }}>Calendar</h1>
+      <h1 style={{ margin: 0 }}>{monthLabel(start, locale)}</h1>
 
       <nav style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, -DAYS)}`}>
-          ← Earlier
+        <Link className="btn btn-quiet" href={month(addMonths(start, -1))}>
+          ←
         </Link>
-        <Link className="btn btn-quiet" href={here}>
-          Today
+        <Link className="btn btn-quiet" href={month("")}>
+          This month
         </Link>
-        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, DAYS)}`}>
-          Later →
+        <Link className="btn btn-quiet" href={month(addMonths(start, 1))}>
+          →
         </Link>
       </nav>
     </div>
+
+    <ViewToggle
+      calendar={localizedPath(locale, `/dashboard/${slug}/bookings/calendar`)}
+      list={localizedPath(locale, `/dashboard/${slug}/bookings/list`)}
+      here="calendar"
+    />
+
+    <RoomTypeFilter groups={groups} />
 
     {data.rooms.length === 0 ? (
       <p className="admin-empty">
@@ -250,39 +262,18 @@ export default async function CalendarPage({
     ) : (
       <Diary
         data={data}
+        groupId={groupId}
         slug={slug}
+        groups={groups}
+        plans={plans.plans}
         move={move}
+        create={book}
         save={save}
         assign={move}
         setStatus={setStatus}
       />
     )}
 
-    {groups.length > 0 ? (
-      <div style={{ marginTop: "2.5rem" }}>
-        <h2 style={{ fontSize: "1.1rem", marginBottom: "0.3rem" }}>
-          Take a booking
-        </h2>
-        <p className="admin-sub" style={{ marginBottom: "1rem" }}>
-          Leave the room blank and it sits unassigned until you pick one.
-        </p>
-        <NewBooking
-          action={book}
-          groups={groups}
-          rooms={data.rooms}
-          plans={plans.plans}
-        />
-      </div>
-    ) : (
-      <p style={{ marginTop: "2rem" }}>
-        <Link
-          className="btn btn-go"
-          href={localizedPath(lang, `/dashboard/${slug}/bookings/rooms`)}
-        >
-          Set up rooms
-        </Link>
-      </p>
-    )}
   </>
   );
 }

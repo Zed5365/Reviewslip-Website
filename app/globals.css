@@ -465,7 +465,7 @@ img {
    inline style, and neither can the display rule that keeps a closed dialog
    closed once anything else sets display on it. */
 .editor {
-  width: min(42rem, calc(100vw - 2rem));
+  width: min(48rem, calc(100vw - 2rem));
   max-height: min(85vh, 46rem);
   padding: 0;
   border: 1px solid var(--jade-line);
@@ -473,7 +473,27 @@ img {
   background: var(--shade-soft);
   color: var(--cream);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  /* The dialog itself never scrolls — its body does. Scrolling here would
+     drag the rounded corners and the backdrop with it. */
   overflow: hidden;
+  display: flex;
+}
+
+/*
+ * The part that scrolls.
+ *
+ * Without it, a booking with several guests on it runs past `max-height` and
+ * the Save button is simply unreachable: the panel is clipped, the dialog does
+ * not scroll, and there is nothing on screen to say the rest exists.
+ */
+.editor-body {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: 1.25rem;
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .editor:not([open]) {
@@ -838,10 +858,20 @@ body:has(.admin-shell) > * > footer {
    lose track of which row you are reading two weeks in. */
 .cal-room {
   position: sticky;
-  left: 0;
+  /*
+   * Minus the scroller's own padding, not zero.
+   *
+   * .admin-scroll pulls itself out to the page gutter with a negative margin
+   * and puts the space back as padding, so `left: 0` pins to the *content*
+   * edge — leaving a 0.75rem strip at the left of the scrollport where night
+   * cells slide out from under the room names and sit there, unlabelled, on
+   * top of the page background. Visible only once somebody scrolls, which is
+   * every time on a phone.
+   */
+  left: -0.75rem;
   z-index: 1;
-  width: 11rem;
-  min-width: 11rem;
+  width: var(--cal-room-w, 11rem);
+  min-width: var(--cal-room-w, 11rem);
   padding: 0.6rem 0.75rem;
   text-align: left;
   font-size: 0.9rem;
@@ -861,8 +891,8 @@ body:has(.admin-shell) > * > footer {
 }
 
 .cal-night {
-  width: 3rem;
-  min-width: 3rem;
+  width: var(--cal-night-w, 3rem);
+  min-width: var(--cal-night-w, 3rem);
   padding: 0.4rem 0.2rem;
   text-align: center;
   font-weight: 500;
@@ -889,6 +919,7 @@ body:has(.admin-shell) > * > footer {
 
 .cal-cell {
   height: 2.6rem;
+  width: var(--cal-night-w, 3rem);
   padding: 0;
   /* A hairline between nights, so a five-night stay reads as five nights
      rather than one long bar. Counting them is the point of the grid. */
@@ -1373,4 +1404,147 @@ body:has(.admin-shell) > * > footer {
      matters below the fold on a phone. */
   .bw-figures { grid-template-columns: repeat(2, 1fr); }
   .bw-value { font-size: 1.4rem; }
+}
+
+/* ---------------------------------------------------------- a month of it */
+
+/*
+ * A month is thirty-one columns, and the fortnight's proportions do not carry.
+ * The table sets --cal-night-w and --cal-room-w inline, so both grids are the
+ * same component at two sizes rather than two components drifting apart.
+ */
+
+/* Where the week turns. Thirty-one identical columns make "the second Friday
+   or the third" unanswerable; one heavier line answers it without a second
+   header row, which `table-layout: fixed` would fight. */
+.cal-night.week-start,
+.cal-cell.week-start {
+  border-left: 1px solid var(--jade-line);
+}
+
+/* The room type, once, above its rooms — instead of repeated in small grey
+   type under every room name. */
+.cal-group-row th.cal-group {
+  padding: 0.85rem 0.75rem 0.3rem;
+  font-family: var(--display);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--jade);
+}
+
+.cal-group-fill {
+  padding: 0;
+  border: 0;
+  background: rgba(130, 180, 155, 0.06);
+}
+
+/* An empty night offers itself. Invisible until the pointer is on it: a grid
+   showing thirty-one plus signs per room is a grid nobody can read. */
+.cal-cell.empty {
+  position: relative;
+}
+
+.cal-take {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--jade);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.12s var(--ease), background 0.12s var(--ease);
+}
+
+.cal-take:hover,
+.cal-take:focus-visible {
+  opacity: 1;
+  background: rgba(130, 180, 155, 0.14);
+  outline: none;
+}
+
+.cal-take:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--jade);
+}
+
+/* Reachable by a screen reader, absent from the page. Not display:none, which
+   takes it out of the accessibility tree along with everything else. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The room-type filter, over both the calendar and the list. */
+.rt-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+}
+
+.rt-chip {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--jade-line);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--cream-soft);
+  text-decoration: none;
+  transition: background 0.12s var(--ease), color 0.12s var(--ease);
+}
+
+.rt-chip:hover {
+  background: rgba(130, 180, 155, 0.12);
+  color: var(--cream);
+}
+
+.rt-chip[aria-current="true"] {
+  background: var(--jade);
+  border-color: var(--jade);
+  color: var(--shade-deep);
+}
+
+.rt-count {
+  margin-left: 0.35rem;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Calendar or list — two answers to two questions, not a default and a fallback. */
+.view-toggle {
+  display: inline-flex;
+  gap: 0.15rem;
+  padding: 0.15rem;
+  margin: 0 0 1rem;
+  border: 1px solid var(--jade-line);
+  border-radius: 999px;
+}
+
+.view-tab {
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--cream-soft);
+  text-decoration: none;
+  transition: background 0.12s var(--ease), color 0.12s var(--ease);
+}
+
+.view-tab:hover {
+  color: var(--cream);
+}
+
+.view-tab[aria-current="page"] {
+  background: var(--jade);
+  color: var(--shade-deep);
 }
