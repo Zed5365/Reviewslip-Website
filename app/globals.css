@@ -1548,3 +1548,129 @@ body:has(.admin-shell) > * > footer {
   background: var(--jade);
   color: var(--shade-deep);
 }
+
+/* ------------------------------------------------------- bookings as a list */
+
+.bl-bar {
+  display: grid;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-card);
+  background: rgba(243, 236, 220, 0.03);
+}
+
+.bl-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.bl-clear {
+  font-size: 0.8rem;
+  color: var(--jade);
+  text-decoration: none;
+  margin-left: 0.3rem;
+}
+
+.bl-clear:hover {
+  text-decoration: underline;
+}
+
+.bl-controls {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.bl-control {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.bl-control > span {
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.bl-control select,
+.bl-control input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--jade-line);
+  border-radius: 8px;
+  background: var(--shade-soft);
+  color: var(--cream);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.bl-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--admin-muted);
+}
+
+.bl-table {
+  min-width: 46rem;
+}
+
+/* The whole row opens the booking — a list where only the name is clickable
+   makes people aim, and the name is the narrowest thing in it. */
+.bl-row {
+  cursor: pointer;
+}
+
+.bl-row:hover {
+  background: rgba(130, 180, 155, 0.08);
+}
+
+.bl-who {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cream);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bl-row:hover .bl-who {
+  text-decoration: underline;
+}
+
+.bl-noroom {
+  color: var(--marigold);
+}
+
+.bl-status-confirmed {
+  border-color: rgba(130, 180, 155, 0.5);
+}
+
+.bl-status-in_house {
+  border-color: rgba(233, 160, 59, 0.55);
+  color: var(--marigold);
+}
+
+.bl-status-checked_out,
+.bl-status-cancelled,
+.bl-status-no_show {
+  color: var(--admin-muted);
+}
+
+.bl-pager {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}

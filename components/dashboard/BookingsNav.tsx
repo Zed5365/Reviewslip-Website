@@ -21,6 +21,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { segment: "", label: "Today" },
   { segment: "calendar", label: "Calendar" },
+  { segment: "list", label: "List" },
   { segment: "rooms", label: "Rooms" },
   { segment: "rates", label: "Rates" },
   { segment: "tm30", label: "TM30" },

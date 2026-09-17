@@ -353,6 +353,37 @@ export interface TakenNight {
  * room-night, and the page builds the grid. Sending it pre-shaped would repeat
  * each booking once per night it covers.
  */
+/** Which date a range asks about. "stay" overlaps the window. */
+export type BookingDateMode = "stay" | "arrival" | "departure";
+
+/**
+ * The filters the server actually applied.
+ *
+ * Echoed back rather than assumed, so the chips on screen are drawn from what
+ * was used. A page that keeps its own copy will eventually show a filter as
+ * active that the server discarded as unreadable — and then the rows and the
+ * chips are telling two different stories.
+ */
+export interface BookingFilters {
+  statuses: BookingStatus[] | null;
+  groupId: number | null;
+  /** Zero means "no room yet". */
+  roomId: number | null;
+  from: NightDate | null;
+  to: NightDate | null;
+  on: BookingDateMode;
+  q: string;
+  limit: number;
+}
+
+export interface BookingList {
+  bookings: Booking[];
+  total: number;
+  /** Null on the last page. Opaque: 'YYYY-MM-DD:id'. */
+  nextCursor: string | null;
+  filters: BookingFilters;
+}
+
 export interface CalendarWindow {
   start: NightDate;
   nights: NightDate[];
