@@ -1829,3 +1829,63 @@ body:has(.admin-shell) > * > footer {
     display: none;
   }
 }
+
+/* ------------------------------------------------------------ the venue hub */
+
+/*
+ * Bookings and reviews, side by side.
+ *
+ * Two cards of the same shape, because they are the same kind of thing: a few
+ * figures and a way in. Stacked below 44rem, where two columns would be two
+ * narrow columns rather than two cards.
+ */
+.hub {
+  display: grid;
+  gap: 1.25rem;
+  /* min() inside the minmax, not a bare 22rem. A bare minimum is a floor the
+     track will not go below even when the column is narrower than it, so on a
+     375px phone the grid sits one pixel wider than the page and the whole
+     document scrolls sideways. */
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  margin-bottom: 2rem;
+}
+
+.rw-spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 56px;
+  margin-top: 1rem;
+}
+
+.rw-caption {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.rw-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.7rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.85rem;
+  color: var(--cream-soft);
+}
+
+.rw-topics-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  width: 100%;
+}
+
+.rw-topic b {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--cream);
+}
