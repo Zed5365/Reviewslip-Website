@@ -3,7 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
-import RatesEditor from "@/components/dashboard/RatesEditor";
+import RateMonth from "@/components/dashboard/RateMonth";
 import {
   call,
   currentUser,
@@ -12,6 +12,13 @@ import {
   type Room,
   type RoomGroup,
 } from "@/lib/customer";
+import {
+  addMonths,
+  daysInMonth,
+  monthLabel,
+  monthStart,
+  todayAt,
+} from "@/lib/nights";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
@@ -19,23 +26,6 @@ export const metadata: Metadata = {
   title: "Rates",
   robots: { index: false, follow: false },
 };
-
-const DAYS = 14;
-
-/** Today at the property, not in UTC — see the calendar page. */
-function todayAt(timeZone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
-
-function shift(date: string, days: number): string {
-  const t = Date.parse(`${date}T00:00:00Z`);
-  return new Date(t + days * 86_400_000).toISOString().slice(0, 10);
-}
 
 export default async function RatesPage({
   params,
@@ -50,9 +40,11 @@ export default async function RatesPage({
 
   const query = await searchParams;
   const asked = Array.isArray(query.start) ? query.start[0] : query.start;
-  const start = /^\d{4}-\d{2}-\d{2}$/.test(String(asked ?? ""))
-    ? String(asked)
-    : todayAt("Asia/Bangkok");
+  // Snapped to the 1st, so a hand-typed or stale date draws the whole month
+  // rather than a ragged window running into the next one.
+  const start =
+    monthStart(String(asked ?? "")) ?? monthStart(todayAt("Asia/Bangkok"))!;
+  const days = daysInMonth(start);
 
   const token = await sessionToken();
 
@@ -61,7 +53,7 @@ export default async function RatesPage({
   try {
     [calendar, rooms] = await Promise.all([
       call<RateCalendar>(
-        `/businesses/${slug}/rate-calendar?start=${start}&days=${DAYS}`,
+        `/businesses/${slug}/rate-calendar?start=${start}&days=${days}`,
         { token }
       ),
       call<{ groups: RoomGroup[]; rooms: Room[] }>(`/businesses/${slug}/rooms`, {
@@ -90,6 +82,39 @@ export default async function RatesPage({
     } catch (err) {
       return {
         error: err instanceof Error ? err.message : "Could not add that rate.",
+      };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
+  /**
+   * The everyday price.
+   *
+   * The endpoint has existed since rates were built and nothing ever called it,
+   * so a rate's price could be set once and never changed — which is most of
+   * why the screen read as though prices had to be painted on night by night.
+   *
+   * An empty value clears it, and that is a real thing to want and a dangerous
+   * one: with no everyday price, every night nobody has set by hand becomes
+   * unquotable. The grid says so in marigold rather than this refusing it.
+   */
+  async function setBase(planId: number, base: string) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/rates/${planId}`, {
+        method: "PATCH",
+        body: { base },
+        token: t,
+      });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not save that price.",
       };
     }
 
@@ -131,16 +156,16 @@ export default async function RatesPage({
         margin: "1.25rem 0 0.4rem",
       }}
     >
-      <h1 style={{ margin: 0 }}>Rates</h1>
+      <h1 style={{ margin: 0 }}>{monthLabel(start, locale)}</h1>
       <nav style={{ display: "flex", gap: "0.5rem" }}>
-        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, -DAYS)}`}>
-          ← Earlier
+        <Link className="btn btn-quiet" href={`${here}?start=${addMonths(start, -1)}`}>
+          ←
         </Link>
         <Link className="btn btn-quiet" href={here}>
-          Today
+          This month
         </Link>
-        <Link className="btn btn-quiet" href={`${here}?start=${shift(start, DAYS)}`}>
-          Later →
+        <Link className="btn btn-quiet" href={`${here}?start=${addMonths(start, 1)}`}>
+          →
         </Link>
       </nav>
     </div>
@@ -149,10 +174,12 @@ export default async function RatesPage({
       What a night costs, and when you are not selling.
     </p>
 
-    <RatesEditor
+    <RateMonth
       calendar={calendar}
       groups={rooms.groups}
+      monthName={monthLabel(start, locale)}
       createPlan={createPlan}
+      setBase={setBase}
       setRange={setRange}
     />
   </>

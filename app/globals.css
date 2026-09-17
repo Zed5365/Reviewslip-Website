@@ -1674,3 +1674,158 @@ body:has(.admin-shell) > * > footer {
   justify-content: center;
   margin-top: 1.25rem;
 }
+
+/* --------------------------------------------------------- a month of rates */
+
+.rm-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.25rem;
+}
+
+.rm-note {
+  flex: 1 1 18rem;
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--admin-muted);
+}
+
+.rm-warn {
+  color: var(--marigold);
+  font-weight: 400;
+}
+
+.rm-grid {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.rm-weekdays,
+.rm-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.rm-weekdays span {
+  padding: 0 0.2rem 0.15rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  text-align: center;
+}
+
+.rm-day {
+  display: grid;
+  align-content: start;
+  gap: 0.1rem;
+  min-height: 4.2rem;
+  padding: 0.35rem 0.4rem;
+  border: 1px solid var(--jade-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s var(--ease), box-shadow 0.12s var(--ease);
+}
+
+.rm-day:hover {
+  background: rgba(130, 180, 155, 0.1);
+}
+
+/* The one cell that is not a button: padding for a month that does not start
+   on a Sunday. Not the neighbouring months' dates, because a cell somebody can
+   click should belong to the month on screen. */
+.rm-blank {
+  border-color: transparent;
+  cursor: default;
+}
+
+.rm-num {
+  font-size: 0.72rem;
+  color: var(--admin-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rm-price {
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rm-mark {
+  font-size: 0.68rem;
+  color: var(--marigold);
+}
+
+.rm-day.base .rm-price {
+  color: var(--cream-soft);
+}
+
+.rm-day.override {
+  background: rgba(130, 180, 155, 0.22);
+}
+
+.rm-day.override:hover {
+  background: rgba(130, 180, 155, 0.3);
+}
+
+.rm-day.closed .rm-price,
+.rm-day.unpriced .rm-price {
+  font-size: 0.8rem;
+}
+
+.rm-day.closed {
+  background: rgba(243, 236, 220, 0.07);
+}
+
+.rm-day.closed .rm-price {
+  color: var(--admin-muted);
+}
+
+.rm-day.unpriced .rm-price {
+  color: var(--marigold);
+}
+
+/*
+ * What Apply is about to touch.
+ *
+ * A whole month is selected on arrival, because that is genuinely what the form
+ * would apply if somebody pressed Apply without clicking anything — so a ring
+ * around every night is honest. It is drawn thin for the same reason: thirty
+ * heavy outlines read as an error state rather than a selection.
+ */
+.rm-day.selected {
+  box-shadow: inset 0 0 0 1px var(--marigold);
+  background: rgba(233, 160, 59, 0.06);
+}
+
+.rm-day.override.selected {
+  background: rgba(130, 180, 155, 0.24);
+}
+
+.rm-day:focus-visible {
+  outline: 2px solid var(--jade);
+  outline-offset: 1px;
+}
+
+@media (max-width: 30rem) {
+  .rm-day {
+    min-height: 3.4rem;
+    padding: 0.25rem 0.28rem;
+  }
+
+  .rm-price {
+    font-size: 0.78rem;
+  }
+
+  .rm-mark {
+    display: none;
+  }
+}
