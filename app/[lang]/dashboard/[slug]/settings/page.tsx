@@ -97,6 +97,14 @@ export default async function BusinessSettingsPage({
           facebookUrl: text("facebookUrl"),
           wongnaiUrl: text("wongnaiUrl"),
           websiteUrl: text("websiteUrl"),
+          // One field carrying a list, because a cleared checkbox posts
+          // nothing — four named boxes would make "unticked" and "not on the
+          // form at all" the same value, which is the distinction this whole
+          // field exists to record. The review app drops ids it does not know.
+          platformsOff: text("platformsOff")
+            .split(",")
+            .map((id) => id.trim())
+            .filter(Boolean),
           // Blanks dropped. Labels, descriptions and locks arrive as three
           // same-length lists, one field each per row, so they zip by index —
           // which is why the lock is a hidden input rather than a checkbox: an

@@ -14,6 +14,9 @@ import type {
   StoredFont,
 } from "@/lib/theme";
 
+/** Platform ids, for the "not used" list. */
+const PLATFORM_IDS = PLATFORMS.map((p) => p.id);
+
 /** The settings field behind each platform's link. */
 const LINK_FIELD: Record<string, string> = {
   google: "googleUrl",
@@ -317,6 +320,21 @@ export default function SettingsForm({
   const [state, formAction, pending] = useActionState(action, EMPTY);
   const [tab, setTab] = useState<TabId>("general");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  /**
+   * The review sites this venue has said it is not on.
+   *
+   * Controlled rather than four `defaultChecked` boxes, because the setup
+   * checklist reads this list and the input that carries it to the server is a
+   * single hidden field — the checkboxes have to agree with something.
+   *
+   * Unknown ids are dropped on the way in as well as on the way out: this is
+   * read back from storage, and a platform that has since been removed would
+   * otherwise sit in the list forever, invisible and counted.
+   */
+  const [off, setOff] = useState<string[]>(() =>
+    (settings.platformsOff?.value ?? []).filter((id) => PLATFORM_IDS.includes(id))
+  );
 
   const [cats, setCats] = useState<Suggestion[]>(() =>
     settings.categories.value.map((c) => ({
@@ -738,6 +756,7 @@ export default function SettingsForm({
           {PLATFORMS.map((platform) => {
             const key = LINK_FIELD[platform.id];
             const setting = (settings as unknown as Record<string, { value: string; source: string }>)[key];
+            const unused = off.includes(platform.id);
 
             return (
               <div style={field} key={platform.id}>
@@ -748,22 +767,54 @@ export default function SettingsForm({
                 <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
                   <Mark label={platform.label} hex={platform.hex} path={platform.path} />
                   <input
-                    style={input}
+                    style={{ ...input, opacity: unused ? 0.5 : 1 }}
                     id={key}
                     name={key}
                     type="url"
                     defaultValue={setting?.value ?? ""}
-                    placeholder="https://…"
+                    placeholder={unused ? "Not used" : "https://…"}
                   />
                 </div>
+                <label
+                  style={{
+                    display: "flex",
+                    gap: "0.4rem",
+                    alignItems: "center",
+                    marginTop: "0.4rem",
+                    fontSize: "0.82rem",
+                    color: "var(--admin-muted)",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={unused}
+                    onChange={(e) =>
+                      setOff((was) =>
+                        e.target.checked
+                          ? [...was, platform.id]
+                          : was.filter((id) => id !== platform.id)
+                      )
+                    }
+                  />
+                  We are not on {platform.label}
+                </label>
               </div>
             );
           })}
 
+          {/*
+            Submitted as one hidden field rather than four checkboxes with
+            names, so the server reads a list it can validate in one place
+            instead of four booleans it has to reassemble.
+          */}
+          <input type="hidden" name="platformsOff" value={off.join(",")} />
+
           <span style={{ ...hint, marginTop: "-0.6rem" }}>
             Every link you set gets its own button on the guest page. Leave one
             empty and it stays off — a button that goes nowhere is worse than no
-            button.
+            button. Ticking &ldquo;we are not on&rdquo; says you have decided
+            rather than not got to it yet, which is the difference between a
+            setup checklist that can finish and one that nags forever.
           </span>
         </Panel>
 

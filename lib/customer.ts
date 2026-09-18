@@ -696,6 +696,18 @@ export interface BusinessSettings {
    */
   categories: Setting<{ id: string; label: string; focus: string }[]>;
   /**
+   * Review sites this venue has said it is not on, by platform id.
+   *
+   * Optional because the review app deploys separately — a dashboard running
+   * ahead of it gets nothing here and must not fall over on that.
+   *
+   * It exists so "no Tripadvisor link yet" and "we are not on Tripadvisor" stop
+   * looking identical. Without the distinction a venue that only uses Google
+   * can never finish its setup checklist, so the checklist nags forever and
+   * people stop reading it.
+   */
+  platformsOff?: Setting<string[]>;
+  /**
    * The four colours the guest page and the table card are built from, plus what
    * they derive to. `derived` is the palette actually served — the contrast
    * checks in the review app's theme.js may have moved a colour, and `adjusted`
@@ -729,7 +741,39 @@ export type {
   BackgroundSummary,
 } from "./theme";
 
+/** One line of the setup checklist. */
+export interface SetupStep {
+  id: string;
+  label: string;
+  done: boolean;
+  /** Whether not doing it stops a review being written or posted at all. */
+  blocks: boolean;
+  note: string;
+}
+
+/** What a venue has decided about one review site. */
+export interface SetupSite {
+  id: string;
+  label: string;
+  url: string;
+  linked: boolean;
+  /** Explicitly marked as not used, so the checklist can finish without it. */
+  off: boolean;
+}
+
+export interface SetupProgress {
+  steps: SetupStep[];
+  sites: SetupSite[];
+  done: number;
+  total: number;
+  complete: boolean;
+  /** Whether the guest page can do its job at all. */
+  canTakeReviews: boolean;
+  blocking: string[];
+}
+
 export interface BusinessDetail {
+  setup: SetupProgress;
   business: {
     slug: string;
     name: string;

@@ -1889,3 +1889,116 @@ body:has(.admin-shell) > * > footer {
   font-variant-numeric: tabular-nums;
   color: var(--cream);
 }
+
+/* ------------------------------------------------------- the setup checklist */
+
+/*
+ * Shown until the venue's setup is finished, then gone entirely. A checklist
+ * that stays on screen saying "all done" is a permanent congratulation nobody
+ * reads, and it costs the top of the page every day afterwards.
+ */
+.setup {
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-card);
+  background: rgba(243, 236, 220, 0.04);
+}
+
+/* Louder when the guest page cannot work at all — the difference between
+   "there is more to do" and "nothing you have set up is reaching anybody". */
+.setup-blocked {
+  border-color: var(--marigold);
+  background: rgba(233, 160, 59, 0.08);
+}
+
+.setup-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.setup-head h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--cream);
+}
+
+.setup-count {
+  font-size: 0.85rem;
+  color: var(--admin-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.setup-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(243, 236, 220, 0.12);
+  overflow: hidden;
+}
+
+.setup-bar span {
+  display: block;
+  height: 100%;
+  background: var(--jade);
+  transition: width 0.3s var(--ease);
+}
+
+.setup-blocked .setup-bar span {
+  background: var(--marigold);
+}
+
+.setup-steps {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.setup-steps li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  font-size: 0.9rem;
+  color: var(--cream-soft);
+}
+
+.setup-steps strong {
+  display: block;
+  font-weight: 500;
+  color: var(--cream);
+}
+
+.setup-steps li.done strong {
+  color: var(--admin-muted);
+  font-weight: 400;
+}
+
+.setup-note {
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--admin-muted);
+}
+
+.setup-tick {
+  flex: 0 0 1.1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--admin-muted);
+}
+
+.setup-steps li.done .setup-tick {
+  color: var(--jade);
+}
+
+.setup-steps li.blocking .setup-tick {
+  color: var(--marigold);
+  font-weight: 700;
+}

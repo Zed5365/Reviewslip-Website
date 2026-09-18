@@ -183,9 +183,35 @@ export default function ReviewList({
     return (
       <div style={card}>
         <h2 style={heading}>Latest reviews</h2>
-        <p style={{ fontSize: "0.85rem", color: "var(--ink-soft)" }}>
-          Nothing yet. Reviews appear here as guests generate them.
-        </p>
+        {notTaken > 0 ? (
+          /*
+           * The reviews exist. There was nowhere to take them.
+           *
+           * This list holds only reviews a guest carried off to a listing, and
+           * the sentence that used to be here — "Nothing yet. Reviews appear
+           * here as guests generate them" — is the one reading of that which is
+           * wrong. An owner with no listing link set saw it while guests were
+           * writing reviews all week, and concluded the product did not work.
+           *
+           * The explanation was already written, twenty lines below, inside the
+           * branch that only renders when the list is *not* empty: visible
+           * exactly when it was not needed.
+           */
+          <p style={{ fontSize: "0.85rem", color: "var(--ink)" }}>
+            <strong style={{ fontWeight: 500 }}>
+              {notTaken} review{notTaken === 1 ? " has" : "s have"} been written
+            </strong>{" "}
+            and none of them reached a listing. This list only holds the ones a
+            guest took somewhere — so if your review page has no Google or
+            Tripadvisor link on it, there is nothing for them to press and
+            nothing lands here. Check the setup on this venue&rsquo;s page.
+          </p>
+        ) : (
+          <p style={{ fontSize: "0.85rem", color: "var(--ink-soft)" }}>
+            Nothing yet. Reviews appear here once a guest writes one and takes
+            it to a listing.
+          </p>
+        )}
       </div>
     );
   }

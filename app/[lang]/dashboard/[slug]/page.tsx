@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import BookingsWidget from "@/components/dashboard/BookingsWidget";
 import ReviewsWidget from "@/components/dashboard/ReviewsWidget";
+import SetupProgress from "@/components/dashboard/SetupProgress";
 import {
   call,
   sessionToken,
@@ -91,6 +92,15 @@ export default async function BusinessPage({
             {business.url}
           </a>
         </p>
+
+        {/* Above the doors, and gone once it is finished. An unfinished
+            venue has one thing worth doing and it is not reading occupancy. */}
+        {data.setup ? (
+          <SetupProgress
+            setup={data.setup}
+            settings={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
+          />
+        ) : null}
 
         {/* The two doors. Side by side on a laptop, stacked on a phone — and in
             this order because the morning question is who is arriving, not what
