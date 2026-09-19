@@ -21,21 +21,10 @@ export default function ViewToggle({
   calendar,
   list,
   here,
-  shape = "month",
 }: {
   calendar: string;
   list: string;
   here: "calendar" | "list";
-  /**
-   * Which calendar is showing, when one is.
-   *
-   * Three tabs rather than two, because the month and the timeline answer
-   * different questions — "what is happening that week" and "which room can
-   * this go in" — and neither is a worse version of the other. Hiding the
-   * timeline behind the month would take away the only view a stay can be
-   * dragged across.
-   */
-  shape?: "month" | "timeline";
 }) {
   const params = useSearchParams();
   const type = params.get("type");
@@ -46,16 +35,9 @@ export default function ViewToggle({
       <Link
         href={`${calendar}${carry}`}
         className="view-tab"
-        aria-current={here === "calendar" && shape === "month" ? "page" : undefined}
+        aria-current={here === "calendar" ? "page" : undefined}
       >
-        Month
-      </Link>
-      <Link
-        href={`${calendar}${carry ? `${carry}&` : "?"}shape=timeline`}
-        className="view-tab"
-        aria-current={here === "calendar" && shape === "timeline" ? "page" : undefined}
-      >
-        Rooms
+        Calendar
       </Link>
       <Link
         href={`${list}${carry}`}

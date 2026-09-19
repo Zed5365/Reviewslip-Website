@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Calendar, { type MoveResult } from "./Calendar";
 import MonthGrid from "./MonthGrid";
 import BookingPanel, {
   type CreateResult,
@@ -21,12 +20,10 @@ export default function Diary({
   data,
   groupId = null,
   today = "",
-  shape = "month",
   deskBase,
   slug,
   groups,
   plans,
-  move,
   create,
   save,
   assign,
@@ -36,20 +33,11 @@ export default function Diary({
   groupId?: number | null;
   /** Today at the property, worked out on the server. */
   today?: string;
-  /**
-   * Which shape of calendar.
-   *
-   * "month" is the one people mean by a calendar — seven columns, a row per
-   * week. "timeline" is rooms down the side and nights across, which is the
-   * tool for assigning a room and the only one that can be dragged.
-   */
-  shape?: "month" | "timeline";
   /** The desk, for the month's day numbers to link into. */
   deskBase: string;
   slug: string;
   groups: { id: number; name: string }[];
   plans: RatePlan[];
-  move: (bookingId: number, roomId: number | null) => Promise<MoveResult>;
   create: (values: Record<string, unknown>) => Promise<CreateResult>;
   save: (id: number, patch: Record<string, unknown>) => Promise<EditResult>;
   assign: (id: number, roomId: number | null) => Promise<EditResult>;
@@ -100,37 +88,20 @@ export default function Diary({
 
   return (
     <>
-      {shape === "timeline" ? (
-        <Calendar
-          data={data}
-          groupId={groupId}
-          today={today}
-          move={move}
-          onOpen={(source) => {
-            setPrefill(undefined);
-            setOpen(toBooking(source));
-          }}
-          onEmpty={(where) => {
-            setPrefill(where);
-            setOpen("new");
-          }}
-        />
-      ) : (
-        <MonthGrid
-          data={data}
-          groupId={groupId}
-          today={today}
-          deskBase={deskBase}
-          onOpen={(source) => {
-            setPrefill(undefined);
-            setOpen(toBooking(source));
-          }}
-          onEmpty={(where) => {
-            setPrefill(where);
-            setOpen("new");
-          }}
-        />
-      )}
+      <MonthGrid
+        data={data}
+        groupId={groupId}
+        today={today}
+        deskBase={deskBase}
+        onOpen={(source) => {
+          setPrefill(undefined);
+          setOpen(toBooking(source));
+        }}
+        onEmpty={(where) => {
+          setPrefill(where);
+          setOpen("new");
+        }}
+      />
       <BookingPanel
         booking={open}
         prefill={prefill}

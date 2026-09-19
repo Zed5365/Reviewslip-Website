@@ -60,12 +60,6 @@ export default async function CalendarPage({
 
   // Which room type, if any. Zero and nonsense both mean "all", because a
   // broken link should show the calendar rather than nothing.
-  // Which way the month is drawn. The day grid is the default because it is
-  // the question people open a calendar with; the timeline is a click away and
-  // is the only one a stay can be dragged across.
-  const askedShape = Array.isArray(query.shape) ? query.shape[0] : query.shape;
-  const shape = askedShape === "timeline" ? "timeline" : "month";
-
   const askedType = Array.isArray(query.type) ? query.type[0] : query.type;
   const typeId = Number(askedType);
   const groupId = Number.isSafeInteger(typeId) && typeId > 0 ? typeId : null;
@@ -215,7 +209,6 @@ export default async function CalendarPage({
     const next = new URLSearchParams();
     if (at) next.set("start", at);
     if (groupId) next.set("type", String(groupId));
-    if (shape === "timeline") next.set("shape", shape);
     const q = next.toString();
     return q ? `${here}?${q}` : here;
   }
@@ -251,7 +244,6 @@ export default async function CalendarPage({
       calendar={localizedPath(locale, `/dashboard/${slug}/bookings/calendar`)}
       list={localizedPath(locale, `/dashboard/${slug}/bookings/list`)}
       here="calendar"
-      shape={shape}
     />
 
     <RoomTypeFilter groups={groups} />
@@ -272,12 +264,10 @@ export default async function CalendarPage({
         data={data}
         groupId={groupId}
         today={todayAt("Asia/Bangkok")}
-        shape={shape}
         deskBase={localizedPath(locale, `/dashboard/${slug}/bookings`)}
         slug={slug}
         groups={groups}
         plans={plans.plans}
-        move={move}
         create={book}
         save={save}
         assign={move}

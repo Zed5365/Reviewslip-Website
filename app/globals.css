@@ -618,11 +618,8 @@ img {
    same problem and it is worth fixing separately. */
 :root {
   --admin-muted: rgba(243, 236, 220, 0.55);
-  /* The calendar's rules. One token because a grid whose lines are three
-     different greys reads as a rendering fault rather than a table. */
+  /* The line the month's day cells are drawn with. */
   --cal-line: rgba(130, 180, 155, 0.22);
-  --cal-rule: rgba(130, 180, 155, 0.5);
-  --cal-weekend: rgba(243, 236, 220, 0.045);
 }
 
 
@@ -840,172 +837,6 @@ body:has(.admin-shell) > * > footer {
 
 /* -------------------------------------------------------------------------- */
 /* Reservations calendar                                                      */
-/* -------------------------------------------------------------------------- */
-
-/* Rooms down the side, nights across. Fixed layout so a long guest name cannot
-   widen its column and shove every night after it out of alignment — the one
-   thing that makes a grid like this unreadable. */
-.cal {
-  border-collapse: separate;
-  border-spacing: 0;
-  table-layout: fixed;
-  /* 11rem for the room label plus a column per night. Narrower than this and
-     the day numbers start to collide. */
-  min-width: 11rem;
-}
-
-/*
- * Every horizontal rule in the grid, in one place.
- *
- * This used to be its own grey, and `.cal td` beats `.cal-cell` on specificity
- * — so a second, lighter value was quietly winning over the one the cell rule
- * thought it was setting. A grid whose lines are two different greys depending
- * on which selector got there first reads as a rendering fault.
- */
-.cal th,
-.cal td {
-  border-bottom: 1px solid var(--cal-line);
-}
-
-/* The room column stays put while the nights scroll under it. Without this you
-   lose track of which row you are reading two weeks in. */
-.cal-room {
-  position: sticky;
-  /*
-   * Minus the scroller's own padding, not zero.
-   *
-   * .admin-scroll pulls itself out to the page gutter with a negative margin
-   * and puts the space back as padding, so `left: 0` pins to the *content*
-   * edge — leaving a 0.75rem strip at the left of the scrollport where night
-   * cells slide out from under the room names and sit there, unlabelled, on
-   * top of the page background. Visible only once somebody scrolls, which is
-   * every time on a phone.
-   */
-  left: -0.75rem;
-  z-index: 1;
-  width: var(--cal-room-w, 11rem);
-  min-width: var(--cal-room-w, 11rem);
-  padding: 0.6rem 0.75rem;
-  text-align: left;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--cream);
-  /* Opaque, not translucent: the cells sliding underneath must not show
-     through it. */
-  background: #0c1f19;
-  border-bottom: 1px solid var(--cal-line);
-}
-
-/* The same weight as the header's underline, so the grid's two edges match and
-   the room column reads as a spine rather than a first column. */
-.cal th.cal-room {
-  border-right: 1px solid var(--cal-rule);
-}
-
-.cal-type {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: var(--admin-muted);
-}
-
-.cal-night {
-  width: var(--cal-night-w, 3rem);
-  min-width: var(--cal-night-w, 3rem);
-  padding: 0.4rem 0.2rem;
-  text-align: center;
-  font-weight: 500;
-  background: #0c1f19;
-  border-left: 1px solid var(--cal-line);
-}
-
-/*
- * Where the header stops and the rooms begin — and where the room names stop
- * and the nights begin. Both qualified with the table, because `.cal th` and
- * `.cal td` above are (0,1,1) and a bare class loses to them: written as
- * `.cal-night` alone, this rule computed to the same grey as an ordinary cell
- * and the header had no edge at all. Measured, or it would have shipped.
- */
-.cal th.cal-night {
-  border-bottom: 1px solid var(--cal-rule);
-}
-
-.cal-weekday {
-  display: block;
-  font-size: 0.68rem;
-  letter-spacing: 0.04em;
-  color: var(--admin-muted);
-}
-
-.cal-day {
-  display: block;
-  font-size: 0.9rem;
-  color: var(--cream);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Weekends run the height of the grid, not just the header. A tint that stops
-   at the day number tells you where Saturday is and not which cells are in it. */
-.cal-night.weekend,
-.cal-cell.weekend {
-  background: var(--cal-weekend);
-}
-
-/* Today. The one column somebody looks for first, and the grid had no mark for
-   it at all — on a month of thirty identical columns that is a scan every time.
-   Both edges, so it reads as a column rather than a line. */
-.cal-night.today,
-.cal-cell.today {
-  background: rgba(130, 180, 155, 0.1);
-  border-left-color: var(--jade);
-  border-right: 1px solid var(--jade);
-}
-
-.cal-night.today .cal-day {
-  color: var(--jade);
-  font-weight: 600;
-}
-
-/*
- * Gridlines, in both directions, visible.
- *
- * These used to be one left border in rgba(12,31,25,.6) — within a hair of the
- * #0c1f19 background it sat on, so effectively invisible — and no horizontal
- * rule at all. The result read as a row of floating bars: you could see that
- * somebody was staying, and not which night or which room without counting
- * along a blank field with your finger. Counting is the entire point of an
- * occupancy grid.
- *
- * border-collapse stays `separate`, because `collapse` drops the sticky room
- * column in Safari. So each cell draws its own left and bottom only, and
- * adjacent cells share the line rather than doubling it.
- */
-.cal-cell {
-  height: 2.6rem;
-  width: var(--cal-night-w, 3rem);
-  padding: 0;
-  border-left: 1px solid var(--cal-line);
-}
-
-.cal-cell.taken {
-  position: relative;
-}
-
-/* The guest name overflows its own night into the ones after it, which is what
-   makes a stay read as one block. pointer-events off so it never covers the
-   cell behind it for a click. */
-.cal-guest {
-  position: absolute;
-  inset: 0 auto 0 0;
-  display: flex;
-  align-items: center;
-  padding-left: 0.4rem;
-  font-size: 0.78rem;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 1;
-}
-
 /* --- the diary's interactive bits ---------------------------------------- */
 
 /* A refusal, above the grid. role="alert" carries it to a screen reader; this
@@ -1019,111 +850,6 @@ body:has(.admin-shell) > * > footer {
   padding: 0.75rem 1rem;
   margin: 0 0 1rem;
   font-size: 0.9rem;
-}
-
-/* Stays with no room. Also a drop target, which is how a stay comes back out
-   of one. */
-.cal-tray {
-  border: 1px dashed var(--jade-line);
-  border-radius: var(--radius-card);
-  padding: 0.9rem 1rem;
-  margin-bottom: 1.25rem;
-  transition: background 0.12s var(--ease), border-color 0.12s var(--ease);
-}
-
-.cal-tray.over {
-  border-color: var(--marigold);
-  border-style: solid;
-  background: rgba(233, 160, 59, 0.08);
-}
-
-.cal-tray-title {
-  margin: 0 0 0.6rem;
-  font-size: 0.95rem;
-}
-
-.cal-tray-empty {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--admin-muted);
-}
-
-.cal-tray-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-/* A draggable stay off the grid. A button, so it is reachable and openable
-   from the keyboard even though the drag itself is pointer-only. */
-.cal-chip {
-  display: block;
-  text-align: left;
-  cursor: grab;
-  border: 1px solid var(--jade-line);
-  border-radius: 10px;
-  background: var(--shade-soft);
-  color: var(--cream);
-  font-family: inherit;
-  padding: 0.5rem 0.75rem;
-}
-
-.cal-chip:hover {
-  border-color: var(--jade);
-}
-
-.cal-chip strong {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.cal-chip span {
-  display: block;
-  font-size: 0.78rem;
-  color: var(--admin-muted);
-}
-
-/* Half-there while it is being carried, so the row it lands on is readable
-   underneath it. */
-.cal-chip.dragging,
-.cal-guest.dragging {
-  opacity: 0.4;
-}
-
-/* The row under the cursor. An inset shadow rather than a background, because
-   the cells already carry their own colours and a background would fight
-   them. */
-.cal-row.over td,
-.cal-row.over th {
-  box-shadow: inset 0 0 0 1px var(--marigold);
-}
-
-/* The guest name on the grid is now a button. Stripped back to looking like
-   text: the affordance is the block it sits in, and a bordered control in
-   every cell would turn the grid into a wall of chrome. */
-.cal-guest {
-  position: absolute;
-  inset: 0 auto 0 0;
-  display: flex;
-  align-items: center;
-  padding: 0 0.4rem;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  font-size: 0.78rem;
-  white-space: nowrap;
-  cursor: grab;
-  z-index: 1;
-}
-
-.cal-guest:focus-visible {
-  outline: 2px solid var(--marigold);
-  outline-offset: -2px;
 }
 
 /* --- rates ---------------------------------------------------------------- */
@@ -1465,83 +1191,6 @@ body:has(.admin-shell) > * > footer {
      matters below the fold on a phone. */
   .bw-figures { grid-template-columns: repeat(2, 1fr); }
   .bw-value { font-size: 1.4rem; }
-}
-
-/* ---------------------------------------------------------- a month of it */
-
-/*
- * A month is thirty-one columns, and the fortnight's proportions do not carry.
- * The table sets --cal-night-w and --cal-room-w inline, so both grids are the
- * same component at two sizes rather than two components drifting apart.
- */
-
-/* Where the week turns. Thirty-one identical columns make "the second Friday
-   or the third" unanswerable; one heavier line answers it without a second
-   header row, which `table-layout: fixed` would fight. */
-.cal-night.week-start,
-.cal-cell.week-start {
-  border-left: 1px solid var(--cal-rule);
-}
-
-/* The room type, once, above its rooms — instead of repeated in small grey
-   type under every room name. */
-.cal-group-row th.cal-group {
-  padding: 0.5rem 0.75rem 0.35rem;
-  font-family: var(--display);
-  font-size: 0.85rem;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--jade);
-}
-
-.cal-group-fill {
-  padding: 0;
-  background: rgba(130, 180, 155, 0.06);
-}
-
-/* A rule above each type, heavier than the rules between its rooms, so the
-   groups separate without leaving a band of nothing across the nights. */
-.cal-group-row th,
-.cal-group-row td {
-  border-top: 1px solid var(--cal-rule);
-}
-
-.cal-group-row:first-child th,
-.cal-group-row:first-child td {
-  border-top: 0;
-}
-
-/* An empty night offers itself. Invisible until the pointer is on it: a grid
-   showing thirty-one plus signs per room is a grid nobody can read. */
-.cal-cell.empty {
-  position: relative;
-}
-
-.cal-take {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: var(--jade);
-  font: inherit;
-  font-size: 1rem;
-  line-height: 1;
-  opacity: 0;
-  cursor: pointer;
-  transition: opacity 0.12s var(--ease), background 0.12s var(--ease);
-}
-
-.cal-take:hover,
-.cal-take:focus-visible {
-  opacity: 1;
-  background: rgba(130, 180, 155, 0.14);
-  outline: none;
-}
-
-.cal-take:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--jade);
 }
 
 /* Reachable by a screen reader, absent from the page. Not display:none, which
@@ -2104,16 +1753,30 @@ body:has(.admin-shell) > * > footer {
   color: var(--admin-muted);
 }
 
+/*
+ * Occupancy is the cell's own shade.
+ *
+ * --mg-heat is 0..1, set inline from the night's occupancy. One reading rather
+ * than a bar and a number saying the same thing twice — and a shade means the
+ * shape of the month is legible before anything is read: the busy week is the
+ * dark one. Capped well short of the jade's full strength, because a cell has
+ * to stay a background for the names on top of it.
+ */
 .mg-day {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  min-height: 7.5rem;
-  padding: 0.45rem 0.5rem 0.5rem;
+  gap: 0.25rem;
+  min-height: 5.5rem;
+  padding: 0.4rem 0.45rem 0.45rem;
   border: 1px solid var(--cal-line);
   border-radius: 8px;
-  background: rgba(243, 236, 220, 0.02);
+  background:
+    linear-gradient(
+      rgba(130, 180, 155, calc(var(--mg-heat, 0) * 0.16)),
+      rgba(130, 180, 155, calc(var(--mg-heat, 0) * 0.16))
+    ),
+    rgba(243, 236, 220, 0.02);
 }
 
 /* Days that belong to the months either side. Not drawn at all rather than
@@ -2124,13 +1787,27 @@ body:has(.admin-shell) > * > footer {
   min-height: 0;
 }
 
+/*
+ * Today, marked without taking the shading with it.
+ *
+ * `background` here used to win over the heat gradient outright — so the one
+ * cell somebody looks for first was the one cell that did not say how full it
+ * was. A ring instead of a fill, which also reads as a mark rather than as
+ * another occupancy level.
+ */
 .mg-day.today {
   border-color: var(--jade);
-  background: rgba(130, 180, 155, 0.08);
+  box-shadow: inset 0 0 0 1px var(--jade);
 }
 
+/* No room left that night. The one occupancy figure worth interrupting for,
+   because it is the one that turns somebody away. */
 .mg-day.full {
-  border-color: rgba(233, 160, 59, 0.45);
+  border-color: rgba(233, 160, 59, 0.5);
+}
+
+.mg-day.full .mg-full {
+  color: var(--marigold);
 }
 
 .mg-top {
@@ -2162,28 +1839,11 @@ body:has(.admin-shell) > * > footer {
   color: var(--admin-muted);
 }
 
-.mg-bar {
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(243, 236, 220, 0.1);
-  overflow: hidden;
-}
-
-.mg-bar span {
-  display: block;
-  height: 100%;
-  background: var(--jade);
-}
-
-.mg-day.full .mg-bar span {
-  background: var(--marigold);
-}
-
 .mg-move {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.45rem;
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2312,4 +1972,29 @@ body:has(.admin-shell) > * > footer {
   .mg-blank {
     display: none;
   }
+}
+
+/*
+ * Stays with no room, said once at the top.
+ *
+ * This is the one thing on the month that is actually wrong, and it used to be
+ * findable only by reading every cell — or, before that, by scrolling a
+ * timeline to a tray at the top of it. Shown only when there is one: a banner
+ * that is always present, usually saying nothing, is a banner the eye learns to
+ * skip.
+ */
+.mg-alert {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid rgba(233, 160, 59, 0.45);
+  border-radius: var(--radius-card);
+  background: rgba(233, 160, 59, 0.08);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--cream-soft);
+}
+
+.mg-alert strong {
+  font-weight: 500;
+  color: var(--marigold);
 }
