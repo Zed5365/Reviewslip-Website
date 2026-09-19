@@ -19,6 +19,7 @@ import type { Booking, CalendarWindow, RatePlan, TakenNight } from "@/lib/custom
 export default function Diary({
   data,
   groupId = null,
+  today = "",
   slug,
   groups,
   plans,
@@ -30,6 +31,8 @@ export default function Diary({
 }: {
   data: CalendarWindow;
   groupId?: number | null;
+  /** Today at the property, worked out on the server. */
+  today?: string;
   slug: string;
   groups: { id: number; name: string }[];
   plans: RatePlan[];
@@ -87,6 +90,7 @@ export default function Diary({
       <Calendar
         data={data}
         groupId={groupId}
+        today={today}
         move={move}
         onOpen={(source) => {
           setPrefill(undefined);

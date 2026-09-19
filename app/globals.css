@@ -618,6 +618,11 @@ img {
    same problem and it is worth fixing separately. */
 :root {
   --admin-muted: rgba(243, 236, 220, 0.55);
+  /* The calendar's rules. One token because a grid whose lines are three
+     different greys reads as a rendering fault rather than a table. */
+  --cal-line: rgba(130, 180, 155, 0.22);
+  --cal-rule: rgba(130, 180, 155, 0.5);
+  --cal-weekend: rgba(243, 236, 220, 0.045);
 }
 
 
@@ -849,9 +854,17 @@ body:has(.admin-shell) > * > footer {
   min-width: 11rem;
 }
 
+/*
+ * Every horizontal rule in the grid, in one place.
+ *
+ * This used to be its own grey, and `.cal td` beats `.cal-cell` on specificity
+ * — so a second, lighter value was quietly winning over the one the cell rule
+ * thought it was setting. A grid whose lines are two different greys depending
+ * on which selector got there first reads as a rendering fault.
+ */
 .cal th,
 .cal td {
-  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+  border-bottom: 1px solid var(--cal-line);
 }
 
 /* The room column stays put while the nights scroll under it. Without this you
@@ -880,7 +893,13 @@ body:has(.admin-shell) > * > footer {
   /* Opaque, not translucent: the cells sliding underneath must not show
      through it. */
   background: #0c1f19;
-  border-right: 1px solid var(--jade-line);
+  border-bottom: 1px solid var(--cal-line);
+}
+
+/* The same weight as the header's underline, so the grid's two edges match and
+   the room column reads as a spine rather than a first column. */
+.cal th.cal-room {
+  border-right: 1px solid var(--cal-rule);
 }
 
 .cal-type {
@@ -897,6 +916,18 @@ body:has(.admin-shell) > * > footer {
   text-align: center;
   font-weight: 500;
   background: #0c1f19;
+  border-left: 1px solid var(--cal-line);
+}
+
+/*
+ * Where the header stops and the rooms begin — and where the room names stop
+ * and the nights begin. Both qualified with the table, because `.cal th` and
+ * `.cal td` above are (0,1,1) and a bare class loses to them: written as
+ * `.cal-night` alone, this rule computed to the same grey as an ordinary cell
+ * and the header had no edge at all. Measured, or it would have shipped.
+ */
+.cal th.cal-night {
+  border-bottom: 1px solid var(--cal-rule);
 }
 
 .cal-weekday {
@@ -913,17 +944,47 @@ body:has(.admin-shell) > * > footer {
   font-variant-numeric: tabular-nums;
 }
 
-.cal-night.weekend {
-  background: rgba(243, 236, 220, 0.04);
+/* Weekends run the height of the grid, not just the header. A tint that stops
+   at the day number tells you where Saturday is and not which cells are in it. */
+.cal-night.weekend,
+.cal-cell.weekend {
+  background: var(--cal-weekend);
 }
 
+/* Today. The one column somebody looks for first, and the grid had no mark for
+   it at all — on a month of thirty identical columns that is a scan every time.
+   Both edges, so it reads as a column rather than a line. */
+.cal-night.today,
+.cal-cell.today {
+  background: rgba(130, 180, 155, 0.1);
+  border-left-color: var(--jade);
+  border-right: 1px solid var(--jade);
+}
+
+.cal-night.today .cal-day {
+  color: var(--jade);
+  font-weight: 600;
+}
+
+/*
+ * Gridlines, in both directions, visible.
+ *
+ * These used to be one left border in rgba(12,31,25,.6) — within a hair of the
+ * #0c1f19 background it sat on, so effectively invisible — and no horizontal
+ * rule at all. The result read as a row of floating bars: you could see that
+ * somebody was staying, and not which night or which room without counting
+ * along a blank field with your finger. Counting is the entire point of an
+ * occupancy grid.
+ *
+ * border-collapse stays `separate`, because `collapse` drops the sticky room
+ * column in Safari. So each cell draws its own left and bottom only, and
+ * adjacent cells share the line rather than doubling it.
+ */
 .cal-cell {
   height: 2.6rem;
   width: var(--cal-night-w, 3rem);
   padding: 0;
-  /* A hairline between nights, so a five-night stay reads as five nights
-     rather than one long bar. Counting them is the point of the grid. */
-  border-left: 1px solid rgba(12, 31, 25, 0.6);
+  border-left: 1px solid var(--cal-line);
 }
 
 .cal-cell.taken {
@@ -1419,13 +1480,13 @@ body:has(.admin-shell) > * > footer {
    header row, which `table-layout: fixed` would fight. */
 .cal-night.week-start,
 .cal-cell.week-start {
-  border-left: 1px solid var(--jade-line);
+  border-left: 1px solid var(--cal-rule);
 }
 
 /* The room type, once, above its rooms — instead of repeated in small grey
    type under every room name. */
 .cal-group-row th.cal-group {
-  padding: 0.85rem 0.75rem 0.3rem;
+  padding: 0.5rem 0.75rem 0.35rem;
   font-family: var(--display);
   font-size: 0.85rem;
   font-weight: 400;
@@ -1436,8 +1497,19 @@ body:has(.admin-shell) > * > footer {
 
 .cal-group-fill {
   padding: 0;
-  border: 0;
   background: rgba(130, 180, 155, 0.06);
+}
+
+/* A rule above each type, heavier than the rules between its rooms, so the
+   groups separate without leaving a band of nothing across the nights. */
+.cal-group-row th,
+.cal-group-row td {
+  border-top: 1px solid var(--cal-rule);
+}
+
+.cal-group-row:first-child th,
+.cal-group-row:first-child td {
+  border-top: 0;
 }
 
 /* An empty night offers itself. Invisible until the pointer is on it: a grid

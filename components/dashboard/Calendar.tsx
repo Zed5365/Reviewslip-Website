@@ -37,6 +37,12 @@ function head(night: string) {
   };
 }
 
+/** Saturday or Sunday. Its own function because the body needs it too. */
+function weekendOf(night: string) {
+  const day = new Date(`${night}T12:00:00Z`).getUTCDay();
+  return day === 0 || day === 6;
+}
+
 /** The nights a stay occupies. Departure day is not one. */
 function nightsOf(arrival: string, departure: string): string[] {
   const a = Date.parse(`${arrival}T00:00:00Z`);
@@ -52,6 +58,7 @@ function nightsOf(arrival: string, departure: string): string[] {
 export default function Calendar({
   data,
   groupId = null,
+  today = "",
   move,
   onOpen,
   onEmpty,
@@ -59,6 +66,15 @@ export default function Calendar({
   data: CalendarWindow;
   /** Show only this room type, or every one. Display only — see below. */
   groupId?: number | null;
+  /**
+   * Today at the property, as the server worked it out.
+   *
+   * Passed rather than read from the browser's clock: the two disagree for
+   * seven hours a day in Bangkok, and a column highlighted on the server and
+   * not in the browser is a hydration mismatch that throws the grid away and
+   * repaints it.
+   */
+  today?: string;
   /** Server action: put a booking in a room, or null to unassign. */
   move: (bookingId: number, roomId: number | null) => Promise<MoveResult>;
   onOpen: (booking: Booking | TakenNight) => void;
@@ -310,6 +326,7 @@ export default function Calendar({
                   // the thing a month view is otherwise worse at than a
                   // fortnight.
                   isWeekStart(night) ? "week-start" : "",
+                  night === today ? "today" : "",
                 ].filter(Boolean);
                 return (
                   <th key={night} className={marks.join(" ")}>
@@ -361,7 +378,18 @@ export default function Calendar({
 
                   {nights.map((night) => {
                     const stay = row?.get(night);
-                    const edge = isWeekStart(night) ? " week-start" : "";
+                    // Every cell carries the column's own marks, so the grid
+                    // reads top to bottom as well as left to right. Putting
+                    // them on the header alone is what made this a row of
+                    // floating bars rather than a table somebody can count.
+                    const edge = [
+                      isWeekStart(night) ? "week-start" : "",
+                      weekendOf(night) ? "weekend" : "",
+                      night === today ? "today" : "",
+                    ]
+                      .filter(Boolean)
+                      .map((c) => ` ${c}`)
+                      .join("");
 
                     if (!stay) {
                       // An empty cell is an offer. One tap on the night and the

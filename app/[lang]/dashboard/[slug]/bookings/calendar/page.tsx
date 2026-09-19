@@ -263,6 +263,7 @@ export default async function CalendarPage({
       <Diary
         data={data}
         groupId={groupId}
+        today={todayAt("Asia/Bangkok")}
         slug={slug}
         groups={groups}
         plans={plans.plans}
