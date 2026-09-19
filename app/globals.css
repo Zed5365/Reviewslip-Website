@@ -1727,10 +1727,11 @@ body:has(.admin-shell) > * > footer {
 /* ------------------------------------------------------- the month of days */
 
 /*
- * Seven columns, a row per week — the shape everybody already reads a calendar
- * in. The room-by-night timeline answers "where can I put this stay"; this one
- * answers "what is happening that week", which is what people open a calendar
- * for.
+ * Seven columns, a row per week, and stays drawn across the nights they hold.
+ *
+ * Each week is two layers. The cells sit underneath and carry the shading,
+ * today and sold-out; the bars sit on top and cross them, which a background
+ * cannot do. Both are the same seven-column grid, so they line up exactly.
  */
 .mg {
   display: grid;
@@ -1738,8 +1739,7 @@ body:has(.admin-shell) > * > footer {
   margin-bottom: 1.5rem;
 }
 
-.mg-weekdays,
-.mg-week {
+.mg-weekdays {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.4rem;
@@ -1753,22 +1753,33 @@ body:has(.admin-shell) > * > footer {
   color: var(--admin-muted);
 }
 
+.mg-week {
+  position: relative;
+}
+
+.mg-cells,
+.mg-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+/* Behind. Absolute so the bars above decide the week's height, and the cells
+   stretch to whatever that turns out to be. */
+.mg-cells {
+  position: absolute;
+  inset: 0;
+}
+
 /*
  * Occupancy is the cell's own shade.
  *
  * --mg-heat is 0..1, set inline from the night's occupancy. One reading rather
  * than a bar and a number saying the same thing twice — and a shade means the
  * shape of the month is legible before anything is read: the busy week is the
- * dark one. Capped well short of the jade's full strength, because a cell has
- * to stay a background for the names on top of it.
+ * dark one.
  */
-.mg-day {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-height: 5.5rem;
-  padding: 0.4rem 0.45rem 0.45rem;
+.mg-cell {
   border: 1px solid var(--cal-line);
   border-radius: 8px;
   background:
@@ -1779,46 +1790,56 @@ body:has(.admin-shell) > * > footer {
     rgba(243, 236, 220, 0.02);
 }
 
-/* Days that belong to the months either side. Not drawn at all rather than
+/* Days belonging to the months either side. Not drawn at all rather than
    greyed: a cell somebody can click should belong to the month on screen. */
 .mg-blank {
   border-color: transparent;
   background: none;
-  min-height: 0;
 }
 
-/*
- * Today, marked without taking the shading with it.
- *
- * `background` here used to win over the heat gradient outright — so the one
- * cell somebody looks for first was the one cell that did not say how full it
- * was. A ring instead of a fill, which also reads as a mark rather than as
- * another occupancy level.
- */
-.mg-day.today {
+/* A ring, not a fill — a fill would beat the shading above and leave the one
+   cell people look for first as the only one not saying how full it is. */
+.mg-cell.today {
   border-color: var(--jade);
   box-shadow: inset 0 0 0 1px var(--jade);
 }
 
-/* No room left that night. The one occupancy figure worth interrupting for,
+/* No room left that night: the one occupancy figure worth interrupting for,
    because it is the one that turns somebody away. */
-.mg-day.full {
+.mg-cell.full {
   border-color: rgba(233, 160, 59, 0.5);
 }
 
-.mg-day.full .mg-full {
-  color: var(--marigold);
+/* In front. `--mg-lanes` reserves the rows the bars need; the last two rows
+   are the overflow count and the add button, and collapse when unused. */
+.mg-grid {
+  position: relative;
+  grid-auto-rows: min-content;
+  row-gap: 0.15rem;
+  /*
+   * Vertical padding only.
+   *
+   * Horizontal padding shrinks this grid's content box, so its seven columns
+   * come out narrower than the cells' and every bar sits a few pixels out of
+   * step with the day underneath it — three to the left at one end, seven to
+   * the right at the other. The two layers have to be the same geometry; the
+   * inset a bar needs is the bar's own margin.
+   */
+  padding: 0.4rem 0 0.5rem;
+  min-height: 5rem;
 }
 
 .mg-top {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.4rem;
+  gap: 0.3rem;
+  padding: 0 0.5rem;
+  margin-bottom: 0.15rem;
 }
 
 .mg-num {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
   color: var(--cream);
   text-decoration: none;
@@ -1828,96 +1849,104 @@ body:has(.admin-shell) > * > footer {
   text-decoration: underline;
 }
 
-.mg-day.today .mg-num {
+.mg-top.today .mg-num {
   color: var(--jade);
   font-weight: 600;
 }
 
 .mg-full {
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--admin-muted);
-}
-
-.mg-move {
-  display: flex;
-  gap: 0.45rem;
-  margin: 0;
   font-size: 0.7rem;
   font-variant-numeric: tabular-nums;
-}
-
-.mg-in {
-  color: var(--jade);
-}
-
-.mg-out {
   color: var(--admin-muted);
 }
 
-.mg-names {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.15rem;
-  min-width: 0;
+.mg-full.sold {
+  color: var(--marigold);
 }
 
-.mg-chip {
-  display: block;
-  width: 100%;
-  padding: 0.12rem 0.3rem;
+/*
+ * A stay, across the nights it holds.
+ *
+ * Square where it runs off the end of a week and round where it genuinely
+ * starts or stops, so a stay spanning two rows reads as one booking continuing
+ * rather than two short ones.
+ */
+.mg-bar {
+  min-width: 0;
+  /* The bar's own inset, so the grid it sits in stays the same shape as the
+     cells behind it. */
+  margin-inline: 4px;
+  padding: 0.14rem 0.4rem;
   border: 0;
-  border-left: 2px solid transparent;
-  border-radius: 3px;
-  background: rgba(243, 236, 220, 0.06);
-  color: var(--cream-soft);
+  border-left: 2px solid var(--jade);
+  border-radius: 0;
+  background: rgba(130, 180, 155, 0.22);
+  color: var(--cream);
   font: inherit;
   font-size: 0.74rem;
-  line-height: 1.35;
+  line-height: 1.4;
   text-align: left;
-  /* One line each. Three wrapped names turn a day cell into a paragraph and
-     the week below it off the bottom of the screen. */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
 }
 
-.mg-chip:hover {
-  background: rgba(130, 180, 155, 0.18);
-  color: var(--cream);
+.mg-bar:hover {
+  background: rgba(130, 180, 155, 0.34);
 }
 
-/* Arriving, leaving, staying — by the edge rather than the fill, so three
-   marks on one day stay legible instead of becoming three blocks of colour. */
-.mg-in-chip,
-.mg-chip.mg-in {
-  border-left-color: var(--jade);
+.mg-bar.opens {
+  border-radius: 4px 0 0 4px;
 }
 
-.mg-chip.mg-out {
+.mg-bar.closes {
+  border-radius: 0 4px 4px 0;
+  border-right: 2px solid rgba(130, 180, 155, 0.5);
+}
+
+.mg-bar.opens.closes {
+  border-radius: 4px;
+}
+
+/* Where it has not started yet: no left edge, because the edge is the mark
+   that says "this begins here". */
+.mg-bar:not(.opens) {
+  border-left: 0;
+  padding-left: 0.5rem;
+  color: var(--cream-soft);
+}
+
+.mg-bar.in_house {
+  border-left-color: var(--marigold);
+  background: rgba(233, 160, 59, 0.2);
+}
+
+.mg-bar.in_house:hover {
+  background: rgba(233, 160, 59, 0.3);
+}
+
+.mg-bar.checked_out,
+.mg-bar.cancelled,
+.mg-bar.no_show {
   border-left-color: rgba(243, 236, 220, 0.4);
-}
-
-.mg-chip.mg-stay {
-  border-left-color: transparent;
-  /* Not --admin-muted, which measured 4.44 here — under the 4.5 this size of
-     text needs. Quieter than an arrival, still readable. */
+  background: rgba(243, 236, 220, 0.08);
   color: rgba(243, 236, 220, 0.66);
 }
 
-/* No room yet: the one thing in a day cell somebody has to fix. */
-.mg-chip.mg-noroom {
-  border-left-color: var(--marigold);
+/* No room yet. Outlined rather than filled, so it reads as unfinished. */
+.mg-bar.noroom {
+  border: 1px dashed var(--marigold);
+  border-left-width: 2px;
+  background: rgba(233, 160, 59, 0.1);
   color: var(--marigold);
+  border-radius: 4px;
 }
 
 .mg-more {
-  display: block;
-  padding: 0.1rem 0.3rem;
-  font-size: 0.72rem;
+  align-self: start;
+  padding: 0 0.5rem;
+  font-size: 0.7rem;
   color: var(--jade);
   text-decoration: none;
 }
@@ -1926,14 +1955,15 @@ body:has(.admin-shell) > * > footer {
   text-decoration: underline;
 }
 
-/* Take a booking that day. Invisible until the pointer is on the cell — a
+/* Take a booking that day. Invisible until the pointer is on the week — a
    month showing thirty plus signs is a month nobody can read. */
 .mg-take {
-  position: absolute;
-  right: 0.3rem;
-  bottom: 0.3rem;
-  width: 1.4rem;
-  height: 1.4rem;
+  justify-self: end;
+  align-self: end;
+  margin-right: 4px;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.15rem;
   padding: 0;
   border: 1px solid var(--jade-line);
   border-radius: 6px;
@@ -1946,31 +1976,54 @@ body:has(.admin-shell) > * > footer {
   transition: opacity 0.12s var(--ease);
 }
 
-.mg-day:hover .mg-take,
+.mg-week:hover .mg-take,
 .mg-take:focus-visible {
   opacity: 1;
 }
 
 @media (max-width: 52rem) {
   /*
-   * Below this the seven columns are narrower than a name, so the month stops
-   * pretending. One column per day, full width, in order — the same cells, read
-   * down instead of across, which is how a phone reads anything.
+   * Below this the seven columns are narrower than a name. The month stops
+   * pretending: one day per row, full width, in order — the same information
+   * read down instead of across, which is how a phone reads anything. A stay
+   * sits under the day it begins — there is no longer a row for it to run
+   * along, so a run would only be a repeated name.
    */
   .mg-weekdays {
     display: none;
   }
 
-  .mg-week {
-    grid-template-columns: 1fr;
-  }
-
-  .mg-day {
-    min-height: 0;
-  }
-
-  .mg-blank {
+  .mg-cells {
     display: none;
+  }
+
+  .mg-grid {
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+    gap: 0.4rem;
+    padding: 0;
+  }
+
+  .mg-grid > * {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+
+  .mg-top {
+    padding: 0.4rem 0.5rem;
+    margin: 0;
+    border: 1px solid var(--cal-line);
+    border-radius: 8px;
+  }
+
+  .mg-bar,
+  .mg-bar.opens,
+  .mg-bar.closes {
+    border-radius: 4px;
+  }
+
+  .mg-take {
+    opacity: 1;
   }
 }
 

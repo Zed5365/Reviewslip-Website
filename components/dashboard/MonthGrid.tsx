@@ -1,14 +1,15 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { weeksOf } from "@/lib/nights";
 import type { Booking, CalendarWindow, TakenNight } from "@/lib/customer";
 
-/** Names in a day before the rest become a count. */
-const NAMES = 3;
+/** Stacked bars in a week before the rest become a count. */
+const LANES = 3;
 
-/** One arrival, as a day cell needs it. */
-interface Arrival {
+/** A stay, once, however many nights it holds. */
+interface Stay {
   id: number;
   guestName: string;
   status: string;
@@ -16,36 +17,36 @@ interface Arrival {
   departure: string;
   roomId: number | null;
   roomName: string | null;
-  /** A stay with no room yet is the one thing in a month somebody must fix. */
+  /** No room yet — the one thing on this screen somebody has to fix. */
   noRoom: boolean;
 }
 
-interface Day {
-  date: string;
-  /** Rooms sold that night. */
-  sold: number;
-  leaving: number;
-  arrivals: Arrival[];
+/** A stay's run across one week: where it starts, how wide, and which lane. */
+interface Run {
+  stay: Stay;
+  column: number;
+  span: number;
+  lane: number;
+  /** Whether the bar's own ends are the stay's ends, or the week's. */
+  opensLeft: boolean;
+  closesRight: boolean;
 }
 
 /**
- * A month, laid out as a month.
+ * A month, laid out as a month, with stays drawn across the nights they hold.
  *
- * Seven columns and a row per week, which is how everybody already reads a
- * month. What it shows in each day is deliberately much less than it could.
+ * The bars are the point. A month that marks a stay only on the day it starts
+ * shows a week of steady occupancy as six disconnected percentages with nobody
+ * in them — you can see that half the rooms are sold and not that it is the
+ * same two guests all week, which is the question. Drawn as a run, a stay reads
+ * as one thing with a beginning and an end, and a gap between two of them reads
+ * as a night somebody could sell.
  *
- * It lists arrivals and nothing else. A property that is full has twenty people
- * in house and nothing to do about any of them; putting all twenty names in the
- * square buries the two who are turning up, and on a busy week made every cell
- * look the same. Who is in house is a question about a *day*, and the desk
- * answers it — the day number links there.
+ * Occupancy stays as the cell's own shade so the shape of the month is legible
+ * before anything is read, with the figure for when the exact number matters.
  *
- * Occupancy is the cell's own shade rather than a bar and a number both. One
- * reading, not two of the same thing, and shading means the shape of the month
- * is visible without reading anything at all: a glance finds the busy week.
- *
- * Every figure comes from the room-nights the window already sends, so this
- * costs no extra request.
+ * Every bar comes from the room-nights the window already sends, so this costs
+ * no extra request.
  */
 export default function MonthGrid({
   data,
@@ -80,66 +81,45 @@ export default function MonthGrid({
       ? data.unassigned
       : data.unassigned.filter((b) => b.groupId === groupId);
 
-  const days = new Map<string, Day>(
-    data.nights.map((date) => [date, { date, sold: 0, leaving: 0, arrivals: [] }])
-  );
+  /* ------------------------------------------------------ what is sold when */
 
-  /*
-   * One pass over the room-nights.
-   *
-   * A stay holding four nights arrives as four rows, so each booking counts
-   * once per day — otherwise one long stay would read as four rooms sold.
-   */
+  const sold = new Map<string, number>(data.nights.map((d) => [d, 0]));
   const counted = new Map<string, Set<number>>();
-  const departed = new Map<string, Set<number>>();
-  const once = (map: Map<string, Set<number>>, date: string, id: number) => {
-    let set = map.get(date);
+
+  /** A stay holds four nights as four rows; count each booking once a night. */
+  function first(date: string, id: number) {
+    let set = counted.get(date);
     if (!set) {
       set = new Set();
-      map.set(date, set);
+      counted.set(date, set);
     }
     if (set.has(id)) return false;
     set.add(id);
     return true;
-  };
-
-  for (const t of nights) {
-    const day = days.get(t.night);
-    if (day && once(counted, t.night, t.bookingId)) {
-      day.sold += 1;
-      if (t.arrival === t.night) {
-        const room = byRoom.get(t.roomId) ?? null;
-        day.arrivals.push({
-          id: t.bookingId,
-          guestName: t.guestName,
-          status: t.status,
-          arrival: t.arrival,
-          departure: t.departure,
-          roomId: t.roomId,
-          roomName: room?.name ?? null,
-          noRoom: false,
-        });
-      }
-    }
-
-    /*
-     * Departures are in no night row at all.
-     *
-     * A stay leaving on the 20th holds the night of the 19th and no part of the
-     * 20th — the rule the whole module rests on. Counted from the stay itself,
-     * because that is the only place the date exists.
-     */
-    const out = days.get(t.departure);
-    if (out && once(departed, t.departure, t.bookingId)) out.leaving += 1;
   }
 
-  // Stays with no room, on the day they arrive. Not on every night they cover:
-  // the job is to give them a room, and that job belongs to the day they turn
-  // up, not to each of the four squares after it.
+  const stays = new Map<number, Stay>();
+  for (const t of nights) {
+    if (sold.has(t.night) && first(t.night, t.bookingId)) {
+      sold.set(t.night, sold.get(t.night)! + 1);
+    }
+    if (!stays.has(t.bookingId)) {
+      const room = byRoom.get(t.roomId) ?? null;
+      stays.set(t.bookingId, {
+        id: t.bookingId,
+        guestName: t.guestName,
+        status: t.status,
+        arrival: t.arrival,
+        departure: t.departure,
+        roomId: t.roomId,
+        roomName: room?.name ?? null,
+        noRoom: false,
+      });
+    }
+  }
+
   for (const b of unassigned) {
-    const day = days.get(b.arrival);
-    if (!day) continue;
-    day.arrivals.push({
+    stays.set(b.id, {
       id: b.id,
       guestName: b.guestName,
       status: b.status,
@@ -151,15 +131,76 @@ export default function MonthGrid({
     });
   }
 
-  for (const day of days.values()) {
-    day.arrivals.sort(
-      (a, b) =>
-        Number(b.noRoom) - Number(a.noRoom) || a.guestName.localeCompare(b.guestName)
-    );
+  const all = [...stays.values()];
+
+  /* ------------------------------------------------------- bars, week by week */
+
+  /**
+   * Where a stay sits in a week, and in which lane.
+   *
+   * Lanes are packed greedily: longest first, each into the topmost lane it
+   * fits. A stay therefore keeps the same lane across a week rather than
+   * jumping a row halfway along, which is what makes a run read as one thing.
+   */
+  function runsFor(week: (string | null)[]): { runs: Run[]; hidden: number[] } {
+    const dates = week.filter((d): d is string => d !== null);
+    if (dates.length === 0) return { runs: [], hidden: [] };
+
+    const from = dates[0];
+    const to = dates[dates.length - 1];
+
+    // Nights held, so a stay departing on the 20th covers up to the 19th —
+    // the same rule the occupancy figure counts by.
+    const touching = all
+      .filter((s) => s.arrival <= to && s.departure > from)
+      .sort(
+        (a, b) =>
+          Number(b.noRoom) - Number(a.noRoom) ||
+          a.arrival.localeCompare(b.arrival) ||
+          b.departure.localeCompare(a.departure)
+      );
+
+    const lanes: Run[][] = [];
+    const runs: Run[] = [];
+    const hidden = new Array(7).fill(0);
+
+    for (const stay of touching) {
+      const startDate = stay.arrival > from ? stay.arrival : from;
+      const lastNight = dates.filter((d) => d < stay.departure).at(-1);
+      if (!lastNight || lastNight < startDate) continue;
+
+      const column = week.indexOf(startDate);
+      const endColumn = week.indexOf(lastNight);
+      if (column < 0 || endColumn < column) continue;
+      const span = endColumn - column + 1;
+
+      let lane = lanes.findIndex(
+        (row) => !row.some((r) => r.column <= endColumn && r.column + r.span > column)
+      );
+      if (lane === -1) {
+        lane = lanes.length;
+        lanes.push([]);
+      }
+
+      const run: Run = {
+        stay,
+        column,
+        span,
+        lane,
+        opensLeft: stay.arrival >= from,
+        closesRight: stay.departure <= to,
+      };
+      lanes[lane].push(run);
+
+      if (lane < LANES) runs.push(run);
+      else for (let c = column; c <= endColumn; c += 1) hidden[c] += 1;
+    }
+
+    return { runs, hidden };
   }
 
-  /** What the panel needs, from what a cell knows. */
-  function asBooking(stay: Arrival): TakenNight {
+  /** What the panel needs, from what a bar knows. */
+  function asBooking(stay: Stay): TakenNight {
     return {
       roomId: stay.roomId as number,
       night: stay.arrival,
@@ -177,17 +218,16 @@ export default function MonthGrid({
   return (
     <>
       {/*
-        The tray the timeline used to carry, reduced to its one useful state.
-        A stay with no room is the only thing on this screen that is wrong, and
-        it was previously findable only by scrolling a grid — so it says itself,
-        above everything, and only when there is one.
+        Said once, at the top, and only when there is one. A stay with no room
+        holds nothing and turns up anyway; it is the only thing on this screen
+        that is actually wrong.
       */}
       {homeless > 0 ? (
         <p className="mg-alert">
           <strong>
             {homeless} {homeless === 1 ? "stay has" : "stays have"} no room yet
           </strong>{" "}
-          — open one below and pick a room, or it holds nothing.
+          — open one and pick a room, or it holds nothing.
         </p>
       ) : null}
 
@@ -198,116 +238,153 @@ export default function MonthGrid({
           ))}
         </div>
 
-        {weeksOf(data.nights).map((week, w) => (
-          <div className="mg-week" key={w}>
-            {week.map((date, i) => {
-              if (date === null) return <div className="mg-blank" key={`b${i}`} />;
+        {weeksOf(data.nights).map((week, w) => {
+          const { runs, hidden } = runsFor(week);
+          const lanes = Math.min(
+            LANES,
+            runs.reduce((most, r) => Math.max(most, r.lane + 1), 0)
+          );
 
-              const day = days.get(date)!;
-              const full =
-                capacity > 0 ? Math.round((day.sold / capacity) * 100) : 0;
-              const extra = day.arrivals.length - NAMES;
+          return (
+            <div className="mg-week" key={w}>
+              {/* The cells themselves: shading, today, sold out. Behind the
+                  bars, because a bar crosses them and a background cannot. */}
+              <div className="mg-cells" aria-hidden="true">
+                {week.map((date, i) => {
+                  if (date === null)
+                    return <div className="mg-cell mg-blank" key={`b${i}`} />;
 
-              const marks = [
-                "mg-day",
-                date === today ? "today" : "",
-                capacity > 0 && day.sold >= capacity ? "full" : "",
-              ].filter(Boolean);
+                  const count = sold.get(date) ?? 0;
+                  const full =
+                    capacity > 0 ? Math.round((count / capacity) * 100) : 0;
+                  const marks = [
+                    "mg-cell",
+                    date === today ? "today" : "",
+                    capacity > 0 && count >= capacity ? "full" : "",
+                  ].filter(Boolean);
 
-              return (
-                <div
-                  className={marks.join(" ")}
-                  key={date}
-                  /*
-                   * Occupancy as the cell's own shade. A month of thirty
-                   * squares shows its shape before anything is read — the busy
-                   * week is the dark one — which no amount of small print in
-                   * each square can do.
-                   */
-                  style={
-                    day.sold > 0
-                      ? ({ "--mg-heat": full / 100 } as React.CSSProperties)
-                      : undefined
-                  }
-                >
-                  <div className="mg-top">
-                    {/* The way into that day's desk: the screen that can check
-                        somebody in, and the one that lists who is in house. */}
-                    <Link className="mg-num" href={`${deskBase}?date=${date}`}>
-                      {Number(date.slice(8, 10))}
-                    </Link>
+                  return (
+                    <div
+                      className={marks.join(" ")}
+                      key={date}
+                      style={
+                        count > 0
+                          ? ({ "--mg-heat": full / 100 } as React.CSSProperties)
+                          : undefined
+                      }
+                    />
+                  );
+                })}
+              </div>
 
-                    {day.sold > 0 ? (
-                      <span
-                        className="mg-full"
-                        title={`${day.sold} of ${capacity} room${capacity === 1 ? "" : "s"} sold`}
+              <div
+                className="mg-grid"
+                style={{ "--mg-lanes": lanes } as React.CSSProperties}
+              >
+                {/*
+                  Emitted a day at a time — the day, then the stays that begin
+                  on it. Every child is placed explicitly by column and row, so
+                  the order here changes nothing on a wide screen; it is what
+                  the narrow one reads, where the grid becomes a single column
+                  and takes its order from the document. Emitting all seven days
+                  first, as this used to, put a week's bars in a heap below the
+                  week's dates.
+                */}
+                {week.map((date, i) => {
+                  if (date === null) return null;
+
+                  const count = sold.get(date) ?? 0;
+                  const full =
+                    capacity > 0 ? Math.round((count / capacity) * 100) : 0;
+                  const starting = runs.filter((r) => r.column === i);
+
+                  return (
+                    <Fragment key={date}>
+                      <div
+                        className={`mg-top${date === today ? " today" : ""}`}
+                        style={{ gridColumn: i + 1, gridRow: 1 }}
                       >
-                        {full}%
-                      </span>
-                    ) : null}
-                  </div>
+                        <Link className="mg-num" href={`${deskBase}?date=${date}`}>
+                          {Number(date.slice(8, 10))}
+                        </Link>
+                        {count > 0 ? (
+                          <span
+                            className={`mg-full${
+                              capacity > 0 && count >= capacity ? " sold" : ""
+                            }`}
+                            title={`${count} of ${capacity} room${capacity === 1 ? "" : "s"} sold`}
+                          >
+                            {full}%
+                          </span>
+                        ) : null}
+                      </div>
 
-                  {day.arrivals.length > 0 || day.leaving > 0 ? (
-                    <p className="mg-move">
-                      {day.arrivals.length > 0 ? (
-                        <span
-                          className="mg-in"
-                          title={`${day.arrivals.length} arriving`}
-                        >
-                          ↓{day.arrivals.length}
-                        </span>
-                      ) : null}
-                      {day.leaving > 0 ? (
-                        <span className="mg-out" title={`${day.leaving} leaving`}>
-                          ↑{day.leaving}
-                        </span>
-                      ) : null}
-                    </p>
-                  ) : null}
-
-                  <ul className="mg-names">
-                    {day.arrivals.slice(0, NAMES).map((stay) => (
-                      <li key={stay.id}>
+                      {starting.map((run) => (
                         <button
                           type="button"
-                          className={`mg-chip${stay.noRoom ? " mg-noroom" : " mg-in"}`}
-                          title={`${stay.guestName} · ${stay.arrival} → ${stay.departure}${
-                            stay.roomName ? ` · ${stay.roomName}` : " · no room yet"
+                          key={run.stay.id}
+                          className={[
+                            "mg-bar",
+                            run.stay.noRoom ? "noroom" : run.stay.status,
+                            run.opensLeft ? "opens" : "",
+                            run.closesRight ? "closes" : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                          style={{
+                            gridColumn: `${run.column + 1} / span ${run.span}`,
+                            gridRow: run.lane + 2,
+                          }}
+                          title={`${run.stay.guestName} · ${run.stay.arrival} → ${run.stay.departure}${
+                            run.stay.roomName
+                              ? ` · ${run.stay.roomName}`
+                              : " · no room yet"
                           }`}
-                          onClick={() => onOpen(asBooking(stay))}
+                          onClick={() => onOpen(asBooking(run.stay))}
                         >
-                          {stay.guestName}
+                          {/* The ellipsis only where a stay runs in from the
+                              week before. Repeating a name with no mark reads
+                              as a second booking. */}
+                          {run.opensLeft
+                            ? run.stay.guestName
+                            : `… ${run.stay.guestName}`}
                         </button>
-                      </li>
-                    ))}
-                  </ul>
+                      ))}
 
-                  {extra > 0 ? (
-                    <Link className="mg-more" href={`${deskBase}?date=${date}`}>
-                      +{extra} more
-                    </Link>
-                  ) : null}
+                      {hidden[i] > 0 ? (
+                        <Link
+                          className="mg-more"
+                          href={`${deskBase}?date=${date}`}
+                          style={{ gridColumn: i + 1, gridRow: LANES + 2 }}
+                        >
+                          +{hidden[i]}
+                        </Link>
+                      ) : null}
 
-                  {onEmpty ? (
-                    <button
-                      type="button"
-                      className="mg-take"
-                      title={`Take a booking arriving ${date}`}
-                      onClick={() =>
-                        onEmpty({ arrival: date, groupId: groupId ?? undefined })
-                      }
-                    >
-                      <span aria-hidden="true">+</span>
-                      <span className="visually-hidden">
-                        Take a booking arriving {date}
-                      </span>
-                    </button>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                      {onEmpty ? (
+                        <button
+                          type="button"
+                          className="mg-take"
+                          style={{ gridColumn: i + 1, gridRow: LANES + 3 }}
+                          title={`Take a booking arriving ${date}`}
+                          onClick={() =>
+                            onEmpty({ arrival: date, groupId: groupId ?? undefined })
+                          }
+                        >
+                          <span aria-hidden="true">+</span>
+                          <span className="visually-hidden">
+                            Take a booking arriving {date}
+                          </span>
+                        </button>
+                      ) : null}
+                    </Fragment>
+                  );
+                })}
+
+              </div>
+            </div>
+          );
+        })}
       </div>
     </>
   );
