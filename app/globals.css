@@ -2074,3 +2074,242 @@ body:has(.admin-shell) > * > footer {
   color: var(--marigold);
   font-weight: 700;
 }
+
+/* ------------------------------------------------------- the month of days */
+
+/*
+ * Seven columns, a row per week — the shape everybody already reads a calendar
+ * in. The room-by-night timeline answers "where can I put this stay"; this one
+ * answers "what is happening that week", which is what people open a calendar
+ * for.
+ */
+.mg {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.mg-weekdays,
+.mg-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.mg-weekdays span {
+  padding: 0 0.3rem 0.15rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.mg-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-height: 7.5rem;
+  padding: 0.45rem 0.5rem 0.5rem;
+  border: 1px solid var(--cal-line);
+  border-radius: 8px;
+  background: rgba(243, 236, 220, 0.02);
+}
+
+/* Days that belong to the months either side. Not drawn at all rather than
+   greyed: a cell somebody can click should belong to the month on screen. */
+.mg-blank {
+  border-color: transparent;
+  background: none;
+  min-height: 0;
+}
+
+.mg-day.today {
+  border-color: var(--jade);
+  background: rgba(130, 180, 155, 0.08);
+}
+
+.mg-day.full {
+  border-color: rgba(233, 160, 59, 0.45);
+}
+
+.mg-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.mg-num {
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--cream);
+  text-decoration: none;
+}
+
+.mg-num:hover {
+  text-decoration: underline;
+}
+
+.mg-day.today .mg-num {
+  color: var(--jade);
+  font-weight: 600;
+}
+
+.mg-full {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-muted);
+}
+
+.mg-bar {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(243, 236, 220, 0.1);
+  overflow: hidden;
+}
+
+.mg-bar span {
+  display: block;
+  height: 100%;
+  background: var(--jade);
+}
+
+.mg-day.full .mg-bar span {
+  background: var(--marigold);
+}
+
+.mg-move {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.mg-in {
+  color: var(--jade);
+}
+
+.mg-out {
+  color: var(--admin-muted);
+}
+
+.mg-names {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.mg-chip {
+  display: block;
+  width: 100%;
+  padding: 0.12rem 0.3rem;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 3px;
+  background: rgba(243, 236, 220, 0.06);
+  color: var(--cream-soft);
+  font: inherit;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  text-align: left;
+  /* One line each. Three wrapped names turn a day cell into a paragraph and
+     the week below it off the bottom of the screen. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.mg-chip:hover {
+  background: rgba(130, 180, 155, 0.18);
+  color: var(--cream);
+}
+
+/* Arriving, leaving, staying — by the edge rather than the fill, so three
+   marks on one day stay legible instead of becoming three blocks of colour. */
+.mg-in-chip,
+.mg-chip.mg-in {
+  border-left-color: var(--jade);
+}
+
+.mg-chip.mg-out {
+  border-left-color: rgba(243, 236, 220, 0.4);
+}
+
+.mg-chip.mg-stay {
+  border-left-color: transparent;
+  /* Not --admin-muted, which measured 4.44 here — under the 4.5 this size of
+     text needs. Quieter than an arrival, still readable. */
+  color: rgba(243, 236, 220, 0.66);
+}
+
+/* No room yet: the one thing in a day cell somebody has to fix. */
+.mg-chip.mg-noroom {
+  border-left-color: var(--marigold);
+  color: var(--marigold);
+}
+
+.mg-more {
+  display: block;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.72rem;
+  color: var(--jade);
+  text-decoration: none;
+}
+
+.mg-more:hover {
+  text-decoration: underline;
+}
+
+/* Take a booking that day. Invisible until the pointer is on the cell — a
+   month showing thirty plus signs is a month nobody can read. */
+.mg-take {
+  position: absolute;
+  right: 0.3rem;
+  bottom: 0.3rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  border: 1px solid var(--jade-line);
+  border-radius: 6px;
+  background: var(--shade);
+  color: var(--jade);
+  font: inherit;
+  line-height: 1;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.12s var(--ease);
+}
+
+.mg-day:hover .mg-take,
+.mg-take:focus-visible {
+  opacity: 1;
+}
+
+@media (max-width: 52rem) {
+  /*
+   * Below this the seven columns are narrower than a name, so the month stops
+   * pretending. One column per day, full width, in order — the same cells, read
+   * down instead of across, which is how a phone reads anything.
+   */
+  .mg-weekdays {
+    display: none;
+  }
+
+  .mg-week {
+    grid-template-columns: 1fr;
+  }
+
+  .mg-day {
+    min-height: 0;
+  }
+
+  .mg-blank {
+    display: none;
+  }
+}
