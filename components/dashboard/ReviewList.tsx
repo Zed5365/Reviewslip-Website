@@ -65,13 +65,59 @@ function contextNote(review: ReviewRow): string {
     parts.push(`in ${LANGUAGES[review.language] ?? review.language}`);
   }
 
-  // Where it went. Last in the line because it is the outcome rather than the
-  // input, and it is the thing an owner scans for: a review that reached Google
-  // is worth more to them than one that reached anywhere else.
-  const platform = PLATFORMS.find((p) => p.id === review.proceeded_to);
-  if (platform) parts.push(`to ${platform.label}`);
-
+  // Where it went used to be the last part of this line. It is the group
+  // heading now, and printing it again on all forty rows underneath is the
+  // kind of repetition that makes a list harder to read rather than fuller.
   return parts.join(" · ");
+}
+
+interface Group {
+  id: string;
+  label: string;
+  hex: string | null;
+  reviews: ReviewRow[];
+}
+
+/**
+ * The reviews, split by the listing each one was taken to.
+ *
+ * Which listing a review reached is the thing an owner is actually asking
+ * about — the same review is worth different amounts depending on where it
+ * landed, and a single column mixing all of them makes that answerable only by
+ * reading every line. Grouped, the shape of the month is visible at a glance:
+ * forty to Google and two to Tripadvisor is a different business problem from
+ * twenty-one each.
+ *
+ * Platform order rather than size order, so the groups do not rearrange
+ * themselves between visits. A list that reorders under you is one you have to
+ * re-read every time.
+ *
+ * Rows recorded before the destination was, and rows from a venue that had one
+ * listing so nothing needed choosing, have no answer. They go last, under a
+ * heading that says so rather than being quietly filed under Google.
+ */
+function group(reviews: ReviewRow[]): Group[] {
+  const groups: Group[] = [];
+
+  for (const platform of PLATFORMS) {
+    const mine = reviews.filter((r) => r.proceeded_to === platform.id);
+    if (mine.length) {
+      groups.push({
+        id: platform.id,
+        label: platform.label,
+        hex: platform.hex ?? null,
+        reviews: mine,
+      });
+    }
+  }
+
+  const known = new Set(PLATFORMS.map((p) => p.id));
+  const rest = reviews.filter((r) => !r.proceeded_to || !known.has(r.proceeded_to));
+  if (rest.length) {
+    groups.push({ id: "_rest", label: "Listing not recorded", hex: null, reviews: rest });
+  }
+
+  return groups;
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -150,6 +196,8 @@ export default function ReviewList({
     Object.fromEntries(reviews.map((r) => [r.id, r.rating]))
   );
   const [, startTransition] = useTransition();
+
+  const groups = group(reviews);
 
   function onRate(id: number, stars: number) {
     const before = ratings[id] ?? null;
@@ -247,53 +295,75 @@ export default function ReviewList({
           margin: 0,
           padding: "0 0.5rem 0 0",
           display: "grid",
-          gap: "0.9rem",
+          gap: "1.6rem",
           maxHeight: "26rem",
           overflowY: "auto",
           overscrollBehavior: "contain",
         }}
       >
-        {reviews.map((review) => {
-          const rating = ratings[review.id] ?? null;
+        {groups.map((g) => (
+          <li key={g.id}>
+            <h3 style={groupHead}>
+              {g.hex && <span aria-hidden="true" style={dot(g.hex)} />}
+              {g.label}
+              <span style={{ color: "var(--ink-soft)", fontWeight: 400 }}>
+                {g.reviews.length}
+              </span>
+            </h3>
 
-          return (
-            <li key={review.id} style={row}>
-              <p style={{ fontSize: "0.9rem", lineHeight: 1.5, margin: 0 }}>
-                {review.review_text}
-              </p>
-              <div style={meta}>
-                <span style={{ fontSize: "0.75rem", color: "var(--ink-soft)" }}>
-                  {contextNote(review)} ·{" "}
-                  {stamp(review.created_at)}
-                </span>
-                <span
-                  style={{ display: "flex", gap: "0.1rem" }}
-                  role="radiogroup"
-                  aria-label="Rating"
-                >
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      role="radio"
-                      aria-checked={rating === n}
-                      aria-label={n === 1 ? "1 star" : n + " stars"}
-                      title={
-                        n === 5
-                          ? "Five stars — the writer keeps this one and follows it"
-                          : n + " stars"
-                      }
-                      onClick={() => onRate(review.id, n)}
-                      style={star(rating !== null && n <= rating, rating === 5)}
+            <ul
+              style={{
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                display: "grid",
+                gap: "0.9rem",
+              }}
+            >
+              {g.reviews.map((review) => {
+              const rating = ratings[review.id] ?? null;
+
+              return (
+                <li key={review.id} style={row}>
+                  <p style={{ fontSize: "0.9rem", lineHeight: 1.5, margin: 0 }}>
+                    {review.review_text}
+                  </p>
+                  <div style={meta}>
+                    <span style={{ fontSize: "0.75rem", color: "var(--ink-soft)" }}>
+                      {contextNote(review)} ·{" "}
+                      {stamp(review.created_at)}
+                    </span>
+                    <span
+                      style={{ display: "flex", gap: "0.1rem" }}
+                      role="radiogroup"
+                      aria-label="Rating"
                     >
-                      <Star filled={rating !== null && n <= rating} />
-                    </button>
-                  ))}
-                </span>
-              </div>
-            </li>
-          );
-        })}
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          role="radio"
+                          aria-checked={rating === n}
+                          aria-label={n === 1 ? "1 star" : n + " stars"}
+                          title={
+                            n === 5
+                              ? "Five stars — the writer keeps this one and follows it"
+                              : n + " stars"
+                          }
+                          onClick={() => onRate(review.id, n)}
+                          style={star(rating !== null && n <= rating, rating === 5)}
+                        >
+                          <Star filled={rating !== null && n <= rating} />
+                        </button>
+                      ))}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+            </ul>
+          </li>
+        ))}
       </ul>
     </div>
   );
@@ -310,6 +380,39 @@ const heading: React.CSSProperties = {
   fontSize: "1.2rem",
   margin: "0 0 0.2rem",
 };
+
+/**
+ * A group's heading.
+ *
+ * Sticky, because the frame scrolls inside itself: without it you scroll past
+ * "Google" into forty rows and the answer to "which listing is this" is off
+ * the top of the box.
+ */
+const groupHead: React.CSSProperties = {
+  position: "sticky",
+  top: 0,
+  zIndex: 1,
+  display: "flex",
+  alignItems: "center",
+  gap: "0.45rem",
+  margin: "0 0 0.7rem",
+  padding: "0.35rem 0",
+  fontSize: "0.85rem",
+  fontWeight: 500,
+  letterSpacing: "0.01em",
+  background: "var(--paper)",
+};
+
+/** The listing's own colour, small. */
+function dot(hex: string): React.CSSProperties {
+  return {
+    width: "0.55rem",
+    height: "0.55rem",
+    borderRadius: "50%",
+    background: hex,
+    flex: "0 0 auto",
+  };
+}
 
 const row: React.CSSProperties = {
   borderTop: "1px solid rgba(27,42,35,0.12)",

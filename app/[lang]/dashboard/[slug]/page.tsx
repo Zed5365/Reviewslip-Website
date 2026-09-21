@@ -110,25 +110,36 @@ export default async function BusinessPage({
             summary={summary}
             base={localizedPath(lang, `/dashboard/${business.slug}/bookings`)}
           />
-          <ReviewsWidget
-            stats={stats}
-            base={localizedPath(lang, `/dashboard/${business.slug}/reviews`)}
-          />
-        </div>
+          {/*
+            The reviews column, with the venue's own buttons under it.
+            
+            Inside the column rather than under the whole grid: a row beneath
+            two columns starts at the left edge, which reads as belonging to
+            the left one. Settings and the table card are about the review
+            side of the product — the card is the thing that sends guests to
+            the page in the first place — so they sit under reviews.
+          */}
+          <div className="hub-col">
+            <ReviewsWidget
+              stats={stats}
+              base={localizedPath(lang, `/dashboard/${business.slug}/reviews`)}
+            />
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
-          <Link
-            className="btn btn-go"
-            href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
-          >
-            Settings
-          </Link>
-          <Link
-            className="btn btn-quiet"
-            href={localizedPath(lang, `/dashboard/${business.slug}/poster`)}
-          >
-            Table card
-          </Link>
+            <div className="hub-actions">
+              <Link
+                className="btn btn-go"
+                href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
+              >
+                Settings
+              </Link>
+              <Link
+                className="btn btn-quiet"
+                href={localizedPath(lang, `/dashboard/${business.slug}/poster`)}
+              >
+                Table card
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

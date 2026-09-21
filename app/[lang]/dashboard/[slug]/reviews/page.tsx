@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import ListingReviews, {
+  type Listings,
+  type NewReview,
+} from "@/components/dashboard/ListingReviews";
 import ReviewList, { type ReviewRow } from "@/components/dashboard/ReviewList";
 import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
@@ -63,6 +67,112 @@ export default async function ReviewsPage({
   }
 
   /**
+   * Reviews already on the venue's listings.
+   *
+   * Optional in the strong sense: the review app deploys separately, and a
+   * dashboard that has this route while the API does not must render the rest
+   * of the page rather than 500. An owner whose reviews list vanished because
+   * a second, newer panel could not load would reasonably conclude the whole
+   * thing was broken.
+   */
+  let listings: Listings | null = null;
+  try {
+    listings = await call<Listings>(`/businesses/${slug}/listing-reviews`, { token });
+  } catch (err) {
+    if ((err as { status?: number }).status !== 404) {
+      console.error(`Could not load listing reviews for ${slug}:`, err);
+    }
+  }
+
+  /** Whether this one has been answered. Returns the fresh list with it. */
+  async function setReplied(
+    id: number,
+    replied: boolean
+  ): Promise<{ ok: boolean; data?: Listings }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false };
+
+    try {
+      await call(`/businesses/${slug}/listing-reviews/${id}/replied`, {
+        method: "POST",
+        body: { replied },
+        token: current,
+      });
+      const data = await call<Listings>(`/businesses/${slug}/listing-reviews`, {
+        token: current,
+      });
+      return { ok: true, data };
+    } catch {
+      return { ok: false };
+    }
+  }
+
+  /**
+   * One added by hand, through the same route a connector would use.
+   *
+   * Which is the point of it: the de-duplication, the window and the reply
+   * tracking are all on this side of the fetch, so a review typed in is a
+   * review, not a lesser copy of one.
+   */
+  async function addReview(
+    input: NewReview
+  ): Promise<{ ok: boolean; error?: string; data?: Listings }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again to save that." };
+
+    try {
+      const data = await call<Listings>(`/businesses/${slug}/listing-reviews/import`, {
+        method: "POST",
+        body: {
+          platform: input.platform,
+          rows: [
+            {
+              author: input.author || null,
+              rating: input.rating,
+              body: input.body,
+              postedAt: input.postedAt,
+              url: input.url || null,
+            },
+          ],
+        },
+        token: current,
+      });
+      return { ok: true, data };
+    } catch (err) {
+      return {
+        ok: false,
+        error: (err as { message?: string }).message ?? "That could not be saved.",
+      };
+    }
+  }
+
+  /** Go and look now, for whichever listings can actually be read. */
+  async function checkNow(): Promise<{ ok: boolean; error?: string; data?: Listings }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again to check." };
+
+    try {
+      const data = await call<Listings>(`/businesses/${slug}/listing-reviews/fetch`, {
+        method: "POST",
+        body: {},
+        token: current,
+      });
+      return { ok: true, data };
+    } catch (err) {
+      return {
+        ok: false,
+        error: (err as { message?: string }).message ?? "Nothing could be fetched.",
+      };
+    }
+  }
+
+  /**
    * Records the owner's judgement. Called straight from the list's stars.
    *
    * `null` clears the rating, which is what a second tap on the star already
@@ -101,15 +211,27 @@ export default async function ReviewsPage({
 
         <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Reviews</h1>
         <p className="lede" style={{ marginBottom: "2rem" }}>
-          What guests have written, and what you thought of it.
+          What guests have written here, and what they have written about you
+          elsewhere.
         </p>
 
-        <ReviewList
-          reviews={reviews}
-          notTaken={notTaken}
-          failed={reviewsFailed}
-          rate={rate}
-        />
+        <div style={{ display: "grid", gap: "1.5rem" }}>
+          <ReviewList
+            reviews={reviews}
+            notTaken={notTaken}
+            failed={reviewsFailed}
+            rate={rate}
+          />
+
+          {listings && (
+            <ListingReviews
+              initial={listings}
+              markReplied={setReplied}
+              addReview={addReview}
+              checkNow={checkNow}
+            />
+          )}
+        </div>
       </div>
     </section>
   );
