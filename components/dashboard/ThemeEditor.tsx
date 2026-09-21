@@ -12,6 +12,7 @@ import {
   type BackgroundSummary,
   type FontSummary,
   type Palette,
+  fileSize,
 } from "@/lib/theme";
 
 /**
@@ -26,6 +27,110 @@ import {
  * and a second copy of that arithmetic in TypeScript would eventually disagree
  * with the first.
  */
+/**
+ * An image by its address, for when reading the site did not find one.
+ *
+ * Which is common, and was previously the end of the road: a logo set as a
+ * stylesheet background, a hero behind a slideshow, a site that will not be
+ * read at all. The address the reader *did* settle on — even one whose
+ * download failed — is offered as the starting point, because "no logo: that
+ * file is 4MB" is only actionable if you can see which file it meant.
+ *
+ * The outcome stays in this box rather than going to the banner at the top of
+ * the form. That banner carries the draft's own notes, and a second message
+ * up there about a different image reads as being about the same one.
+ */
+function ImageByUrl({
+  kind,
+  label,
+  suggestion,
+  busy,
+  onFetch,
+}: {
+  kind: "logo" | "background";
+  label: string;
+  suggestion: string | null;
+  busy: boolean;
+  onFetch: (
+    kind: "logo" | "background",
+    url: string
+  ) => Promise<{ ok: boolean; note?: string; error?: string }>;
+}) {
+  const [url, setUrl] = useState("");
+  const [said, setSaid] = useState<{ ok: boolean; text: string } | null>(null);
+  const [pending, startFetch] = useTransition();
+
+  // What the reader found, once it is known, as a starting point — and only
+  // while the box is untouched, so it cannot overwrite somebody's typing.
+  const [seen, setSeen] = useState<string | null>(null);
+  if (suggestion !== seen) {
+    setSeen(suggestion);
+    if (suggestion && !url) setUrl(suggestion);
+  }
+
+  function go() {
+    const address = url.trim();
+    if (!address) return;
+    setSaid(null);
+    startFetch(async () => {
+      const result = await onFetch(kind, address).catch(
+        (): { ok: boolean; note?: string; error?: string } => ({
+          ok: false,
+          error: "That could not be fetched.",
+        })
+      );
+      setSaid({
+        ok: result.ok,
+        text: result.ok ? result.note ?? "Got it." : result.error ?? "That could not be used.",
+      });
+    });
+  }
+
+  return (
+    <div style={{ display: "grid", gap: "0.35rem" }}>
+      <label style={hint} htmlFor={`image-${kind}`}>
+        {label}
+      </label>
+      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <input
+          id={`image-${kind}`}
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => {
+            // Enter in a box inside a form submits the form, which here means
+            // saving the whole venue with a half-finished theme.
+            if (e.key === "Enter") {
+              e.preventDefault();
+              go();
+            }
+          }}
+          placeholder="https://yoursite.com/logo.png"
+          style={urlBox}
+        />
+        <button
+          type="button"
+          className="btn btn-quiet"
+          disabled={busy || pending || !url.trim()}
+          onClick={go}
+        >
+          {pending ? "Fetching…" : "Fetch"}
+        </button>
+      </div>
+      {said && (
+        <span
+          role="status"
+          style={{
+            ...hint,
+            color: said.ok ? "var(--jade)" : "var(--warn, #d98c3a)",
+          }}
+        >
+          {said.text}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function ThemeEditor({
   value,
   derived,
@@ -41,6 +146,8 @@ export default function ThemeEditor({
   onDropFont,
   onRights,
   onGenerate,
+  found,
+  onImage,
   preview,
 }: {
   value: Palette;
@@ -60,6 +167,13 @@ export default function ThemeEditor({
   onDropBackground: () => void;
   onRights: (confirmed: boolean) => void;
   onGenerate: () => void;
+  /** The addresses reading the site settled on, whether or not they worked. */
+  found: { logoUrl: string | null; backgroundUrl: string | null };
+  /** Fetches one from an address the customer gives. */
+  onImage: (
+    kind: "logo" | "background",
+    url: string
+  ) => Promise<{ ok: boolean; note?: string; error?: string }>;
   /** Asks the review app what these four derive to. No model call. */
   preview: (
     theme: Palette,
@@ -172,7 +286,7 @@ export default function ThemeEditor({
                   <div>
                     <strong style={{ fontWeight: 500 }}>{grabbed.family}</strong>{" "}
                     <span style={hint}>
-                      — your own file, {grabbed.kb}kB {grabbed.format}
+                      — your own file, {fileSize(grabbed.bytes)} {grabbed.format}
                     </span>
                   </div>
                   <button
@@ -278,6 +392,14 @@ export default function ThemeEditor({
         ) : (
           <span style={hint}>None yet — generating from your website looks for one.</span>
         )}
+
+        <ImageByUrl
+          kind="logo"
+          label="Or paste the address of your logo"
+          suggestion={found.logoUrl}
+          busy={busy}
+          onFetch={onImage}
+        />
       </div>
 
       {/* ---------------------------------------------------- background */}
@@ -288,9 +410,15 @@ export default function ThemeEditor({
         {background ? (
           <div style={grabbedBox}>
             <div>
-              <strong style={{ fontWeight: 500 }}>From your site</strong>{" "}
+              <strong style={{ fontWeight: 500 }}>
+                {background.from === "you"
+                  ? "The one you gave"
+                  : background.from === "site"
+                    ? "From your site"
+                    : "Saved photo"}
+              </strong>{" "}
               <span style={hint}>
-                — {background.kb}kB {background.type.replace("image/", "")}
+                — {fileSize(background.bytes)} {background.type.replace("image/", "")}
               </span>
             </div>
             <button type="button" className="btn btn-quiet" onClick={onDropBackground}>
@@ -302,6 +430,14 @@ export default function ThemeEditor({
             None — generating looks for the photo at the top of your site.
           </span>
         )}
+
+        <ImageByUrl
+          kind="background"
+          label="Or paste the address of a photo"
+          suggestion={found.backgroundUrl}
+          busy={busy}
+          onFetch={onImage}
+        />
 
         <span style={hint}>
           It sits behind the whole page, heavily dimmed. That is not a style
@@ -418,6 +554,19 @@ export default function ThemeEditor({
 }
 
 const hint: React.CSSProperties = { fontSize: "0.8rem", color: "var(--ink-soft)" };
+
+/** Wide, because an image address is long and truncation hides the useful end. */
+const urlBox: React.CSSProperties = {
+  font: "inherit",
+  fontSize: "0.82rem",
+  flex: "1 1 20rem",
+  minWidth: 0,
+  padding: "0.4rem 0.55rem",
+  borderRadius: 8,
+  border: "1px solid rgba(243,236,220,0.22)",
+  background: "rgba(243,236,220,0.06)",
+  color: "inherit",
+};
 
 const swatch: React.CSSProperties = {
   flex: "0 0 auto",

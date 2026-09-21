@@ -115,6 +115,16 @@ type Action = (state: BusinessState, formData: FormData) => Promise<BusinessStat
 /** What reading the website can produce, per button. */
 type Topics = { categories?: Suggestion[]; error?: string };
 type Described = { description?: string; error?: string };
+/** An image fetched from an address, for the preview rather than for keeps. */
+export type FetchedImage = {
+  kind: "logo" | "background";
+  type: string;
+  bytes: number;
+  dataUri: string;
+  source: string;
+  note: string;
+};
+
 export type ThemeDraft = {
   theme?: Palette;
   sources?: Partial<Record<keyof Palette, string>>;
@@ -129,6 +139,8 @@ export type ThemeDraft = {
   /** The hero photograph taken off the site, file included. */
   background?: StoredBackground | null;
   backgroundNote?: string;
+  /** The addresses the reader settled on, whether or not they downloaded. */
+  found?: { logoUrl: string | null; backgroundUrl: string | null };
   error?: string;
 };
 
@@ -141,7 +153,7 @@ function summarise(font: StoredFont | null): FontSummary | null {
     family: font.family,
     format: font.format,
     source: font.source,
-    kb: Math.round((font.data.length * 3) / 4 / 1024),
+    bytes: Math.round((font.data.length * 3) / 4),
   };
 }
 
@@ -294,6 +306,7 @@ export default function SettingsForm({
   draftTheme,
   rulebook,
   previewTheme,
+  fetchThemeImage,
   name,
   settings,
   children,
@@ -308,6 +321,10 @@ export default function SettingsForm({
   /** Everything the writer is told about this business, as markdown. */
   rulebook: () => Promise<{ markdown?: string; error?: string }>;
   /** Asks what four colours derive to, so the preview is the served palette. */
+  fetchThemeImage: (
+    kind: "logo" | "background",
+    url: string
+  ) => Promise<{ image?: FetchedImage; error?: string }>;
   previewTheme: (
     theme: Palette,
     background?: boolean
@@ -387,6 +404,17 @@ export default function SettingsForm({
     settings.theme?.background ?? null
   );
   const [backgroundFile, setBackgroundFile] = useState<StoredBackground | null>(null);
+
+  /**
+   * The addresses the reader settled on, whether or not the download worked.
+   *
+   * Kept so the boxes below can be filled with what was found: "no logo, that
+   * file is 4MB" is a dead end on its own, and with the address in the box
+   * beside it somebody can look at what was found and correct it.
+   */
+  const [found, setFound] = useState<{ logoUrl: string | null; backgroundUrl: string | null }>(
+    { logoUrl: null, backgroundUrl: null }
+  );
 
   const [busy, startBusy] = useTransition();
   const [notice, setNotice] = useState("");
@@ -548,11 +576,13 @@ export default function SettingsForm({
           ? {
               type: result.background.type,
               source: result.background.source,
-              kb: Math.round((result.background.dataUri.length * 3) / 4 / 1024),
+              bytes: Math.round((result.background.dataUri.length * 3) / 4),
+              from: "site",
             }
           : null
       );
       setBackgroundFile(result.background ?? null);
+      setFound(result.found ?? { logoUrl: null, backgroundUrl: null });
 
       const got = result.fonts ?? { display: null, ui: null };
       setFontFiles(got);
@@ -582,6 +612,46 @@ export default function SettingsForm({
         .filter(Boolean)
         .join(" ");
     });
+  }
+
+  /**
+   * One the customer pointed at, put where the drafted one would have gone.
+   *
+   * The outcome goes back to the box that asked, so the message sits with the
+   * address that produced it rather than in the banner at the top of the form
+   * — which is where the draft's own notes go, and where a second one about a
+   * different image would be read as being about the same thing.
+   */
+  async function onImage(
+    kind: "logo" | "background",
+    url: string
+  ): Promise<{ ok: boolean; note?: string; error?: string }> {
+    const result = await fetchThemeImage(kind, url).catch(
+      (): { image?: FetchedImage; error?: string } => ({})
+    );
+
+    if (!result.image) {
+      return { ok: false, error: result.error ?? "That image could not be used." };
+    }
+
+    const image = result.image;
+    if (kind === "logo") {
+      setPalette((current) => ({ ...current, logo: image.dataUri }));
+    } else {
+      setBackground({
+        type: image.type,
+        source: image.source,
+        bytes: image.bytes,
+        from: "you",
+      });
+      setBackgroundFile({
+        type: image.type,
+        dataUri: image.dataUri,
+        source: image.source,
+      });
+    }
+
+    return { ok: true, note: `${image.note} Then Save.` };
   }
 
   /** Drops the photograph, file and all. */
@@ -1131,6 +1201,8 @@ export default function SettingsForm({
               onDropFont={onDropFont}
               onRights={setRights}
               onGenerate={onDraftTheme}
+              found={found}
+              onImage={onImage}
               preview={previewTheme}
             />
 

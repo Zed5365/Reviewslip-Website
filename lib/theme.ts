@@ -82,12 +82,24 @@ export interface StoredFont {
   data: string;
 }
 
+/**
+ * A file size a person can read.
+ *
+ * Bytes below a kilobyte, because Math.round(366 / 1024) is 0 and "0kB" reads
+ * as a file that failed to arrive. Plenty of real logos are a few hundred
+ * bytes of SVG. Mirrors assets.size in the review app.
+ */
+export function fileSize(bytes: number): string {
+  const n = Number(bytes) || 0;
+  return n < 1024 ? `${n}B` : `${Math.round(n / 1024)}kB`;
+}
+
 /** What the settings payload says about a grabbed font, minus the file. */
 export interface FontSummary {
   family: string;
   format: string;
   source: string;
-  kb: number;
+  bytes: number;
 }
 
 export const PALETTE_SLOTS: {
@@ -112,5 +124,15 @@ export interface StoredBackground {
 export interface BackgroundSummary {
   type: string;
   source: string;
-  kb: number;
+  bytes: number;
+  /**
+   * Where it came from: read off the site, handed over, or already saved.
+   *
+   * The panel used to say "From your site" for all of them, which is wrong the
+   * moment somebody pastes an address — and wrong in the direction that
+   * matters, because it credits the reader with something it failed to find.
+   * A stored photo says "saved" rather than guessing, since which of the two
+   * routes put it there is not recorded.
+   */
+  from: "site" | "you" | "stored";
 }

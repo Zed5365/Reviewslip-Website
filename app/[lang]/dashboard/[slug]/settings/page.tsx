@@ -7,6 +7,7 @@ import DeleteBusiness from "@/components/dashboard/DeleteBusiness";
 import SettingsForm, {
   type BusinessState,
   type Suggestion,
+  type FetchedImage,
   type ThemeDraft,
 } from "@/components/dashboard/SettingsForm";
 import {
@@ -253,6 +254,43 @@ export default async function BusinessSettingsPage({
   }
 
   /**
+   * A logo or a background the customer points at themselves.
+   *
+   * Reading the site finds these when they are findable, and often they are
+   * not — a logo set as a stylesheet background, a hero behind a slideshow, a
+   * site that will not be read at all. Without this the draft said "no logo
+   * found" and that was the end of it.
+   *
+   * The review app does the fetching, because the checks that make it safe to
+   * fetch an address somebody typed already live there: https only, the host
+   * resolved and private addresses refused, a byte cap and a type check.
+   */
+  async function fetchThemeImage(
+    kind: "logo" | "background",
+    url: string
+  ): Promise<{ image?: FetchedImage; error?: string }> {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { error: "Sign in again." };
+
+    try {
+      const image = await call<FetchedImage>(`/businesses/${slug}/theme/image`, {
+        method: "POST",
+        token: current,
+        body: { kind, url },
+      });
+      return { image };
+    } catch (err) {
+      // The review app's own words: every refusal it gives is something the
+      // customer can act on — a different file, a smaller one, a real address.
+      return {
+        error: err instanceof Error ? err.message : "That image could not be used.",
+      };
+    }
+  }
+
+  /**
    * What four colours actually become once the contrast checks have run.
    *
    * Server-side so the derivation has exactly one implementation — the review
@@ -330,6 +368,7 @@ export default async function BusinessSettingsPage({
           draftTheme={draftTheme}
           rulebook={rulebook}
           previewTheme={previewTheme}
+          fetchThemeImage={fetchThemeImage}
           name={data.business.name}
           settings={data.settings}
         >
