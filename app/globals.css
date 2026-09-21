@@ -2321,3 +2321,183 @@ body:has(.admin-shell) > * > footer {
   line-height: 1.5;
   color: var(--admin-muted);
 }
+
+/* ----------------------------------------------------- the registration card */
+
+/*
+ * Ink on paper, on screen too.
+ *
+ * The rest of the dashboard is a dark room; this is a thing that comes out of
+ * a printer, and showing it dark would print either a black page or a preview
+ * that looks nothing like the result. So it is light here and light there, and
+ * what the desk sees is what comes out.
+ */
+.card-page {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.card-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.card {
+  padding: 2rem 2.25rem;
+  border-radius: var(--radius-card);
+  background: #fff;
+  color: #1b2a23;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.card h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1b2a23;
+}
+
+.card h2 {
+  margin: 1.6rem 0 0.5rem;
+  font-family: var(--ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5a6b63;
+}
+
+.card-head {
+  position: relative;
+  padding-bottom: 0.9rem;
+  border-bottom: 2px solid #1b2a23;
+}
+
+.card-head p {
+  margin: 0.15rem 0 0;
+  color: #5a6b63;
+}
+
+.card-ref {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.85rem;
+  color: #5a6b63;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-stay {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.8rem 1.25rem;
+  margin-top: 1.1rem;
+}
+
+.card-stay span,
+.card-lines span {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5a6b63;
+}
+
+.card-stay b {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.card-lines p {
+  margin: 0 0 0.7rem;
+}
+
+/* A ruled line under everything, filled in or not: the desk writes on the
+   empty ones and the printed ones still look like the same form. */
+.card-lines b {
+  display: block;
+  min-height: 1.5rem;
+  font-weight: 500;
+  border-bottom: 1px solid #b9c3bd;
+}
+
+.card-guests {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.card-guests th {
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #5a6b63;
+  border-bottom: 1px solid #1b2a23;
+}
+
+.card-guests td {
+  height: 2.1rem;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid #b9c3bd;
+}
+
+.card-terms {
+  margin-top: 1.6rem;
+  font-size: 0.78rem;
+  color: #3d4a44;
+}
+
+.card-terms p {
+  margin: 0 0 0.4rem;
+}
+
+.card-sign {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2.4rem;
+}
+
+.card-sign .rule {
+  display: block;
+  height: 2.2rem;
+  border-bottom: 1px solid #1b2a23;
+}
+
+.card-sign small {
+  font-size: 0.7rem;
+  color: #5a6b63;
+}
+
+@media print {
+  /* Only the card goes on the paper. */
+  body > *:not(main),
+  .card-bar,
+  header,
+  footer,
+  nav {
+    display: none !important;
+  }
+
+  .card-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .card {
+    padding: 0;
+    border-radius: 0;
+  }
+
+  /* A signature block orphaned onto page two is a form that gets signed on
+     the wrong sheet. */
+  .card-sign,
+  .card-terms {
+    break-inside: avoid;
+  }
+}

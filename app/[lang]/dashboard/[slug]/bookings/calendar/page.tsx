@@ -310,6 +310,7 @@ export default async function CalendarPage({
         shape={shape}
         move={moveStay}
         deskBase={localizedPath(locale, `/dashboard/${slug}/bookings`)}
+        cardBase={localizedPath(locale, `/dashboard/${slug}/bookings/card`)}
         slug={slug}
         groups={groups}
         plans={plans.plans}

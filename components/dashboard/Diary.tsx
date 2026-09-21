@@ -23,6 +23,7 @@ export default function Diary({
   today = "",
   shape = "timeline",
   deskBase,
+  cardBase,
   slug,
   groups,
   plans,
@@ -46,6 +47,8 @@ export default function Diary({
   shape?: "timeline" | "month";
   /** The desk, for the month's day numbers to link into. */
   deskBase: string;
+  /** The registration cards, for the link in the panel. */
+  cardBase?: string;
   slug: string;
   groups: { id: number; name: string }[];
   plans: RatePlan[];
@@ -142,6 +145,7 @@ export default function Diary({
         groups={groups}
         plans={plans}
         slug={slug}
+        cardBase={cardBase}
         onClose={() => setOpen(null)}
         onCreated={(made) => setOpen(made)}
         create={create}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import GuestList from "./GuestList";
 import { nightCount } from "@/lib/nights";
 import type { Booking, BookingGuest, RatePlan, Room } from "@/lib/customer";
@@ -90,6 +91,7 @@ export default function BookingPanel({
   groups,
   plans,
   slug,
+  cardBase,
   onClose,
   onCreated,
   create,
@@ -105,6 +107,8 @@ export default function BookingPanel({
   plans: RatePlan[];
   /** Which venue, for the guest and booking endpoints. */
   slug: string;
+  /** Where the registration card lives, for the link at check-in. */
+  cardBase?: string;
   onClose: () => void;
   /**
    * The booking that was just taken.
@@ -677,6 +681,22 @@ export default function BookingPanel({
               >
                 {busy ? "Saving…" : "Save"}
               </button>
+
+              {/*
+                The card the guest signs. A link rather than a button, so it
+                opens in its own tab and the panel behind it keeps whatever
+                was being typed — a print dialog that costs somebody their
+                half-finished edit is a print dialog they stop using.
+              */}
+              {cardBase && current ? (
+                <Link
+                  className="btn btn-quiet"
+                  href={`${cardBase}/${current.id}`}
+                  target="_blank"
+                >
+                  Registration card
+                </Link>
+              ) : null}
 
               {STATUS.filter((s) => s.id !== current?.status).map((s) => (
                 <button
