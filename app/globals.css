@@ -2051,3 +2051,273 @@ body:has(.admin-shell) > * > footer {
   font-weight: 500;
   color: var(--marigold);
 }
+
+/* -------------------------------------------------- rooms down, nights across */
+
+/*
+ * The timeline. Two layers, like the month: a track of night cells that take
+ * the clicks, and stays absolutely positioned over them.
+ *
+ * Absolute rather than a run of table cells, because a stay has to be dragged
+ * as one object and resized by its ends — neither of which a row of cells can
+ * do. --tl-day is the one number both layers are built from, so a bar and the
+ * night under it cannot drift apart.
+ */
+.tl {
+  --tl-day: 2.1rem;
+  --tl-room: 10rem;
+  /* The two heights the stay overlay does its arithmetic with. Changing either
+     here changes where the bars sit, because that is the only place the
+     component reads them from. */
+  --tl-row-h: 2.2rem;
+  --tl-group-h: 1.9rem;
+  min-width: max-content;
+  /* Nothing here scrolls or selects under a drag. A pointer drag that starts
+     panning the page halfway through is worse than no drag. */
+  touch-action: none;
+  user-select: none;
+}
+
+.tl-head,
+.tl-row,
+.tl-group {
+  display: flex;
+  align-items: stretch;
+}
+
+/*
+ * The rows are exactly as tall as the variable says.
+ *
+ * Not approximately: the stay overlay works out a bar's `top` by multiplying
+ * these, so a row that comes out 1.9px taller than the number — a border the
+ * arithmetic did not know about — is a bar a third of a row out by the middle
+ * of the grid and a whole row out by the bottom. Fixing the height here is
+ * what makes the arithmetic true rather than close.
+ */
+.tl-row {
+  box-sizing: border-box;
+  height: var(--tl-row-h);
+}
+
+.tl-group {
+  box-sizing: border-box;
+  height: var(--tl-group-h);
+}
+
+.tl-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--shade);
+}
+
+.tl-room {
+  position: sticky;
+  left: -0.75rem;
+  z-index: 2;
+  flex: 0 0 var(--tl-room);
+  width: var(--tl-room);
+  padding: 0.45rem 0.6rem;
+  /* Opaque: the nights slide underneath it. */
+  background: #0c1f19;
+  border-right: 1px solid var(--cal-rule);
+  border-bottom: 1px solid var(--cal-line);
+  font-size: 0.85rem;
+  color: var(--cream);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-corner {
+  z-index: 4;
+  font-size: 0.75rem;
+  color: var(--admin-muted);
+  display: flex;
+  align-items: flex-end;
+}
+
+.tl-days {
+  display: grid;
+  grid-template-columns: repeat(var(--tl-cols), var(--tl-day));
+}
+
+.tl-day {
+  padding: 0.25rem 0 0.3rem;
+  text-align: center;
+  border-left: 1px solid var(--cal-line);
+  border-bottom: 1px solid var(--cal-rule);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-day span {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--admin-muted);
+}
+
+.tl-day b {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--cream);
+}
+
+.tl-day.weekend,
+.tl-cell.weekend {
+  background: var(--cal-weekend);
+}
+
+.tl-day.today,
+.tl-cell.today {
+  background: rgba(130, 180, 155, 0.12);
+  border-left-color: var(--jade);
+}
+
+.tl-day.today b {
+  color: var(--jade);
+  font-weight: 700;
+}
+
+/* The type, once, above its rooms. */
+.tl-group .tl-room {
+  font-family: var(--display);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--jade);
+  border-top: 1px solid var(--cal-rule);
+}
+
+.tl-groupfill {
+  flex: 1 1 auto;
+  min-width: calc(var(--tl-cols) * var(--tl-day));
+  background: rgba(130, 180, 155, 0.06);
+  border-top: 1px solid var(--cal-rule);
+  border-bottom: 1px solid var(--cal-line);
+}
+
+.tl-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--tl-cols), var(--tl-day));
+  min-width: calc(var(--tl-cols) * var(--tl-day));
+}
+
+.tl-cell {
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--cal-line);
+  border-bottom: 1px solid var(--cal-line);
+  background: transparent;
+  cursor: pointer;
+}
+
+.tl-cell:hover {
+  background: rgba(130, 180, 155, 0.1);
+}
+
+/* A stay. Sits over the cells, and is the thing that gets dragged. */
+/* The layer every stay lives in. Transparent to the pointer except on the
+   bars themselves, so the cells underneath still take a click. */
+.tl-stays {
+  position: absolute;
+  top: 0;
+  left: var(--tl-room);
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.tl-body {
+  position: relative;
+}
+
+.tl-stay {
+  position: absolute;
+  height: calc(var(--tl-row-h) - 5px);
+  pointer-events: auto;
+  display: flex;
+  align-items: stretch;
+  border-radius: 4px;
+  background: rgba(130, 180, 155, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(130, 180, 155, 0.55);
+  cursor: grab;
+  overflow: hidden;
+}
+
+.tl-stay.in-house {
+  background: rgba(233, 160, 59, 0.32);
+  box-shadow: inset 0 0 0 1px rgba(233, 160, 59, 0.55);
+}
+
+.tl-stay.out {
+  background: rgba(243, 236, 220, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(243, 236, 220, 0.25);
+}
+
+/* Lifted while it is being dragged, so it reads as held rather than dropped. */
+.tl-stay.dragging {
+  cursor: grabbing;
+  z-index: 2;
+  box-shadow:
+    inset 0 0 0 1px var(--marigold),
+    0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.tl-who {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 0.3rem;
+  border: 0;
+  background: none;
+  color: var(--cream);
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+/*
+ * The ends, for making a stay longer or shorter.
+ *
+ * Wider than they look: a 4px target is a target people miss, and missing it
+ * here means dragging the whole booking to another room instead of extending
+ * it by a night.
+ */
+.tl-grip {
+  flex: 0 0 8px;
+  cursor: ew-resize;
+  background: linear-gradient(
+    to right,
+    rgba(243, 236, 220, 0.28),
+    rgba(243, 236, 220, 0.28)
+  );
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.tl-grip.start {
+  background-position: left 3px center;
+}
+
+.tl-grip.end {
+  background-position: right 3px center;
+}
+
+.tl-stay:hover .tl-grip {
+  background-image: linear-gradient(to right, var(--cream), var(--cream));
+}
+
+.tl-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--admin-muted);
+}

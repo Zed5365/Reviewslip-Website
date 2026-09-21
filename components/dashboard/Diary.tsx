@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import MonthGrid from "./MonthGrid";
+import Timeline, { type MoveResult } from "./Timeline";
 import BookingPanel, {
   type CreateResult,
   type EditResult,
@@ -20,11 +21,13 @@ export default function Diary({
   data,
   groupId = null,
   today = "",
+  shape = "timeline",
   deskBase,
   slug,
   groups,
   plans,
   create,
+  move,
   save,
   assign,
   setStatus,
@@ -33,12 +36,25 @@ export default function Diary({
   groupId?: number | null;
   /** Today at the property, worked out on the server. */
   today?: string;
+  /**
+   * Which calendar.
+   *
+   * The timeline answers "which room", the month answers "what does the month
+   * look like". Neither is a worse version of the other, and only the timeline
+   * can be dragged — a month of days has no room axis to drag along.
+   */
+  shape?: "timeline" | "month";
   /** The desk, for the month's day numbers to link into. */
   deskBase: string;
   slug: string;
   groups: { id: number; name: string }[];
   plans: RatePlan[];
   create: (values: Record<string, unknown>) => Promise<CreateResult>;
+  /** A dragged stay: its room and its dates, in one call. */
+  move: (
+    bookingId: number,
+    to: { roomId: number; arrival: string; departure: string }
+  ) => Promise<MoveResult>;
   save: (id: number, patch: Record<string, unknown>) => Promise<EditResult>;
   assign: (id: number, roomId: number | null) => Promise<EditResult>;
   setStatus: (id: number, status: string) => Promise<EditResult>;
@@ -88,20 +104,37 @@ export default function Diary({
 
   return (
     <>
-      <MonthGrid
-        data={data}
-        groupId={groupId}
-        today={today}
-        deskBase={deskBase}
-        onOpen={(source) => {
-          setPrefill(undefined);
-          setOpen(toBooking(source));
-        }}
-        onEmpty={(where) => {
-          setPrefill(where);
-          setOpen("new");
-        }}
-      />
+      {shape === "month" ? (
+        <MonthGrid
+          data={data}
+          groupId={groupId}
+          today={today}
+          deskBase={deskBase}
+          onOpen={(source) => {
+            setPrefill(undefined);
+            setOpen(toBooking(source));
+          }}
+          onEmpty={(where) => {
+            setPrefill(where);
+            setOpen("new");
+          }}
+        />
+      ) : (
+        <Timeline
+          data={data}
+          groupId={groupId}
+          today={today}
+          move={move}
+          onOpen={(source) => {
+            setPrefill(undefined);
+            setOpen(toBooking(source));
+          }}
+          onEmpty={(where) => {
+            setPrefill(where);
+            setOpen("new");
+          }}
+        />
+      )}
       <BookingPanel
         booking={open}
         prefill={prefill}

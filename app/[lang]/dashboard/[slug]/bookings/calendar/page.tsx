@@ -60,6 +60,11 @@ export default async function CalendarPage({
 
   // Which room type, if any. Zero and nonsense both mean "all", because a
   // broken link should show the calendar rather than nothing.
+  // Which calendar. The timeline is the default: it is the one that answers
+  // "which room", and the only one a stay can be dragged across.
+  const askedShape = Array.isArray(query.shape) ? query.shape[0] : query.shape;
+  const shape = askedShape === "month" ? "month" : "timeline";
+
   const askedType = Array.isArray(query.type) ? query.type[0] : query.type;
   const typeId = Number(askedType);
   const groupId = Number.isSafeInteger(typeId) && typeId > 0 ? typeId : null;
@@ -122,6 +127,42 @@ export default async function CalendarPage({
    * dragged block that has already moved on screen and has to decide whether to
    * put itself back. A thrown error there is an error boundary and a lost grid.
    */
+  /**
+   * Where a dragged stay ended up.
+   *
+   * One PATCH, because the room and the dates are one change: the review app
+   * does both inside a transaction, so a drag cannot half-land — in the new
+   * room on the old nights, holding a room it was never given.
+   *
+   * Errors come back as values rather than thrown. The caller is a bar that
+   * has already moved on screen and has to decide whether to put itself back;
+   * a throw there is an error boundary and a lost calendar.
+   */
+  async function moveStay(
+    bookingId: number,
+    to: { roomId: number; arrival: string; departure: string }
+  ) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/bookings/${bookingId}`, {
+        method: "PATCH",
+        body: to,
+        token: t,
+      });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not move that.",
+      };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
   async function move(bookingId: number, roomId: number | null) {
     "use server";
 
@@ -209,6 +250,7 @@ export default async function CalendarPage({
     const next = new URLSearchParams();
     if (at) next.set("start", at);
     if (groupId) next.set("type", String(groupId));
+    if (shape === "month") next.set("shape", shape);
     const q = next.toString();
     return q ? `${here}?${q}` : here;
   }
@@ -244,6 +286,7 @@ export default async function CalendarPage({
       calendar={localizedPath(locale, `/dashboard/${slug}/bookings/calendar`)}
       list={localizedPath(locale, `/dashboard/${slug}/bookings/list`)}
       here="calendar"
+      shape={shape}
     />
 
     <RoomTypeFilter groups={groups} />
@@ -264,6 +307,8 @@ export default async function CalendarPage({
         data={data}
         groupId={groupId}
         today={todayAt("Asia/Bangkok")}
+        shape={shape}
+        move={moveStay}
         deskBase={localizedPath(locale, `/dashboard/${slug}/bookings`)}
         slug={slug}
         groups={groups}
