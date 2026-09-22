@@ -141,6 +141,14 @@ export type ThemeDraft = {
   backgroundNote?: string;
   /** The addresses the reader settled on, whether or not they downloaded. */
   found?: { logoUrl: string | null; backgroundUrl: string | null };
+  /**
+   * Colours read straight out of the site's stylesheets, before the model saw
+   * anything. The distinction is worth showing: a palette measured off the
+   * site is a different claim from one a model liked the look of.
+   */
+  measured?: { hex: string; roles: string[] }[];
+  /** Why the site's own files could not be read, when they could not. */
+  readNote?: string | null;
   error?: string;
 };
 
@@ -594,16 +602,30 @@ export default function SettingsForm({
       // customer agreed to last time.
       setRights(false);
 
+      /*
+       * Where the colours came from, which is the question this whole feature
+       * turned on. "Picked colours from your site" was said whether they had
+       * been read off it or invented, and it was not true half the time.
+       */
+      const measured = result.measured?.length ?? 0;
       const moved = result.adjusted?.length ?? 0;
+
+      const how = measured
+        ? `Read ${measured} colour${measured === 1 ? "" : "s"} out of your site's own stylesheets`
+        : result.readNote
+          ? "Chose colours from the page"
+          : "Chose colours from your site";
+
       const colours = moved
-        ? `Picked colours, ${moved} nudged for readability.`
-        : "Picked colours from your site.";
+        ? `${how}, ${moved} nudged for readability.`
+        : `${how}.`;
 
       // The logo and each font are fetched over the network and can fail on
       // their own while the rest of the draft is perfectly good, so each says
       // what happened to it.
       return [
         colours,
+        result.readNote,
         ...(result.fontNotes ?? []),
         result.logoNote,
         result.backgroundNote,
