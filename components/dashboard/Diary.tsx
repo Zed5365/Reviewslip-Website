@@ -56,7 +56,7 @@ export default function Diary({
   /** A dragged stay: its room and its dates, in one call. */
   move: (
     bookingId: number,
-    to: { roomId: number; arrival: string; departure: string }
+    to: { roomId: number | null; arrival: string; departure: string }
   ) => Promise<MoveResult>;
   save: (id: number, patch: Record<string, unknown>) => Promise<EditResult>;
   assign: (id: number, roomId: number | null) => Promise<EditResult>;

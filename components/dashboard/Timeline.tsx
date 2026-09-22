@@ -19,13 +19,39 @@ interface Stay {
   arrival: string;
   departure: string;
   roomId: number | null;
+  /** Which room type it was booked as, which is true even with no room yet. */
+  groupId: number;
+  /**
+   * How many people, when the grid knows.
+   *
+   * Null for a stay read off a room-night, which carries the guest's name and
+   * the dates and nothing else. Null is "not known here", and a warning is not
+   * raised on it — a capacity warning nobody can substantiate is worse than
+   * none, because it teaches people to click through warnings.
+   */
+  heads: number | null;
   source: string;
 }
+
+/**
+ * A line down the side of the grid.
+ *
+ * Rooms, and one holding row per type for the bookings that have not been
+ * given a room yet. The holding row is a real row and not a list beside the
+ * grid, because the question it answers — "where can this one go?" — is
+ * answered by the fortnight of nights to the right of it, and an unassigned
+ * booking listed somewhere else is one nobody assigns.
+ */
+type Row =
+  | { key: string; kind: "room"; groupId: number; groupName: string | null; room: Room }
+  | { key: string; kind: "holding"; groupId: number; groupName: string | null };
 
 /** Where a stay has been dragged to, before the server has agreed. */
 interface Ghost {
   id: number;
-  roomId: number;
+  /** Null when it is over a holding row: a booking with no room is normal. */
+  roomId: number | null;
+  groupId: number;
   arrival: string;
   departure: string;
 }
@@ -53,6 +79,14 @@ const TONE: Record<string, string> = {
  * target and nothing else — no live position, so no preview — and it does not
  * fire under a finger at all, which rules out the tablet a front desk actually
  * runs on. Pointer events are one code path for mouse, pen and touch.
+ *
+ * Two gestures, and they were one until they were separated deliberately.
+ * Dragging the body of a stay moves it between rooms and does not touch its
+ * dates: moving sideways and vertically at once meant that reaching for the
+ * room below also shifted the stay a day, and nothing on screen said the dates
+ * had changed. Dragging an end still changes the dates, because that gesture
+ * is unambiguous — nobody pulls an end by accident. Everything else about a
+ * booking, dates included, is in the panel a click opens.
  */
 export default function Timeline({
   data,
@@ -69,13 +103,14 @@ export default function Timeline({
   /**
    * Where a stay ended up: its room, and its dates.
    *
-   * One call rather than one for the room and another for the dates, because a
-   * drag changes both at once and two calls means a state where it landed in
-   * the right room on the wrong nights.
+   * One call rather than one for the room and another for the dates. A drag
+   * changes one or the other now, but the server takes both together and two
+   * calls would mean a state where it landed in the right room on the wrong
+   * nights. `roomId` is null when it has been put back in a holding row.
    */
   move: (
     bookingId: number,
-    to: { roomId: number; arrival: string; departure: string }
+    to: { roomId: number | null; arrival: string; departure: string }
   ) => Promise<MoveResult>;
   onOpen: (booking: Booking | TakenNight) => void;
   onEmpty?: (prefill: { roomId: number; groupId: number; arrival: string }) => void;
@@ -85,32 +120,53 @@ export default function Timeline({
   const rooms =
     groupId === null ? data.rooms : data.rooms.filter((r) => r.groupId === groupId);
 
-  /** Rooms in drawing order, so a drag can step between them by index. */
-  const ordered = [...rooms].sort(
-    (a, b) =>
-      (a.groupName ?? "").localeCompare(b.groupName ?? "") ||
-      a.name.localeCompare(b.name, undefined, { numeric: true })
-  );
-  const rowOf = new Map(ordered.map((r, i) => [r.id, i]));
-
   /**
-   * How far down each room's row starts, in rows and group headings.
+   * The rows, in drawing order: each type's rooms, then its holding row.
    *
-   * Arithmetic rather than measurement, because it has to be known during
-   * render to place a bar, and a measured height is only known after one.
-   * The two heights are CSS variables so the sums here and the layout there
-   * cannot disagree.
+   * Last within the type rather than first. First would put a row that is
+   * usually empty above every group and push the rooms down the screen four
+   * times over; last keeps the rooms together and still leaves the holding row
+   * where somebody scanning a type will pass it.
    */
-  const offsetOf = new Map<number, { rows: number; heads: number }>();
+  const rows: Row[] = [];
   {
-    let heads = 0;
-    ordered.forEach((room, i) => {
-      if (i === 0 || ordered[i - 1].groupName !== room.groupName) heads += 1;
-      offsetOf.set(room.id, { rows: i, heads });
-    });
+    const sorted = [...rooms].sort(
+      (a, b) =>
+        (a.groupName ?? "").localeCompare(b.groupName ?? "") ||
+        a.name.localeCompare(b.name, undefined, { numeric: true })
+    );
+
+    for (let i = 0; i < sorted.length; i += 1) {
+      const room = sorted[i];
+      rows.push({
+        key: `room:${room.id}`,
+        kind: "room",
+        groupId: room.groupId,
+        groupName: room.groupName,
+        room,
+      });
+
+      const last = i === sorted.length - 1 || sorted[i + 1].groupId !== room.groupId;
+      if (last) {
+        rows.push({
+          key: `hold:${room.groupId}`,
+          kind: "holding",
+          groupId: room.groupId,
+          groupName: room.groupName,
+        });
+      }
+    }
   }
 
+  const rowOf = new Map(rows.map((r, i) => [r.key, i]));
+  const keyFor = (roomId: number | null, group: number) =>
+    roomId === null ? `hold:${group}` : `room:${roomId}`;
+
+  /** Room and type facts a warning needs, by id. */
+  const roomOf = new Map(data.rooms.map((r) => [r.id, r]));
+
   const [problem, setProblem] = useState("");
+  const [warning, setWarning] = useState("");
   const [busy, setBusy] = useState(false);
   /*
    * Where the stay is being dragged to, in two places on purpose.
@@ -118,24 +174,22 @@ export default function Timeline({
    * The state is what renders. The ref is what `finish` reads, because an
    * event handler closes over the state as it was at its render — and pointerup
    * can land before React has re-rendered from the last pointermove. Reading
-   * the state there is how a drag silently posts the position the stay started
-   * from, or decides nothing changed and posts nothing at all.
+   * the ref is reading the drag as it actually is.
    */
   const [ghost, setGhostState] = useState<Ghost | null>(null);
   const ghostRef = useRef<Ghost | null>(null);
-
   function setGhost(next: Ghost | null) {
     ghostRef.current = next;
     setGhostState(next);
   }
 
-  const track = useRef<HTMLDivElement>(null);
+  const track = useRef<HTMLDivElement | null>(null);
   const drag = useRef<{
     stay: Stay;
     mode: Mode;
     x: number;
     /**
-     * Where the bar was when it was grabbed — not where the server has it.
+     * Where the stay was when the drag began, not where the server has it.
      *
      * Those differ for as long as a saved change is in flight: the ghost is
      * left in place on success so the stay does not flash back to its old
@@ -143,7 +197,7 @@ export default function Timeline({
      * measure from dates nobody can see. A drag has to move the thing that is
      * under the pointer.
      */
-    origin: { roomId: number; arrival: string; departure: string };
+    origin: { roomId: number | null; groupId: number; arrival: string; departure: string };
   } | null>(null);
 
   /* ------------------------------------------------------------ the stays */
@@ -158,9 +212,35 @@ export default function Timeline({
         arrival: t.arrival,
         departure: t.departure,
         roomId: t.roomId,
+        groupId: roomOf.get(t.roomId)?.groupId ?? 0,
+        heads: null,
         source: t.source,
       });
     }
+  }
+
+  /*
+   * And the ones nobody has given a room to.
+   *
+   * These arrive as whole bookings rather than room-nights — they hold no
+   * nights, which is exactly what makes them unassigned — so they carry the
+   * headcount that a room-night does not, and they are the stays a capacity
+   * warning can actually be raised about.
+   */
+  for (const b of data.unassigned) {
+    if (groupId !== null && b.groupId !== groupId) continue;
+    if (stays.has(b.id)) continue;
+    stays.set(b.id, {
+      id: b.id,
+      guestName: b.guestName,
+      status: b.status,
+      arrival: b.arrival,
+      departure: b.departure,
+      roomId: null,
+      groupId: b.groupId,
+      heads: (b.adults ?? 0) + (b.children ?? 0) || null,
+      source: b.source,
+    });
   }
 
   /*
@@ -176,9 +256,86 @@ export default function Timeline({
     setSeen(data);
     setGhostState(null);
     setProblem("");
+    setWarning("");
   }
 
+  /*
+   * Declared before the lane packing below, and that is load-bearing.
+   *
+   * The packing calls `place`, `place` calls this, and a const arrow function
+   * referenced before its own line is a ReferenceError rather than an
+   * undefined — so moving this down again takes the whole calendar out.
+   */
   const index = (night: string) => nights.indexOf(night);
+
+  /* ------------------------------------------------------------- the lanes */
+
+  /**
+   * Which stays are on which row, and how many deep a holding row has to be.
+   *
+   * A room row can never need more than one lane: two guests in one room on
+   * one night is the thing the whole inventory refuses. A holding row has no
+   * such rule — that is what being unassigned means — so four bookings for the
+   * same Tuesday all land on it, and without this they are drawn exactly on
+   * top of one another. Three of the four would be invisible, on the one row
+   * that exists to make sure nothing is forgotten.
+   *
+   * Greedy by arrival, which is the usual interval-packing and is enough here:
+   * the aim is that every bar can be seen and grabbed, not the fewest possible
+   * lanes.
+   */
+  const byRow = new Map<string, Stay[]>();
+  for (const stay of stays.values()) {
+    const key = place(stay).key;
+    const list = byRow.get(key);
+    if (list) list.push(stay);
+    else byRow.set(key, [stay]);
+  }
+
+  const laneOf = new Map<number, number>();
+  const lanesIn = new Map<string, number>();
+  for (const row of rows) {
+    if (row.kind !== "holding") continue;
+
+    const mine = (byRow.get(row.key) ?? [])
+      .slice()
+      .sort((a, b) => place(a).arrival.localeCompare(place(b).arrival));
+
+    const freeFrom: string[] = [];
+    for (const stay of mine) {
+      const p = place(stay);
+      let lane = freeFrom.findIndex((end) => end <= p.arrival);
+      if (lane === -1) {
+        lane = freeFrom.length;
+        freeFrom.push(p.departure);
+      } else {
+        freeFrom[lane] = p.departure;
+      }
+      laneOf.set(stay.id, lane);
+    }
+
+    lanesIn.set(row.key, Math.max(1, freeFrom.length));
+  }
+
+  /**
+   * How far down each row starts, in row units and group headings.
+   *
+   * Arithmetic rather than measurement, because it has to be known during
+   * render to place a bar, and a measured height is only known after one. The
+   * heights are CSS variables so the sums here and the layout there cannot
+   * disagree — which is also why a holding row is counted as a whole number of
+   * ordinary rows rather than given a height of its own.
+   */
+  const offsetOf = new Map<string, { rows: number; heads: number }>();
+  {
+    let units = 0;
+    let heads = 0;
+    rows.forEach((row, i) => {
+      if (i === 0 || rows[i - 1].groupId !== row.groupId) heads += 1;
+      offsetOf.set(row.key, { rows: units, heads });
+      units += lanesIn.get(row.key) ?? 1;
+    });
+  }
 
   /**
    * Would this stay clash where it is being dropped?
@@ -186,8 +343,12 @@ export default function Timeline({
    * Checked against every room-night on screen except the stay's own, so an
    * impossible drop refuses instantly rather than after a round trip. The
    * server checks again — this is the courtesy, not the rule.
+   *
+   * A holding row cannot clash: nothing there holds a room, which is the
+   * whole of what it means to be unassigned.
    */
-  function clashes(id: number, roomId: number, from: string, to: string) {
+  function clashes(id: number, roomId: number | null, from: string, to: string) {
+    if (roomId === null) return false;
     return data.taken.some(
       (t) =>
         t.roomId === roomId &&
@@ -197,11 +358,74 @@ export default function Timeline({
     );
   }
 
+  /**
+   * Things that are odd about a placement but not impossible.
+   *
+   * Separate from `clashes` because the two deserve different answers. Two
+   * guests in one room on one night is a fact about the world and is refused.
+   * A family of four in a double, or a garden bungalow booking put in a loft,
+   * is a judgement — and the desk routinely knows something this does not: a
+   * cot is going in, the guest asked to be moved, the type was a placeholder.
+   * Refusing those would teach people that the grid is wrong and to work
+   * around it, which is how a warning stops being read.
+   */
+  function concerns(stay: Stay, to: { roomId: number | null; arrival: string; departure: string }) {
+    const said: string[] = [];
+    if (to.roomId === null) return said;
+
+    const room = roomOf.get(to.roomId);
+    if (!room) return said;
+
+    if (room.status !== "active") {
+      said.push(`${room.name} is out of service`);
+    }
+    if (room.groupId !== stay.groupId) {
+      const booked = rows.find((r) => r.groupId === stay.groupId)?.groupName;
+      said.push(
+        booked
+          ? `this was booked as ${booked} and ${room.name} is ${room.groupName}`
+          : `${room.name} is a different room type`
+      );
+    }
+    if (today && to.arrival < today && stay.status === "confirmed") {
+      said.push("it arrives in the past");
+    }
+
+    return said;
+  }
+
+  /** The live warning while a drag is happening, or "". */
+  function liveWarning(stay: Stay, g: Ghost, mode: Mode) {
+    if (clashes(stay.id, g.roomId, g.arrival, g.departure)) {
+      return g.roomId === null
+        ? ""
+        : `${roomOf.get(g.roomId)?.name ?? "That room"} is taken on one of those nights`;
+    }
+
+    if (mode !== "move") {
+      const said: string[] = [];
+      const nights_ = Math.round(
+        (new Date(`${g.departure}T00:00:00Z`).getTime() -
+          new Date(`${g.arrival}T00:00:00Z`).getTime()) /
+          86_400_000
+      );
+      if (nights_ <= 1) said.push("one night is the shortest a stay can be");
+      if (today && g.departure <= today) said.push("it would end in the past");
+      if (stay.status === "checked_out") said.push("this guest has already checked out");
+      return said.join(", ");
+    }
+
+    return concerns(stay, g).join(", ");
+  }
+
   /* ----------------------------------------------------------- the drag */
 
   function begin(e: React.PointerEvent, stay: Stay, mode: Mode) {
     const from = place(stay);
-    if (busy || from.roomId === null) return;
+    if (busy) return;
+    // A stay with no room has no ends to pull: there is nothing to size it
+    // against, and its dates are the panel's business.
+    if (mode !== "move" && from.roomId === null) return;
     e.preventDefault();
     e.stopPropagation();
     // Capture so the drag survives the pointer leaving the bar — which it does
@@ -221,6 +445,7 @@ export default function Timeline({
       x: e.clientX,
       origin: {
         roomId: from.roomId,
+        groupId: stay.groupId,
         arrival: from.arrival,
         departure: from.departure,
       },
@@ -228,10 +453,12 @@ export default function Timeline({
     setGhost({
       id: stay.id,
       roomId: from.roomId,
+      groupId: stay.groupId,
       arrival: from.arrival,
       departure: from.departure,
     });
     setProblem("");
+    setWarning("");
   }
 
   function during(e: React.PointerEvent) {
@@ -241,24 +468,33 @@ export default function Timeline({
     const width = track.current.getBoundingClientRect().width / nights.length;
     const days = Math.round((e.clientX - d.x) / width);
 
-    // Which room row the pointer is over. Read from the rows themselves rather
-    // than from arithmetic, because a group heading makes the rows unevenly
-    // spaced and a computed row index would drift past the first one.
     let roomId = d.origin.roomId;
-    if (d.mode === "move") {
-      const under = document
-        .elementsFromPoint(e.clientX, e.clientY)
-        .find((el) => el instanceof HTMLElement && el.dataset.room);
-      const found = Number((under as HTMLElement | undefined)?.dataset.room);
-      if (Number.isSafeInteger(found) && rowOf.has(found)) roomId = found;
-    }
-
+    let group = d.origin.groupId;
     let arrival = d.origin.arrival;
     let departure = d.origin.departure;
 
     if (d.mode === "move") {
-      arrival = shift(d.origin.arrival, days);
-      departure = shift(d.origin.departure, days);
+      /*
+       * The row under the pointer, and nothing else.
+       *
+       * Read from the rows themselves rather than from arithmetic, because a
+       * group heading makes the rows unevenly spaced and a computed row index
+       * drifts past the first one.
+       *
+       * The dates are deliberately untouched. Moving between rooms and across
+       * days in one gesture meant that reaching for the room below also shifted
+       * the stay by a day, and nothing said so — the bar simply ended up on
+       * different nights. Dates are changed by pulling an end, or in the panel.
+       */
+      const under = document
+        .elementsFromPoint(e.clientX, e.clientY)
+        .find((el) => el instanceof HTMLElement && el.dataset.row);
+      const key = (under as HTMLElement | undefined)?.dataset.row;
+      if (key && rowOf.has(key)) {
+        const row = rows[rowOf.get(key) as number];
+        roomId = row.kind === "room" ? row.room.id : null;
+        group = row.groupId;
+      }
     } else if (d.mode === "start") {
       arrival = shift(d.origin.arrival, days);
       // A stay is at least one night; the database says so too.
@@ -268,7 +504,9 @@ export default function Timeline({
       if (departure <= arrival) departure = shift(arrival, 1);
     }
 
-    setGhost({ id: d.stay.id, roomId, arrival, departure });
+    const next = { id: d.stay.id, roomId, groupId: group, arrival, departure };
+    setGhost(next);
+    setWarning(liveWarning(d.stay, next, d.mode));
   }
 
   async function finish() {
@@ -283,16 +521,28 @@ export default function Timeline({
       g.departure === d.origin.departure;
     if (unchanged) {
       setGhost(null);
+      setWarning("");
       return;
     }
 
     if (clashes(d.stay.id, g.roomId, g.arrival, g.departure)) {
       setGhost(null);
+      setWarning("");
       setProblem(
         `${d.stay.guestName} cannot go there — the room is taken on one of those nights.`
       );
       return;
     }
+
+    /*
+     * Warnings are carried through the save rather than stopping it.
+     *
+     * The desk is allowed to do the odd thing; what it is not allowed to do is
+     * not notice. So the sentence stays on screen after the move lands, which
+     * is also when it is most useful — the bar is where they put it and the
+     * note says what is unusual about that.
+     */
+    const said = concerns(d.stay, g);
 
     setBusy(true);
     try {
@@ -306,10 +556,18 @@ export default function Timeline({
       // where it started for the length of the round trip.
       if (result.error) {
         setGhost(null);
+        setWarning("");
         setProblem(result.error);
+      } else {
+        setWarning(
+          said.length
+            ? `Moved ${d.stay.guestName} — ${said.join(", ")}.`
+            : ""
+        );
       }
     } catch {
       setGhost(null);
+      setWarning("");
       setProblem("Could not reach the server. Reload the page and try again.");
     } finally {
       setBusy(false);
@@ -319,7 +577,8 @@ export default function Timeline({
   /** Where a stay sits now — dragged, or as the server has it. */
   function place(stay: Stay) {
     const g = ghost?.id === stay.id ? ghost : null;
-    const roomId = g ? g.roomId : (stay.roomId as number);
+    const roomId = g ? g.roomId : stay.roomId;
+    const group = g ? g.groupId : stay.groupId;
     const arrival = g ? g.arrival : stay.arrival;
     const departure = g ? g.departure : stay.departure;
 
@@ -331,7 +590,15 @@ export default function Timeline({
         ? nights.length - 1
         : index(lastNight);
 
-    return { roomId, from, to, arrival, departure, dragging: Boolean(g) };
+    return {
+      roomId,
+      key: keyFor(roomId, group),
+      from,
+      to,
+      arrival,
+      departure,
+      dragging: Boolean(g),
+    };
   }
 
   return (
@@ -339,6 +606,12 @@ export default function Timeline({
       {problem ? (
         <p className="cal-problem" role="alert">
           {problem}
+        </p>
+      ) : null}
+
+      {warning ? (
+        <p className="tl-warn" role="status">
+          {warning}
         </p>
       ) : null}
 
@@ -357,6 +630,7 @@ export default function Timeline({
           onPointerCancel={() => {
             drag.current = null;
             setGhost(null);
+            setWarning("");
           }}
         >
           <div className="tl-head">
@@ -381,38 +655,72 @@ export default function Timeline({
           </div>
 
           <div className="tl-body">
-            {ordered.map((room: Room, at) => {
-              const opensGroup =
-                at === 0 || ordered[at - 1].groupName !== room.groupName;
+            {rows.map((row, at) => {
+              const opensGroup = at === 0 || rows[at - 1].groupId !== row.groupId;
+              const holding = row.kind === "holding";
+              const waiting = holding ? (byRow.get(row.key) ?? []).length : 0;
 
               return (
-                <Fragment key={room.id}>
+                <Fragment key={row.key}>
                   {opensGroup ? (
                     <div className="tl-group">
-                      <div className="tl-room">{room.groupName}</div>
+                      <div className="tl-room">{row.groupName}</div>
                       <div className="tl-groupfill" />
                     </div>
                   ) : null}
 
-                  <div className="tl-row">
-                    <div className="tl-room">{room.name}</div>
-                    <div className="tl-track" data-room={room.id}>
+                  <div
+                    className={`tl-row${holding ? " holding" : ""}`}
+                    style={
+                      { "--tl-rows": lanesIn.get(row.key) ?? 1 } as React.CSSProperties
+                    }
+                  >
+                    <div className="tl-room">
+                      {holding ? (
+                        <span className="tl-holdlabel">
+                          No room yet
+                          {waiting ? <b>{waiting}</b> : null}
+                        </span>
+                      ) : (
+                        row.room.name
+                      )}
+                    </div>
+                    <div className="tl-track" data-row={row.key}>
                       {nights.map((night) => {
                         const d = new Date(`${night}T12:00:00Z`);
                         const weekend = d.getUTCDay() === 0 || d.getUTCDay() === 6;
+
+                        /*
+                         * A holding row's cells take a drop and nothing else.
+                         * "Book this night" has no meaning without a room, and
+                         * a button that opens a panel you cannot complete is
+                         * worse than a cell that does nothing.
+                         */
+                        if (holding) {
+                          return (
+                            <div
+                              key={night}
+                              data-row={row.key}
+                              className={`tl-cell hold${weekend ? " weekend" : ""}${
+                                night === today ? " today" : ""
+                              }`}
+                            />
+                          );
+                        }
+
                         return (
                           <button
                             key={night}
                             type="button"
-                            data-room={room.id}
+                            data-row={row.key}
                             className={`tl-cell${weekend ? " weekend" : ""}${
                               night === today ? " today" : ""
                             }`}
-                            title={`${room.name} · ${night}`}
+                            title={`${row.room.name} · ${night}`}
                             onClick={() =>
                               onEmpty?.({
-                                roomId: room.id,
-                                groupId: room.groupId,
+                                roomId: row.room.id,
+                                groupId: row.room.groupId,
                                 arrival: night,
                               })
                             }
@@ -441,29 +749,35 @@ export default function Timeline({
                 const p = place(stay);
                 if (p.to < 0 || p.from > nights.length - 1) return null;
 
-                const at = offsetOf.get(p.roomId);
+                const at = offsetOf.get(p.key);
                 if (!at) return null;
 
                 const span = Math.max(1, p.to - p.from + 1);
+                const unplaced = p.roomId === null;
+
                 return (
                   <div
                     key={stay.id}
                     className={`tl-stay ${TONE[stay.status] ?? "confirmed"}${
                       p.dragging ? " dragging" : ""
-                    }`}
+                    }${unplaced ? " unplaced" : ""}`}
                     style={{
                       left: `calc(${p.from} * var(--tl-day))`,
                       width: `calc(${span} * var(--tl-day))`,
-                      top: `calc(${at.rows} * var(--tl-row-h) + ${at.heads} * var(--tl-group-h) + 2px)`,
+                      top: `calc(${at.rows + (laneOf.get(stay.id) ?? 0)} * var(--tl-row-h) + ${at.heads} * var(--tl-group-h) + 2px)`,
                     }}
-                    title={`${stay.guestName} · ${p.arrival} → ${p.departure}`}
+                    title={`${stay.guestName} · ${p.arrival} → ${p.departure}${
+                      unplaced ? " · no room yet" : ""
+                    }`}
                     onPointerDown={(e) => begin(e, stay, "move")}
                   >
-                    <span
-                      className="tl-grip start"
-                      onPointerDown={(e) => begin(e, stay, "start")}
-                      aria-hidden="true"
-                    />
+                    {unplaced ? null : (
+                      <span
+                        className="tl-grip start"
+                        onPointerDown={(e) => begin(e, stay, "start")}
+                        aria-hidden="true"
+                      />
+                    )}
                     <button
                       type="button"
                       className="tl-who"
@@ -482,11 +796,13 @@ export default function Timeline({
                     >
                       {stay.guestName}
                     </button>
-                    <span
-                      className="tl-grip end"
-                      onPointerDown={(e) => begin(e, stay, "end")}
-                      aria-hidden="true"
-                    />
+                    {unplaced ? null : (
+                      <span
+                        className="tl-grip end"
+                        onPointerDown={(e) => begin(e, stay, "end")}
+                        aria-hidden="true"
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -496,9 +812,10 @@ export default function Timeline({
       </div>
 
       <p className="tl-hint">
-        Drag a stay to move it — sideways for dates, up and down for rooms — or
-        pull either end to make it longer or shorter. Click an empty night to
-        take a booking in that room.
+        Drag a stay up or down to put it in another room, or into{" "}
+        <b>No room yet</b> to take it out of one — the dates do not change.
+        Pull either end to make it longer or shorter. Click the name to open it
+        and change anything else, dates included.
       </p>
     </>
   );

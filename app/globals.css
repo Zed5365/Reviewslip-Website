@@ -2096,7 +2096,16 @@ body:has(.admin-shell) > * > footer {
  */
 .tl-row {
   box-sizing: border-box;
-  height: var(--tl-row-h);
+  /*
+   * A whole number of ordinary rows.
+   *
+   * One for a room, which can only ever hold one stay at a time, and as many
+   * as it needs for a holding row, which can hold any number of bookings on
+   * the same night — that is what unassigned means. Counted in row units
+   * rather than given a height of its own so the sums that place the bars can
+   * stay in the same unit.
+   */
+  height: calc(var(--tl-rows, 1) * var(--tl-row-h));
 }
 
 .tl-group {
@@ -2320,6 +2329,83 @@ body:has(.admin-shell) > * > footer {
   font-size: 0.8rem;
   line-height: 1.5;
   color: var(--admin-muted);
+}
+
+/*
+ * The holding row: where a booking sits when nobody has given it a room.
+ *
+ * Hatched rather than coloured, so it reads as "not a room" at a glance and
+ * cannot be mistaken for one that is merely empty. Quiet, because on a tidy
+ * day every one of these rows is empty and there is one per room type.
+ */
+.tl-row.holding .tl-track {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(243, 236, 220, 0.045) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.tl-row.holding .tl-room {
+  color: var(--admin-muted);
+}
+
+.tl-holdlabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+/* The count, when there is anything waiting. Marigold: it is a job to do. */
+.tl-holdlabel b {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.7rem;
+  min-width: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  text-align: center;
+  background: rgba(233, 160, 59, 0.9);
+  color: #24180a;
+}
+
+/* A holding cell is a drop target and not a button, so it does not light up. */
+.tl-cell.hold {
+  cursor: default;
+}
+
+/*
+ * A stay with no room.
+ *
+ * Dashed, and it keeps its status colour: what is unusual about it is that it
+ * is nowhere, not what state it is in. It has no grips either — there is
+ * nothing to size it against until it has a room.
+ */
+.tl-stay.unplaced {
+  background: rgba(233, 160, 59, 0.18);
+  box-shadow: none;
+  outline: 1px dashed rgba(233, 160, 59, 0.75);
+  outline-offset: -1px;
+}
+
+/*
+ * What is odd about where this went.
+ *
+ * Deliberately not styled as an error. It sits beside .cal-problem, which
+ * refuses things; this one is a note about something that has already
+ * happened and is allowed, and if the two looked alike neither would be read.
+ */
+.tl-warn {
+  margin: 0 0 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--marigold);
+  background: rgba(233, 160, 59, 0.12);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--cream);
 }
 
 /* ----------------------------------------------------- the registration card */

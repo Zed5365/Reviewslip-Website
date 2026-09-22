@@ -140,7 +140,7 @@ export default async function CalendarPage({
    */
   async function moveStay(
     bookingId: number,
-    to: { roomId: number; arrival: string; departure: string }
+    to: { roomId: number | null; arrival: string; departure: string }
   ) {
     "use server";
 
