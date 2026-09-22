@@ -12,6 +12,8 @@ export interface ListingReview {
   rating: number | null;
   body: string | null;
   postedAt: string;
+  /** Whether that date is real, or worked out from "3 weeks ago". */
+  approximate?: boolean;
   repliedAt: string | null;
   replyBody: string | null;
   url: string | null;
@@ -34,6 +36,20 @@ export interface Connector {
   automatic: boolean;
 }
 
+/** What one listing gave up on a fetch. */
+export interface Ran {
+  id: string;
+  platform: string | null;
+  label: string;
+  /** How many were on the page, before the window was applied. */
+  read?: number;
+  stored: number;
+  added: number;
+  reason?: string | null;
+  /** The page it was read off, when that is not the listing it is on. */
+  via?: string | null;
+}
+
 export interface Listings {
   from: string;
   days: number;
@@ -41,6 +57,8 @@ export interface Listings {
   unanswered: number;
   groups: ListingGroup[];
   connectors: Connector[];
+  /** Present only on the answer to a fetch. */
+  ran?: Ran[];
 }
 
 export interface NewReview {
@@ -90,6 +108,15 @@ export default function ListingReviews({
   checkNow: () => Promise<{ ok: boolean; error?: string; data?: Listings }>;
 }) {
   const [data, setData] = useState<Listings>(initial);
+  /**
+   * What the last fetch found, per listing.
+   *
+   * Kept apart from the list itself because "nothing changed" and "nothing
+   * happened" look identical on a screen that only shows the result. A fetch
+   * that read fourteen reviews and found none of them new is a success, and
+   * without this line it is indistinguishable from a button that does nothing.
+   */
+  const [ran, setRan] = useState<Ran[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -138,6 +165,7 @@ export default function ListingReviews({
       );
       if (result?.ok && result.data) {
         setData(result.data);
+        setRan(result.data.ran ?? []);
         setReplied({});
       } else {
         setError(result?.error ?? "Nothing could be fetched just now.");
@@ -208,6 +236,33 @@ export default function ListingReviews({
         </p>
       )}
 
+      {ran && (
+        <ul role="status" style={ranList}>
+          {ran.length === 0 && (
+            <li style={{ fontSize: "0.78rem", color: "var(--ink-soft)" }}>
+              Nothing could be read. Check the listing links in Settings.
+            </li>
+          )}
+          {ran.map((r, i) => (
+            <li key={`${r.id}-${r.platform}-${i}`} style={{ fontSize: "0.78rem" }}>
+              <strong style={{ fontWeight: 500 }}>{r.label}</strong>{" "}
+              {r.reason ? (
+                <span style={{ color: "var(--ink-soft)" }}>— {r.reason}</span>
+              ) : (
+                <span style={{ color: "var(--ink-soft)" }}>
+                  — {r.read ?? r.stored} on the page
+                  {typeof r.read === "number" && r.read > r.stored
+                    ? `, ${r.stored} inside the window`
+                    : ""}
+                  , {r.added === 0 ? "none new" : `${r.added} new`}
+                  {r.via ? `, off the ${r.via} page` : ""}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
       {adding && (
         <AddReview
           connectors={connectors}
@@ -262,7 +317,15 @@ export default function ListingReviews({
                             </span>
                           )}
                         </span>
-                        <span style={{ fontSize: "0.75rem", color: "var(--ink-soft)" }}>
+                        <span
+                          style={{ fontSize: "0.75rem", color: "var(--ink-soft)" }}
+                          title={
+                            review.approximate
+                              ? "The listing page shows how long ago, not a date, so this is worked out from that"
+                              : undefined
+                          }
+                        >
+                          {review.approximate ? "about " : ""}
                           {stamp(review.postedAt)}
                         </span>
                       </div>
@@ -479,6 +542,16 @@ function dot(hex: string): React.CSSProperties {
     flex: "0 0 auto",
   };
 }
+
+const ranList: React.CSSProperties = {
+  listStyle: "none",
+  margin: "0.8rem 0 0",
+  padding: "0.7rem 0.9rem",
+  borderRadius: 10,
+  background: "rgba(27,42,35,0.04)",
+  display: "grid",
+  gap: "0.3rem",
+};
 
 const badge: React.CSSProperties = {
   fontSize: "0.7rem",
