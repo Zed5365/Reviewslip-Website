@@ -3,6 +3,9 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import HousekeepingPin, {
+  type HousekeepingState,
+} from "@/components/dashboard/HousekeepingPin";
 import RoomsSetup, { type RoomsState } from "@/components/dashboard/RoomsSetup";
 import {
   call,
@@ -39,6 +42,29 @@ export default async function RoomsPage({
     // belongs to somebody else. Neither is this account's business.
     if ((err as { status?: number }).status === 404) notFound();
     throw err;
+  }
+
+  /*
+   * The venue's own address and whether the board is switched on.
+   *
+   * Caught rather than awaited into the happy path: the rooms page is how
+   * somebody sets a property up, and it must not fail to load because a second
+   * call did. Without it the card simply does not appear.
+   */
+  let venue: { url: string; housekeeping: HousekeepingState } | null = null;
+  try {
+    const detail = await call<{
+      business: { url: string };
+      housekeeping?: HousekeepingState;
+    }>(`/businesses/${slug}`, { token });
+    venue = {
+      url: detail.business.url,
+      // Absent on a review app that has not been deployed yet, which reads as
+      // off rather than as an error.
+      housekeeping: detail.housekeeping ?? { on: false, changedAt: null },
+    };
+  } catch (err) {
+    console.error(`Could not read the venue for ${slug}:`, err);
   }
 
   const here = localizedPath(locale, `/dashboard/${slug}/bookings/rooms`);
@@ -128,6 +154,28 @@ export default async function RoomsPage({
     revalidatePath(here);
   }
 
+  /** Sets, changes or clears the PIN. Never reads one back. */
+  async function savePin(pin: string | null) {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again." };
+
+    try {
+      const saved = await call<{ on: boolean }>(
+        `/businesses/${slug}/housekeeping/pin`,
+        { method: "POST", body: { pin }, token: current }
+      );
+      revalidatePath(here);
+      return { ok: true, on: saved.on };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "That could not be saved.",
+      };
+    }
+  }
+
   return (
     <>
     <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Rooms</h1>
@@ -142,6 +190,14 @@ export default async function RoomsPage({
       addRoom={addRoom}
       remove={remove}
     />
+
+    {venue && (
+      <HousekeepingPin
+        state={venue.housekeeping}
+        url={`${venue.url.replace(/\/$/, "")}/housekeeping`}
+        save={savePin}
+      />
+    )}
 
     <p style={{ marginTop: "1.5rem" }}>
       <Link
