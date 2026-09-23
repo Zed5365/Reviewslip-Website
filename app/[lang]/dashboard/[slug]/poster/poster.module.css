@@ -99,6 +99,38 @@
   max-width: 90mm;
 }
 
+/*
+ * The same instruction in the guest's own language.
+ *
+ * Smaller than the English and not faint. It is quieter because one of the two
+ * has to lead and the card is printed by an English-speaking dashboard — but a
+ * line set in the muted grey would read as a footnote, and for half the people
+ * who pick this card up it is the only line that means anything.
+ */
+.second {
+  font-size: 4.4mm;
+  line-height: 1.5;
+  font-weight: 500;
+  margin: 1.5mm 0 0;
+  max-width: 90mm;
+  color: var(--card-ink, #1b2a23);
+}
+
+/* Latin text sits above its own baseline; Thai, Chinese and Japanese need the
+   room back or the lines crowd. */
+.second:lang(th),
+.second:lang(zh),
+.second:lang(ja),
+.second:lang(ko) {
+  line-height: 1.7;
+}
+
+.secondHint {
+  font-size: 3.4mm;
+  color: var(--card-muted, #5d6b62);
+  margin: 0.5mm 0 0;
+}
+
 /* ----------------------------------------------------------------- the QR */
 
 .qr {

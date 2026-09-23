@@ -11,6 +11,7 @@ import {
 } from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
+import { cardLanguages, cardText, DEFAULT_SECOND } from "@/lib/card-text";
 import { qrCode } from "@/lib/qr";
 
 import styles from "./poster.module.css";
@@ -22,6 +23,16 @@ import styles from "./poster.module.css";
  * than against the theme's own paper, so a business whose brand colour is pale
  * still gets a legible card — see theme.js.
  */
+const pick: React.CSSProperties = {
+  font: "inherit",
+  fontSize: "0.85rem",
+  padding: "0.3rem 0.45rem",
+  borderRadius: 8,
+  border: "1px solid rgba(243,236,220,0.22)",
+  background: "rgba(243,236,220,0.06)",
+  color: "inherit",
+};
+
 function cardVars(derived: Derived): React.CSSProperties {
   const vars: Record<string, string> = {};
   for (const name of ["--card-ink", "--card-frame", "--card-rule", "--card-muted", "--card-brand"]) {
@@ -37,9 +48,20 @@ export const metadata: Metadata = {
 
 export default async function PosterPage({
   params,
+  searchParams,
 }: PageProps<"/[lang]/dashboard/[slug]/poster">) {
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
+
+  /*
+   * The guest's language, alongside the dashboard's English.
+   *
+   * In the address rather than stored against the venue: a card is printed
+   * once and pinned to a table, and a setting somebody has to find, change and
+   * change back is more machinery than a link with `?with=th` on it.
+   */
+  const asked = String((await searchParams)?.with ?? DEFAULT_SECOND);
+  const second = asked === "none" || asked === "en" ? null : cardText(asked);
 
   const token = await sessionToken();
   if (!token) redirect(localizedPath(lang, "/login"));
@@ -78,6 +100,19 @@ export default async function PosterPage({
             on the review page.
           </p>
 
+          <form method="get" className={styles.actions} style={{ marginBottom: "0.4rem" }}>
+            <label style={{ fontSize: "0.85rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              Second language
+              <select name="with" defaultValue={asked} style={pick}>
+                <option value="none">None — English only</option>
+                {cardLanguages().filter((l) => l.code !== "en").map((l) => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))}
+              </select>
+            </label>
+            <button type="submit" className="btn btn-quiet">Change</button>
+          </form>
+
           <div className={styles.actions}>
             <PrintPoster />
             <a
@@ -95,6 +130,15 @@ export default async function PosterPage({
             print it straight away. The card is already A5 — set paper size to A5
             and scale to 100%, and pick borderless if your printer offers it.
           </p>
+
+          {second && (
+            <p className={styles.note}>
+              The second line is written plainly and literally rather than
+              cleverly. Have somebody who speaks it read the card once before
+              you print a boxful — it is four words, and it is the line half
+              your guests will actually be reading.
+            </p>
+          )}
         </div>
       </section>
 
@@ -121,6 +165,11 @@ export default async function PosterPage({
           <h2 className={styles.name}>{business.name}</h2>
           <div className={styles.rule} />
           <p className={styles.headline}>Scan to leave us a review</p>
+          {second && (
+            <p className={styles.second} lang={asked}>
+              {second.scan}
+            </p>
+          )}
 
           <div className={styles.qr}>
             {/* The quiet zone is four modules of the code itself, inside the
@@ -144,9 +193,12 @@ export default async function PosterPage({
           </div>
 
           <p className={styles.url}>{printedUrl}</p>
-          <p className={styles.hint}>
-            Takes about a minute. The words are yours to change.
-          </p>
+          <p className={styles.hint}>Takes about a minute</p>
+          {second && (
+            <p className={styles.secondHint} lang={asked}>
+              {second.minute}
+            </p>
+          )}
           <p className={styles.brand}>Reviewslip</p>
         </div>
       </div>
