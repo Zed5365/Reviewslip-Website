@@ -9,6 +9,7 @@ import type {
   BackgroundSummary,
   Derived,
   FontSummary,
+  MeasuredColour,
   Palette,
   StoredBackground,
   StoredFont,
@@ -146,7 +147,7 @@ export type ThemeDraft = {
    * anything. The distinction is worth showing: a palette measured off the
    * site is a different claim from one a model liked the look of.
    */
-  measured?: { hex: string; roles: string[] }[];
+  measured?: MeasuredColour[];
   /** Why the site's own files could not be read, when they could not. */
   readNote?: string | null;
   error?: string;
@@ -424,6 +425,19 @@ export default function SettingsForm({
     { logoUrl: null, backgroundUrl: null }
   );
 
+  /*
+   * The site's own colours, kept for the same reason the addresses above are.
+   *
+   * They were already being read, already sent over the wire, and thrown away
+   * into a sentence counting them. They are the answer to the only question
+   * anybody has when the drafted palette is nearly right — "what are my actual
+   * colours?" — and the alternative is another tab and an eyedropper.
+   *
+   * Empty until a draft has run, like the addresses: there is nothing honest
+   * to show under "found on your website" before the website has been read.
+   */
+  const [measured, setMeasured] = useState<MeasuredColour[]>([]);
+
   const [busy, startBusy] = useTransition();
   const [notice, setNotice] = useState("");
   // Which button is working, so it can say so. Reading a website through the
@@ -591,6 +605,7 @@ export default function SettingsForm({
       );
       setBackgroundFile(result.background ?? null);
       setFound(result.found ?? { logoUrl: null, backgroundUrl: null });
+      setMeasured(result.measured ?? []);
 
       const got = result.fonts ?? { display: null, ui: null };
       setFontFiles(got);
@@ -1224,6 +1239,7 @@ export default function SettingsForm({
               onRights={setRights}
               onGenerate={onDraftTheme}
               found={found}
+              measured={measured}
               onImage={onImage}
               preview={previewTheme}
             />

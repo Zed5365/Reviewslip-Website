@@ -11,8 +11,10 @@ import {
   type Derived,
   type BackgroundSummary,
   type FontSummary,
+  type MeasuredColour,
   type Palette,
   fileSize,
+  forSlot,
 } from "@/lib/theme";
 
 /**
@@ -147,6 +149,7 @@ export default function ThemeEditor({
   onRights,
   onGenerate,
   found,
+  measured,
   onImage,
   preview,
 }: {
@@ -169,6 +172,8 @@ export default function ThemeEditor({
   onGenerate: () => void;
   /** The addresses reading the site settled on, whether or not they worked. */
   found: { logoUrl: string | null; backgroundUrl: string | null };
+  /** The site's own colours, measured off its stylesheets. */
+  measured: MeasuredColour[];
   /** Fetches one from an address the customer gives. */
   onImage: (
     kind: "logo" | "background",
@@ -247,6 +252,43 @@ export default function ThemeEditor({
               <div style={{ ...hint, marginTop: "0.1rem" }}>
                 {sources[slot.key] || slot.hint}
               </div>
+              {/*
+                Your site's own colours, the likeliest for this slot first.
+                One click, because the alternative to this row is opening the
+                website in another tab with an eyedropper — and these are the
+                values the site actually paints with, which is a stronger
+                claim than anything the picker beside them can offer.
+              */}
+              {measured.length > 0 && (
+                <div style={swatchRow}>
+                  {forSlot(measured, slot.key).map((c) => {
+                    const chosen = c.hex.toLowerCase() === value[slot.key].toLowerCase();
+                    return (
+                      <button
+                        key={c.hex}
+                        type="button"
+                        onClick={() => onChange({ [slot.key]: c.hex })}
+                        // Both, because the roles are the reason this one is
+                        // near the front of the row and a tooltip is not
+                        // available to somebody using a keyboard.
+                        title={c.roles.length ? `${c.hex} — ${c.roles.join(", ")}` : c.hex}
+                        aria-label={`Use ${c.hex} for ${slot.label}${
+                          c.roles.length ? `, found on your ${c.roles.join(" and ")}` : ""
+                        }`}
+                        aria-pressed={chosen}
+                        style={{
+                          ...fromSite,
+                          background: c.hex,
+                          // The one in use gets the ring. Without it a row of
+                          // swatches says nothing about which was taken.
+                          outline: chosen ? "2px solid var(--marigold)" : "none",
+                          outlineOffset: 1,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <input
               id={`theme-${slot.key}`}
@@ -588,6 +630,31 @@ const urlBox: React.CSSProperties = {
   border: "1px solid rgba(243,236,220,0.22)",
   background: "rgba(243,236,220,0.06)",
   color: "inherit",
+};
+
+/*
+ * One of the site's own colours, offered against a slot.
+ *
+ * Small and square, in a row that has to sit under a line of hint text without
+ * becoming the loudest thing in the panel: this is evidence to reach for, not
+ * the control. The real picker is the 2.6rem well to its left.
+ */
+const swatchRow: React.CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "0.3rem",
+  marginTop: "0.35rem",
+};
+
+const fromSite: React.CSSProperties = {
+  width: "1.15rem",
+  height: "1.15rem",
+  padding: 0,
+  borderRadius: 4,
+  // A hairline, so a swatch the colour of the panel behind it is still a
+  // swatch. Half the colours a site is painted with are near-black.
+  border: "1px solid rgba(243,236,220,0.35)",
+  cursor: "pointer",
 };
 
 const swatch: React.CSSProperties = {

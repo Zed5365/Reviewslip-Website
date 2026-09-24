@@ -133,6 +133,63 @@ export const PALETTE_SLOTS: {
   { key: "highlight", label: "Highlight", hint: "the button that opens your listing" },
 ];
 
+/**
+ * A colour read straight out of the site's own stylesheets.
+ *
+ * Measured, not decided: these are the values the site paints with, before the
+ * model saw anything. The roles come from the variable names and selectors the
+ * colour was found on — `ground` off `body`, `highlight` off a button — and are
+ * coarse on purpose. They order the evidence; they do not make the choice.
+ */
+export interface MeasuredColour {
+  hex: string;
+  roles: string[];
+}
+
+/**
+ * Which measured colours to offer against a slot, best first.
+ *
+ * The site's palette was already being read, sent over the wire and thrown
+ * away into a sentence saying how many there were. It is the answer to the
+ * only question somebody has when the drafted colours are not quite right —
+ * "what are my actual colours?" — and without it the alternative is opening
+ * the site in another tab and an eyedropper.
+ *
+ * Sorted rather than filtered. A colour found on a button is the likeliest
+ * highlight, but the venue is looking at their own website and knows what they
+ * want better than a regular expression does, so everything stays on offer.
+ */
+const WANTS: Record<ColourSlot, string[]> = {
+  ground: ["ground", "header", "footer"],
+  paper: ["surface", "ground"],
+  accent: ["heading", "highlight", "text"],
+  highlight: ["highlight", "heading"],
+};
+
+export function forSlot(
+  measured: MeasuredColour[],
+  slot: ColourSlot,
+  limit = 7
+): MeasuredColour[] {
+  const wants = WANTS[slot] ?? [];
+
+  const rank = (c: MeasuredColour) => {
+    const best = c.roles
+      .map((r) => wants.indexOf(r))
+      .filter((i) => i !== -1)
+      .sort((a, b) => a - b)[0];
+    return best ?? wants.length;
+  };
+
+  return measured
+    // Index carried through so equal ranks keep the order they were read in,
+    // which is the order of how much of the site is painted with them.
+    .map((c, i) => ({ c, i, rank: rank(c) }))
+    .sort((a, b) => a.rank - b.rank || a.i - b.i)
+    .slice(0, limit)
+    .map((x) => x.c);
+}
+
 /** The hero photograph taken off the site, whole. Carried by the form on save. */
 export interface StoredBackground {
   type: string;
