@@ -149,6 +149,16 @@ export default async function PosterPage({
           module's own job — every rule carries them as var() fallbacks. */}
       <div className={styles.sheet} style={cardVars(data.settings.theme.derived)}>
         <div className={styles.frame}>
+          {/* Four corner marks, sitting across both rules of the frame. Empty
+              spans because they are drawn with their own borders — two sides
+              each — and there is nothing to read here. */}
+          <div className={styles.corners} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+
           {/* Above the name, not instead of it: a mark alone leaves a guest who
               scanned the wrong card with no way to tell. A stored data URI, so
               printing does not depend on the customer's server being up.
@@ -163,7 +173,9 @@ export default async function PosterPage({
             />
           )}
           <h2 className={styles.name}>{business.name}</h2>
-          <div className={styles.rule} />
+          <div className={styles.rule} aria-hidden="true">
+            <span className={styles.lozenge} />
+          </div>
           <p className={styles.headline}>Scan to leave us a review</p>
           {second && (
             <p className={styles.second} lang={asked}>
@@ -172,6 +184,16 @@ export default async function PosterPage({
           )}
 
           <div className={styles.qr}>
+            {/* Ticks at the four corners of the code. Decoration that does a
+                job — on a table card "point here" is the one instruction that
+                matters — and outside the code's own quiet zone, so a scanner
+                never sees them. */}
+            <div className={styles.ticks} aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
             {/* The quiet zone is four modules of the code itself, inside the
                 viewBox — so it scales with the card instead of being a padding
                 value that stops being four modules the moment the code grows a

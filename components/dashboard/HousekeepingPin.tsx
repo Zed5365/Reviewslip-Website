@@ -101,19 +101,36 @@ export default function HousekeepingPin({
 
       <form onSubmit={submit} style={form}>
         <label style={{ display: "grid", gap: "0.3rem" }}>
-          <span style={label}>{on ? "Change the PIN" : "Set a PIN to switch it on"}</span>
+          <span style={label}>
+            {on ? "Change the PIN" : "Set a six-digit PIN to switch it on"}
+          </span>
+          {/*
+            Six slots, shown rather than described.
+
+            It read "4 to 8 digits" as placeholder text, and at the
+            letter-spacing a PIN field wants, that came out as a row of
+            spread-out letters — so people reasonably concluded letters were
+            allowed. A fixed length can show itself instead: six dots, and
+            nothing left to misread.
+          */}
           <input
             value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
             inputMode="numeric"
-            maxLength={8}
-            placeholder="4 to 8 digits"
+            autoComplete="off"
+            maxLength={6}
+            aria-label="Six-digit PIN"
+            placeholder="••••••"
             style={input}
           />
         </label>
 
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end" }}>
-          <button type="submit" className="btn btn-go" disabled={pending || !pin.trim()}>
+          <button
+            type="submit"
+            className="btn btn-go"
+            disabled={pending || pin.length !== 6}
+          >
             {pending ? "Saving…" : on ? "Change it" : "Switch it on"}
           </button>
           {on && (
@@ -188,8 +205,13 @@ const label: React.CSSProperties = { fontSize: "0.75rem", color: "var(--ink-soft
 
 const input: React.CSSProperties = {
   font: "inherit",
-  fontSize: "1.1rem",
-  letterSpacing: "0.25em",
+  fontSize: "1.15rem",
+  // Tabular, so six digits are six equal columns and a "1" does not leave a
+  // gap. The indent puts letter-spaced text back on its centre.
+  fontVariantNumeric: "tabular-nums",
+  letterSpacing: "0.35em",
+  textIndent: "0.35em",
+  textAlign: "center",
   width: "8rem",
   padding: "0.45rem 0.6rem",
   borderRadius: 8,
