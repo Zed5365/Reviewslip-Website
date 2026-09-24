@@ -326,7 +326,7 @@ export default function SettingsForm({
   /** Writes one topic's description from its name and whatever is in the box. */
   describeTopic: (label: string, hint: string) => Promise<Described>;
   /** Reads the website and picks four colours. */
-  draftTheme: () => Promise<ThemeDraft>;
+  draftTheme: (note?: string) => Promise<ThemeDraft>;
   /** Everything the writer is told about this business, as markdown. */
   rulebook: () => Promise<{ markdown?: string; error?: string }>;
   /** Asks what four colours derive to, so the preview is the served palette. */
@@ -437,6 +437,16 @@ export default function SettingsForm({
    * to show under "found on your website" before the website has been read.
    */
   const [measured, setMeasured] = useState<MeasuredColour[]>([]);
+
+  /*
+   * What the owner wants from the look, in their own words.
+   *
+   * Kept across a re-generate rather than cleared, because the way this gets
+   * used is to press the button, look at the result, add a word and press it
+   * again. Wiping the box every time would make that the slowest possible
+   * loop.
+   */
+  const [themeNote, setThemeNote] = useState("");
 
   const [busy, startBusy] = useTransition();
   const [notice, setNotice] = useState("");
@@ -586,7 +596,7 @@ export default function SettingsForm({
   }
 
     function onDraftTheme() {
-    read("theme", draftTheme, (result) => {
+    read("theme", () => draftTheme(themeNote), (result) => {
       if (!result.theme) return "No usable colours came back.";
       setPalette(result.theme);
       setPaletteSources(result.sources ?? {});
@@ -1240,6 +1250,8 @@ export default function SettingsForm({
               onGenerate={onDraftTheme}
               found={found}
               measured={measured}
+              note={themeNote}
+              onNote={setThemeNote}
               onImage={onImage}
               preview={previewTheme}
             />

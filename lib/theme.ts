@@ -134,6 +134,32 @@ export const PALETTE_SLOTS: {
 ];
 
 /**
+ * How long a line of direction may be.
+ *
+ * Mirrors themenote.js in the review app, which is what actually enforces it.
+ * Held here too so the box stops at the limit rather than letting somebody
+ * write a paragraph and then telling them it was too long.
+ */
+export const THEME_NOTE_MAX = 300;
+
+/**
+ * Directions we offer, because an empty box is a hard question.
+ *
+ * "Tell us how you want it to look" gets nothing from most people. These are
+ * the four things a venue has actually wanted after seeing a draft: the site's
+ * colours are right but tired, the wrong one of two brand colours was picked,
+ * the page is too dark, or the printed card is louder than they want on a
+ * table. Each one is a starting phrase, not a setting — they land in the box
+ * as text and can be edited or thrown away.
+ */
+export const THEME_SUGGESTIONS = [
+  "Warmer",
+  "Calmer, less contrast",
+  "Use the colour from our sign",
+  "Keep the table card quieter than the website",
+];
+
+/**
  * A colour read straight out of the site's own stylesheets.
  *
  * Measured, not decided: these are the values the site paints with, before the

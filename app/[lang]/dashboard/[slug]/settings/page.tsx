@@ -239,8 +239,15 @@ export default async function BusinessSettingsPage({
     }
   }
 
-  /** Picks four colours off the website. Fills the swatches; saves nothing. */
-  async function draftTheme(): Promise<ThemeDraft> {
+  /**
+   * Picks four colours off the website. Fills the swatches; saves nothing.
+   *
+   * `note` is what the owner asked for in their own words, and it is optional.
+   * Reading a site measures what it is painted with, which is not always what
+   * the business wants to be seen in — the review app's themenote.js has the
+   * long version, and is what checks and enforces it.
+   */
+  async function draftTheme(note?: string): Promise<ThemeDraft> {
     "use server";
 
     const current = await sessionToken();
@@ -250,6 +257,7 @@ export default async function BusinessSettingsPage({
       return await call<ThemeDraft>(`/businesses/${slug}/theme/draft`, {
         method: "POST",
         token: current,
+        body: { note: note ?? "" },
       });
     } catch (err) {
       return {

@@ -7,6 +7,8 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import {
   DISPLAY_FONTS,
   PALETTE_SLOTS,
+  THEME_NOTE_MAX,
+  THEME_SUGGESTIONS,
   UI_FONTS,
   type Derived,
   type BackgroundSummary,
@@ -150,6 +152,8 @@ export default function ThemeEditor({
   onGenerate,
   found,
   measured,
+  note,
+  onNote,
   onImage,
   preview,
 }: {
@@ -174,6 +178,9 @@ export default function ThemeEditor({
   found: { logoUrl: string | null; backgroundUrl: string | null };
   /** The site's own colours, measured off its stylesheets. */
   measured: MeasuredColour[];
+  /** What the owner wants from the look, in their own words. Optional. */
+  note: string;
+  onNote: (note: string) => void;
   /** Fetches one from an address the customer gives. */
   onImage: (
     kind: "logo" | "background",
@@ -233,6 +240,66 @@ export default function ThemeEditor({
               ? "Re-generate from website"
               : "Generate from website"}
         </button>
+      </div>
+
+      {/*
+        What the owner wants, alongside what the website says.
+        Reading the site measures what it is painted with, which is not always
+        what the business wants to be seen in: a site everybody is embarrassed
+        by measures perfectly accurately. This is where they say so, and it is
+        weighed above the measurements.
+      */}
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        <label htmlFor="theme-note" style={{ fontSize: "0.85rem", fontWeight: 500 }}>
+          Anything we should know?
+        </label>
+        <div style={hint}>
+          Optional. It steers the colours and the type, and the table card is
+          drawn from the same four colours, so it steers that too.
+        </div>
+
+        {/*
+          Suggestions, because an empty box is a hard question. Each one lands
+          as text that can be edited or deleted — a starting phrase, not a
+          setting, which is why they do not look like toggles and nothing
+          stays lit after a click.
+        */}
+        <div style={swatchRow}>
+          {THEME_SUGGESTIONS.map((phrase) => (
+            <button
+              key={phrase}
+              type="button"
+              className="btn btn-quiet"
+              style={chip}
+              disabled={busy}
+              onClick={() => {
+                // Added to what is there rather than replacing it: two of these
+                // together is a perfectly good instruction, and somebody who
+                // clicked one and then typed should not lose either.
+                const joined = note.trim() ? `${note.trim()}, ${phrase.toLowerCase()}` : phrase;
+                onNote(joined.slice(0, THEME_NOTE_MAX));
+              }}
+            >
+              {phrase}
+            </button>
+          ))}
+        </div>
+
+        <textarea
+          id="theme-note"
+          value={note}
+          onChange={(e) => onNote(e.target.value)}
+          // Stopped at the limit rather than refused after the fact: the review
+          // app enforces the same number, and finding out from an error that a
+          // paragraph was too long is the worse way to learn it.
+          maxLength={THEME_NOTE_MAX}
+          rows={2}
+          placeholder="Warmer, and use the green from our sign rather than the blue on the site."
+          style={noteBox}
+        />
+        <div style={{ ...hint, textAlign: "right" }}>
+          {note.length}/{THEME_NOTE_MAX}
+        </div>
       </div>
 
       <div style={{ display: "grid", gap: "0.75rem" }}>
@@ -655,6 +722,26 @@ const fromSite: React.CSSProperties = {
   // swatch. Half the colours a site is painted with are near-black.
   border: "1px solid rgba(243,236,220,0.35)",
   cursor: "pointer",
+};
+
+/** A starting phrase. Quieter than the Generate button it sits under. */
+const chip: React.CSSProperties = {
+  fontSize: "0.78rem",
+  padding: "0.25rem 0.6rem",
+  borderRadius: 999,
+};
+
+const noteBox: React.CSSProperties = {
+  font: "inherit",
+  fontSize: "0.88rem",
+  lineHeight: 1.5,
+  padding: "0.55rem 0.7rem",
+  borderRadius: 10,
+  border: "1px solid var(--jade-line)",
+  background: "rgba(243,236,220,0.06)",
+  color: "var(--paper)",
+  resize: "vertical",
+  minHeight: "3.4rem",
 };
 
 const swatch: React.CSSProperties = {
