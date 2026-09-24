@@ -131,15 +131,112 @@
   border-top: 0;
 }
 
-/* Height-capped, not width-capped: logos arrive at every aspect ratio, and a
-   wide wordmark held to a width becomes a hairline. Millimetres, like the rest
-   of this card — it is measured for paper, not for a screen. */
+/* ------------------------------------------------------------- the masthead */
+
+/*
+ * The block of colour at the top, carrying the mark and the name.
+ *
+ * The card already used the venue's palette — as the frame, the corner marks
+ * and the divider — and every one of those is a hairline, so at arm's length
+ * it read as a white card with some fine lines on it. One filled block behind
+ * the name is what makes somebody recognise whose card it is before they have
+ * read a word of it, which is the whole job of a mark on a table.
+ *
+ * Its size is the compromise. A full-bleed A5 in a dark colour costs a
+ * cartridge and leaves a white margin on any printer that cannot go
+ * borderless, which is most of the printers a small venue owns — so the block
+ * is about an eighth of the page and sits inside the frame, where it prints
+ * correctly on everything and the ink is spent on the part somebody looks at.
+ * The rest of the card stays white, and so does everything around the code.
+ */
+.masthead {
+  /* Wider than the frame's padding allows, so it reads as a band rather than
+     as a floating box — but stopping short of the inner rule, and starting
+     below the corner marks, so it never crowds either. */
+  margin: 0 -3mm 5mm;
+  align-self: stretch;
+  padding: 6mm 6mm 5.5mm;
+  border-radius: 1.5mm;
+  /*
+   * A hairline round the block, in the frame's own colour.
+   *
+   * For the venue whose ground colour is a cream or an off-white: filled with
+   * it, the block is the same as the stock and there is no block — the card
+   * falls back to the white card this was meant to stop being. The outline
+   * gives it an edge at any ground, costs a hairline of ink, and on a dark
+   * ground reads as a second line answering the frame rather than as a border.
+   */
+  border: 0.3mm solid var(--card-frame, #82b49b);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background: var(--card-panel, #14211b);
+  color: var(--card-on-panel, #fff);
+}
+
+/*
+ * The ornament, when it is on the block rather than on the paper.
+ *
+ * `--card-rule` is derived against white, which is where the rest of the
+ * card's colours live. On the block it would be a dark line on a dark ground,
+ * so the review app derives a second value against the ground itself.
+ */
+.masthead .rule::before,
+.masthead .rule::after {
+  background: var(--card-panel-rule, rgba(255, 255, 255, 0.7));
+}
+
+.masthead .lozenge {
+  border-color: var(--card-panel-rule, rgba(255, 255, 255, 0.7));
+}
+
+.masthead .rule {
+  margin-bottom: 0;
+}
+
+/*
+ * A window in the block for the logo.
+ *
+ * Logos arrive drawn for whatever the venue's own site uses, and a great many
+ * of them are dark marks on a transparent background — which on a dark block
+ * is an invisible logo and a card that looks broken. Setting it on white means
+ * the mark reads whatever it was drawn for. On a logo that already has a white
+ * background the window is invisible, so it costs nothing in the common case.
+ */
+.logoWindow {
+  background: #fff;
+  border-radius: 1mm;
+  padding: 3mm 4mm;
+  margin-bottom: 4.5mm;
+  /* Block, not flex. As a flex container it stretched the mark on the cross
+     axis and left it nothing on the main one, and a logo measured 0 x 0 — the
+     window shrinks to the mark, so the mark has to be what is measured. */
+  display: block;
+}
+
+/*
+ * Height-set, not height-capped, and millimetres like the rest of this card —
+ * it is measured for paper, not for a screen.
+ *
+ * The height is stated rather than capped because of SVG. A logo saved as an
+ * SVG usually carries a `viewBox` and no width or height, which gives it a
+ * ratio but no intrinsic size — and a replaced element with no intrinsic size,
+ * in a box that shrinks to its contents, resolves to nothing at all. The mark
+ * was 0 x 0 and the card printed without it. One definite axis is all it takes
+ * for the ratio to produce the other.
+ *
+ * Capped on width for the wordmarks, which are most logos: held to a height
+ * alone, a 6:1 wordmark would run off the card. `object-fit` is what keeps the
+ * mark's own shape when both constraints bite at once.
+ */
 .logo {
-  max-height: 16mm;
-  max-width: 70mm;
+  display: block;
+  height: 16mm;
   width: auto;
+  max-width: 62mm;
   object-fit: contain;
-  margin-bottom: 5mm;
 }
 
 .name {
@@ -151,6 +248,8 @@
   /* Long names shrink the gap rather than the QR: the code is the one element
      on this card that has a minimum usable size. */
   overflow-wrap: anywhere;
+  /* Inherited from the block it sits on, not from the sheet. */
+  color: inherit;
 }
 
 /*

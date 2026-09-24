@@ -17,11 +17,13 @@ import { qrCode } from "@/lib/qr";
 import styles from "./poster.module.css";
 
 /**
- * The card's four themed properties, as an inline style.
+ * The card's themed properties, as an inline style.
  *
- * Only the `--card-*` ones. The review app derives them against white rather
- * than against the theme's own paper, so a business whose brand colour is pale
- * still gets a legible card — see theme.js.
+ * Only the `--card-*` ones. Most are derived against white rather than against
+ * the theme's own paper, so a business whose brand colour is pale still gets a
+ * legible card. The three panel properties are the exception — they are derived
+ * against the venue's own ground colour, because that is what they sit on. All
+ * of it is theme.js's arithmetic, not ours.
  */
 const pick: React.CSSProperties = {
   font: "inherit",
@@ -35,7 +37,16 @@ const pick: React.CSSProperties = {
 
 function cardVars(derived: Derived): React.CSSProperties {
   const vars: Record<string, string> = {};
-  for (const name of ["--card-ink", "--card-frame", "--card-rule", "--card-muted", "--card-brand"]) {
+  for (const name of [
+    "--card-ink",
+    "--card-frame",
+    "--card-rule",
+    "--card-muted",
+    "--card-brand",
+    "--card-panel",
+    "--card-on-panel",
+    "--card-panel-rule",
+  ]) {
     if (derived[name]) vars[name] = derived[name];
   }
   return vars as React.CSSProperties;
@@ -86,8 +97,13 @@ export default async function PosterPage({
    * the settings preview cannot answer it three different ways. Defaulting to
    * true here covers a review app that has not been deployed with the field
    * yet, which is a card that looks exactly as it did before.
+   *
+   * The setting only means anything when there is a mark to carry the name.
+   * Without one, honouring it prints a card with no name on it at all, and the
+   * guest who scanned the wrong table has nothing to check against.
    */
-  const showsName = data.settings.theme.showName ?? true;
+  const showsName =
+    !data.settings.theme.value.logo || (data.settings.theme.showName ?? true);
 
   // The scheme is noise on a printed card — nobody types it, and it costs a line
   // of width that a long slug needs more.
@@ -169,34 +185,43 @@ export default async function PosterPage({
             <span />
           </div>
 
-          {/* Above the name, not instead of it: a mark alone leaves a guest who
-              scanned the wrong card with no way to tell. A stored data URI, so
-              printing does not depend on the customer's server being up.
-              eslint-disable because next/image cannot optimise a data URI and
-              this is print output, not a page to score. */}
-          {data.settings.theme.value.logo && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              className={styles.logo}
-              src={data.settings.theme.value.logo}
-              /*
-               * The mark carries the name when the name is not printed under
-               * it. Empty otherwise, because saying it twice to a screen
-               * reader is noise rather than access.
-               */
-              alt={showsName ? "" : business.name}
-            />
-          )}
-          {/*
-            Most logos are a wordmark. Printing the name under one says it
-            twice, on a card the size of a postcard, and it is the first thing
-            anybody notices. A venue whose mark is a symbol turns the name back
-            on from Settings.
-          */}
-          {showsName && <h2 className={styles.name}>{business.name}</h2>}
-          <div className={styles.rule} aria-hidden="true">
-            <span className={styles.lozenge} />
+          {/* The mark, the name and the divider, on a block of the venue's own
+              ground colour. Everything below it stays on white — see the
+              masthead notes in poster.module.css for why the colour stops
+              here and not at the edge of the paper. */}
+          <div className={styles.masthead}>
+            {/* Above the name, not instead of it: a mark alone leaves a guest
+                who scanned the wrong card with no way to tell. A stored data
+                URI, so printing does not depend on the customer's server being
+                up. eslint-disable because next/image cannot optimise a data
+                URI and this is print output, not a page to score. */}
+            {data.settings.theme.value.logo && (
+              <span className={styles.logoWindow}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className={styles.logo}
+                  src={data.settings.theme.value.logo}
+                  /*
+                   * The mark carries the name when the name is not printed
+                   * under it. Empty otherwise, because saying it twice to a
+                   * screen reader is noise rather than access.
+                   */
+                  alt={showsName ? "" : business.name}
+                />
+              </span>
+            )}
+            {/*
+              Most logos are a wordmark. Printing the name under one says it
+              twice, on a card the size of a postcard, and it is the first
+              thing anybody notices. A venue whose mark is a symbol turns the
+              name back on from Settings.
+            */}
+            {showsName && <h2 className={styles.name}>{business.name}</h2>}
+            <div className={styles.rule} aria-hidden="true">
+              <span className={styles.lozenge} />
+            </div>
           </div>
+
           <p className={styles.headline}>Scan to leave us a review</p>
           {second && (
             <p className={styles.second} lang={asked}>
