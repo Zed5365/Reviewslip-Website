@@ -376,8 +376,18 @@ export default function Timeline({
     const room = roomOf.get(to.roomId);
     if (!room) return said;
 
-    if (room.status !== "active") {
-      said.push(`${room.name} is out of service`);
+    /*
+     * Which state, not merely "not active".
+     *
+     * There are three now and they mean different things: a room held back
+     * from sale can perfectly well have somebody put in it by hand — staff,
+     * family, a long stay — and one being renovated cannot. Saying "out of
+     * service" about both told the desk the wrong thing about one of them.
+     */
+    if (room.status === "renovating" || room.status === "out_of_service") {
+      said.push(`${room.name} is being renovated`);
+    } else if (room.status === "not_selling") {
+      said.push(`${room.name} is held back from sale`);
     }
     if (room.groupId !== stay.groupId) {
       const booked = rows.find((r) => r.groupId === stay.groupId)?.groupName;

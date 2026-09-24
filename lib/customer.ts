@@ -289,7 +289,12 @@ export interface Room {
   groupId: number;
   groupName: string | null;
   name: string;
-  /** Whether the room exists to be sold: active, or out_of_service. */
+  /**
+   * What state the room is in: active, not_selling or renovating.
+   *
+   * `out_of_service` is the old second state and still reads as renovating —
+   * see roomstatus.js in the review app, which owns what each one stops.
+   */
   status: string;
   /**
    * Whether it can be given to somebody today: clean or dirty.

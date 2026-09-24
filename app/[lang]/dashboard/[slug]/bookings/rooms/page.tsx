@@ -3,6 +3,10 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import CleaningStandard, {
+  type ChecklistItem,
+  type RoomState,
+} from "@/components/dashboard/CleaningStandard";
 import HousekeepingPin, {
   type HousekeepingState,
 } from "@/components/dashboard/HousekeepingPin";
@@ -65,6 +69,23 @@ export default async function RoomsPage({
     };
   } catch (err) {
     console.error(`Could not read the venue for ${slug}:`, err);
+  }
+
+  /*
+   * The cleaning standard and the states a room can be in.
+   *
+   * Caught, like the venue above: this page is how somebody sets a property
+   * up and it must not fail to load because a second call did. A review app
+   * that has not been deployed yet simply has no standard to show.
+   */
+  let standard: { items: ChecklistItem[]; states: RoomState[] } | null = null;
+  try {
+    standard = await call<{ items: ChecklistItem[]; states: RoomState[] }>(
+      `/businesses/${slug}/checklist`,
+      { token }
+    );
+  } catch (err) {
+    console.error(`Could not read the cleaning standard for ${slug}:`, err);
   }
 
   const here = localizedPath(locale, `/dashboard/${slug}/bookings/rooms`);
@@ -154,6 +175,74 @@ export default async function RoomsPage({
     revalidatePath(here);
   }
 
+  /** A line of the standard. No room type means every room. */
+  async function addItem(label: string, groupId: number | null) {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again." };
+
+    try {
+      await call(`/businesses/${slug}/checklist`, {
+        method: "POST",
+        body: { label, groupId },
+        token: current,
+      });
+      revalidatePath(here);
+      return { ok: true };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "That could not be saved.",
+      };
+    }
+  }
+
+  /** Take a line out. Its ticks go with it. */
+  async function removeItem(id: number) {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again." };
+
+    try {
+      await call(`/businesses/${slug}/checklist/${id}`, {
+        method: "DELETE",
+        token: current,
+      });
+      revalidatePath(here);
+      return { ok: true };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "That could not be removed.",
+      };
+    }
+  }
+
+  /** Open, not selling, or renovating — on one room. */
+  async function setStatus(id: number, status: string) {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again." };
+
+    try {
+      await call(`/businesses/${slug}/rooms/${id}/status`, {
+        method: "POST",
+        body: { status },
+        token: current,
+      });
+      revalidatePath(here);
+      return { ok: true };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "That could not be changed.",
+      };
+    }
+  }
+
   /** Sets, changes or clears the PIN. Never reads one back. */
   async function savePin(pin: string | null) {
     "use server";
@@ -190,6 +279,23 @@ export default async function RoomsPage({
       addRoom={addRoom}
       remove={remove}
     />
+
+    {standard && (
+      <CleaningStandard
+        items={standard.items}
+        states={standard.states}
+        groups={data.groups.map((g) => ({ id: g.id, name: g.name }))}
+        rooms={data.rooms.map((r) => ({
+          id: r.id,
+          name: r.name,
+          groupName: r.groupName,
+          status: r.status,
+        }))}
+        addItem={addItem}
+        removeItem={removeItem}
+        setStatus={setStatus}
+      />
+    )}
 
     {venue && (
       <HousekeepingPin
