@@ -730,6 +730,16 @@ export interface BusinessSettings {
     fonts?: { display: FontSummary | null; ui: FontSummary | null };
     /** The hero photograph, described without the file. */
     background?: BackgroundSummary | null;
+    /**
+     * Whether the venue's name is printed under its logo.
+     *
+     * Worked out by the review app rather than by each screen, because three
+     * of them ask and the rule is not obvious: a logo hides the name unless
+     * somebody asked for both, and no logo always shows it. Optional for the
+     * usual reason — a dashboard running ahead of the review app reads the
+     * absence as true, which is the card exactly as it was.
+     */
+    showName?: boolean;
   };
   limits: { categories: number; description: number };
 }

@@ -135,6 +135,11 @@ export default async function BusinessSettingsPage({
             // app downloaded and checked it during drafting and refuses
             // anything else here, so this cannot become a link to elsewhere.
             logo: text("theme-logo"),
+            // Print the name under the mark as well. A hidden field rather
+            // than a checkbox name, because an unchecked checkbox posts
+            // nothing at all and "nothing" already means "no logo, show the
+            // name" further down — two different absences on one save.
+            showName: text("theme-show-name") === "1",
           },
           // The grabbed font files. Absent means "leave what is stored alone",
           // an empty string means "drop it", and a JSON body is a new file the

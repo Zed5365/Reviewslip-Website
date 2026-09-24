@@ -30,6 +30,15 @@ export interface Palette {
   display: string;
   ui: string;
   logo: string;
+  /**
+   * Print the venue's name under its logo as well.
+   *
+   * "As well", not "instead": the default with a logo is the mark on its own,
+   * because most logos are a wordmark and setting the name underneath one says
+   * it twice. A venue whose mark is a symbol turns this on. theme.js in the
+   * review app owns the rule — see showsName there.
+   */
+  showName?: boolean;
 }
 
 /**
@@ -102,8 +111,19 @@ export interface FontSummary {
   bytes: number;
 }
 
+/**
+ * The four that are colours.
+ *
+ * Named rather than `keyof Palette`, because Palette also carries the logo and
+ * whether the name is printed with it — and the moment one of those stopped
+ * being a string, every colour input typed against `keyof Palette` stopped
+ * compiling. The slots were always the four colours; the type just said
+ * otherwise.
+ */
+export type ColourSlot = "ground" | "paper" | "accent" | "highlight";
+
 export const PALETTE_SLOTS: {
-  key: keyof Palette;
+  key: ColourSlot;
   label: string;
   hint: string;
 }[] = [

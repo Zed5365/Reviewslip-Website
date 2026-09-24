@@ -79,6 +79,16 @@ export default async function PosterPage({
   const { business } = data;
   const code = qrCode(business.url);
 
+  /*
+   * Whether the name is printed under the mark.
+   *
+   * The review app decides it — theme.js — so the card, the guest page and
+   * the settings preview cannot answer it three different ways. Defaulting to
+   * true here covers a review app that has not been deployed with the field
+   * yet, which is a card that looks exactly as it did before.
+   */
+  const showsName = data.settings.theme.showName ?? true;
+
   // The scheme is noise on a printed card — nobody types it, and it costs a line
   // of width that a long slug needs more.
   const printedUrl = business.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
@@ -169,10 +179,21 @@ export default async function PosterPage({
             <img
               className={styles.logo}
               src={data.settings.theme.value.logo}
-              alt=""
+              /*
+               * The mark carries the name when the name is not printed under
+               * it. Empty otherwise, because saying it twice to a screen
+               * reader is noise rather than access.
+               */
+              alt={showsName ? "" : business.name}
             />
           )}
-          <h2 className={styles.name}>{business.name}</h2>
+          {/*
+            Most logos are a wordmark. Printing the name under one says it
+            twice, on a card the size of a postcard, and it is the first thing
+            anybody notices. A venue whose mark is a symbol turns the name back
+            on from Settings.
+          */}
+          {showsName && <h2 className={styles.name}>{business.name}</h2>}
           <div className={styles.rule} aria-hidden="true">
             <span className={styles.lozenge} />
           </div>

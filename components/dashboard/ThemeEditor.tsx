@@ -365,6 +365,7 @@ export default function ThemeEditor({
         <input type="hidden" name="theme-logo" value={value.logo} />
 
         {value.logo ? (
+          <div style={{ display: "grid", gap: "0.6rem" }}>
           <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -388,6 +389,27 @@ export default function ThemeEditor({
             >
               Remove
             </button>
+          </div>
+
+          {/*
+            Most logos are a wordmark, so the name goes off by default the
+            moment there is one — printing it twice is the first thing
+            anybody notices on a card the size of a postcard. A venue whose
+            mark is a symbol rather than a word puts it back here.
+          */}
+          <label style={{ display: "flex", gap: "0.5rem", alignItems: "center", ...hint }}>
+            <input
+              type="checkbox"
+              checked={value.showName === true}
+              onChange={(e) => onChange({ showName: e.target.checked })}
+            />
+            Print the name under the logo as well
+          </label>
+          <input
+            type="hidden"
+            name="theme-show-name"
+            value={value.showName === true ? "1" : ""}
+          />
           </div>
         ) : (
           <span style={hint}>None yet — generating from your website looks for one.</span>
