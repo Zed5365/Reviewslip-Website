@@ -1,12 +1,23 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
+
+import { shrink } from "@/lib/photo";
 
 export interface ChecklistItem {
   id: number;
   groupId: number | null;
   groupName: string | null;
   label: string;
+  /**
+   * Whether a reference photograph is attached, not the photograph.
+   *
+   * A standard runs to two dozen lines and each picture is up to 250kB;
+   * carrying them in this payload would make opening this page a six megabyte
+   * download for pictures most visits never look at. They come from
+   * /api/checklist-photo instead, one request each, cached by the browser.
+   */
+  hasPhoto: boolean;
 }
 
 export interface RoomState {
@@ -31,10 +42,13 @@ export default function CleaningStandard({
   groups,
   rooms,
   states,
+  slug,
   addItem,
   removeItem,
+  setPhoto,
   setStatus,
 }: {
+  slug: string;
   items: ChecklistItem[];
   groups: { id: number; name: string }[];
   rooms: { id: number; name: string; groupName: string | null; status: string }[];
@@ -44,6 +58,11 @@ export default function CleaningStandard({
     groupId: number | null
   ) => Promise<{ ok: boolean; error?: string }>;
   removeItem: (id: number) => Promise<{ ok: boolean; error?: string }>;
+  /** A data URI to attach one, or null to take it off. */
+  setPhoto: (
+    id: number,
+    dataUri: string | null
+  ) => Promise<{ ok: boolean; error?: string }>;
   setStatus: (id: number, status: string) => Promise<{ ok: boolean; error?: string }>;
 }) {
   const [label, setLabel] = useState("");
@@ -141,10 +160,25 @@ export default function CleaningStandard({
         ) : (
           <div style={{ display: "grid", gap: "1.2rem", marginTop: "1.2rem" }}>
             {general.length > 0 && (
-              <Block title="Every room" items={general} onDrop={drop} busy={pending} />
+              <Block
+                title="Every room"
+                items={general}
+                slug={slug}
+                onDrop={drop}
+                onPhoto={setPhoto}
+                busy={pending}
+              />
             )}
             {byType.map(({ group: g, mine }) => (
-              <Block key={g.id} title={`${g.name} only`} items={mine} onDrop={drop} busy={pending} />
+              <Block
+                key={g.id}
+                title={`${g.name} only`}
+                items={mine}
+                slug={slug}
+                onDrop={drop}
+                onPhoto={setPhoto}
+                busy={pending}
+              />
             ))}
           </div>
         )}
@@ -193,12 +227,19 @@ export default function CleaningStandard({
 function Block({
   title,
   items,
+  slug,
   onDrop,
+  onPhoto,
   busy,
 }: {
   title: string;
   items: ChecklistItem[];
+  slug: string;
   onDrop: (id: number) => void;
+  onPhoto: (
+    id: number,
+    dataUri: string | null
+  ) => Promise<{ ok: boolean; error?: string }>;
   busy: boolean;
 }) {
   return (
@@ -207,7 +248,8 @@ function Block({
       <ul style={list}>
         {items.map((item) => (
           <li key={item.id} style={row}>
-            <span>{item.label}</span>
+            <Photo item={item} slug={slug} onPhoto={onPhoto} busy={busy} />
+            <span style={{ flex: 1, minWidth: 0 }}>{item.label}</span>
             <button
               type="button"
               className="btn btn-quiet"
@@ -222,6 +264,160 @@ function Block({
     </div>
   );
 }
+
+/**
+ * The picture of what the line means.
+ *
+ * "Bathroom clean" is not an instruction. It is a word that everybody reading
+ * it fills in differently, and the people reading it are often working in
+ * their second or third language at seven in the morning. A photograph of the
+ * shelf as it should be left settles in a glance what the sentence cannot.
+ *
+ * Its own state rather than a page reload after each change: adding pictures
+ * to a standard is a dozen of them in a row, and a round trip through the
+ * whole Rooms page between each one would make that unbearable.
+ */
+function Photo({
+  item,
+  slug,
+  onPhoto,
+  busy,
+}: {
+  item: ChecklistItem;
+  slug: string;
+  onPhoto: (
+    id: number,
+    dataUri: string | null
+  ) => Promise<{ ok: boolean; error?: string }>;
+  busy: boolean;
+}) {
+  const picker = useRef<HTMLInputElement>(null);
+  const [has, setHas] = useState(item.hasPhoto);
+  const [working, setWorking] = useState(false);
+  const [problem, setProblem] = useState("");
+  /*
+   * Bumped on every change, and added to the address.
+   *
+   * The picture is served with five minutes of cache, so replacing one and
+   * leaving the URL alone shows the old photograph until the cache expires —
+   * which reads as the upload having silently failed.
+   */
+  const [version, setVersion] = useState(0);
+
+  async function chosen(file: File | undefined) {
+    if (!file) return;
+    setProblem("");
+    setWorking(true);
+
+    const made = await shrink(file);
+    if ("error" in made) {
+      setProblem(made.error);
+      setWorking(false);
+      return;
+    }
+
+    const saved = await onPhoto(item.id, made.dataUri);
+    setWorking(false);
+    if (!saved.ok) return setProblem(saved.error ?? "That photo could not be saved.");
+
+    setHas(true);
+    setVersion((v) => v + 1);
+  }
+
+  async function clear() {
+    setProblem("");
+    setWorking(true);
+    const saved = await onPhoto(item.id, null);
+    setWorking(false);
+    if (!saved.ok) return setProblem(saved.error ?? "That photo could not be removed.");
+    setHas(false);
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <input
+        ref={picker}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => {
+          void chosen(e.target.files?.[0]);
+          // Cleared, or choosing the same file twice in a row fires nothing
+          // the second time and looks like the button stopped working.
+          e.target.value = "";
+        }}
+      />
+
+      <button
+        type="button"
+        onClick={() => picker.current?.click()}
+        disabled={busy || working}
+        style={well}
+        title={has ? "Replace this photo" : "Add a photo"}
+        aria-label={
+          has ? `Replace the photo for ${item.label}` : `Add a photo for ${item.label}`
+        }
+      >
+        {has ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/api/checklist-photo/${encodeURIComponent(slug)}/${item.id}?v=${version}`}
+            alt=""
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        ) : (
+          <span style={{ fontSize: "1.1rem", opacity: 0.55 }}>+</span>
+        )}
+      </button>
+
+      {has && (
+        <button
+          type="button"
+          className="btn btn-quiet"
+          style={tiny}
+          disabled={busy || working}
+          onClick={() => void clear()}
+        >
+          Clear
+        </button>
+      )}
+
+      {/* Beside the picture rather than in the page's own notice, so a failure
+          sits with the line it happened on — there are two dozen of these and
+          a message at the top would not say which. */}
+      {(working || problem) && (
+        <span style={{ ...tinyNote, color: problem ? "var(--warn, #b4423a)" : undefined }}>
+          {problem || "Working…"}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/* Square, and the size of a thumbnail somebody can actually judge a photo by.
+   Smaller than this and it is a coloured dot. */
+const well: React.CSSProperties = {
+  flex: "0 0 auto",
+  width: "2.6rem",
+  height: "2.6rem",
+  padding: 0,
+  display: "grid",
+  placeItems: "center",
+  overflow: "hidden",
+  borderRadius: 8,
+  border: "1px dashed var(--ink-soft, #7b8a82)",
+  background: "rgba(0,0,0,0.04)",
+  cursor: "pointer",
+};
+
+const tiny: React.CSSProperties = { fontSize: "0.72rem", padding: "0.15rem 0.45rem" };
+
+const tinyNote: React.CSSProperties = {
+  fontSize: "0.72rem",
+  lineHeight: 1.35,
+  maxWidth: "12rem",
+  color: "var(--ink-soft)",
+};
 
 const card: React.CSSProperties = {
   background: "var(--paper)",

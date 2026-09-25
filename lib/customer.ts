@@ -129,6 +129,35 @@ export async function callText(
   return body;
 }
 
+/**
+ * A file from the review app, passed straight through.
+ *
+ * Unlike `callText` this does not read the body: the caller streams it on to
+ * the browser, so nothing here buffers a picture in memory only to hand it
+ * over. The whole response comes back rather than the body alone, because the
+ * headers the review app set on it — the content type, and the ones that stop
+ * a browser treating uploaded bytes as a document — are the part that must
+ * survive the hop.
+ *
+ * Here rather than in the route so the base address stays in one file. The
+ * first version of that route carried its own copy and named the wrong
+ * environment variable, which would have worked in production by coincidence
+ * and nowhere else.
+ */
+export async function callFile(
+  path: string,
+  options: { token?: string } = {}
+): Promise<Response> {
+  try {
+    return await fetch(`${BASE}/api/customer${path}`, {
+      headers: options.token ? { Authorization: `Bearer ${options.token}` } : {},
+      cache: "no-store",
+    });
+  } catch {
+    throw apiError(503, "Could not reach the service. Try again in a moment.");
+  }
+}
+
 /* ---------------------------------------------------------------- sessions */
 
 export async function setSessionCookie(token: string) {

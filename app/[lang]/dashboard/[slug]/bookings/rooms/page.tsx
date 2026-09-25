@@ -243,6 +243,38 @@ export default async function RoomsPage({
     }
   }
 
+  /**
+   * Attaches a reference photograph to a line, or takes it off with null.
+   *
+   * The picture arrives already scaled down — lib/photo.ts does that in the
+   * browser, so a phone's eight megabyte original never crosses the network.
+   * The review app checks it again regardless: raster only, and capped.
+   *
+   * No revalidate. Adding pictures to a standard is a dozen of them in a row,
+   * and re-rendering the whole Rooms page between each one would make that
+   * unbearable; the control keeps its own state instead.
+   */
+  async function setPhoto(id: number, dataUri: string | null) {
+    "use server";
+
+    const current = await sessionToken();
+    if (!current) return { ok: false, error: "Sign in again." };
+
+    try {
+      await call(`/businesses/${slug}/checklist/${id}/photo`, {
+        method: "PUT",
+        body: { photo: dataUri },
+        token: current,
+      });
+      return { ok: true };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "That photo could not be saved.",
+      };
+    }
+  }
+
   /** Sets, changes or clears the PIN. Never reads one back. */
   async function savePin(pin: string | null) {
     "use server";
@@ -282,6 +314,8 @@ export default async function RoomsPage({
 
     {standard && (
       <CleaningStandard
+        slug={slug}
+        setPhoto={setPhoto}
         items={standard.items}
         states={standard.states}
         groups={data.groups.map((g) => ({ id: g.id, name: g.name }))}
