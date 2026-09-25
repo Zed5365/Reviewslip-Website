@@ -150,6 +150,7 @@ export default function ThemeEditor({
   onDropFont,
   onRights,
   onGenerate,
+  onAdjust,
   found,
   measured,
   note,
@@ -174,6 +175,8 @@ export default function ThemeEditor({
   onDropBackground: () => void;
   onRights: (confirmed: boolean) => void;
   onGenerate: () => void;
+  /** Changes the colours that are there, from the note, without reading. */
+  onAdjust: () => void;
   /** The addresses reading the site settled on, whether or not they worked. */
   found: { logoUrl: string | null; backgroundUrl: string | null };
   /** The site's own colours, measured off its stylesheets. */
@@ -232,12 +235,39 @@ export default function ThemeEditor({
     <div style={{ display: "grid", gap: "1.25rem" }}>
       {/* First, like every other tab: this is the thing to do here, and the
           swatches below are what it produced. */}
+      {/*
+        Two buttons, because they are two different things and the difference
+        matters to whoever presses one.
+
+        Reading the website is several requests to their own server and a
+        model call with a page attached — the better part of a minute, and it
+        decides the whole palette again. Adjusting takes the four colours that
+        are on screen and moves the one that was named. Once a palette exists
+        the second is what almost every press actually means, so it leads.
+      */}
       <div style={topAction}>
+        {themed && (
+          <button
+            type="button"
+            className="btn btn-quiet"
+            // Nothing to go on without an instruction: this is the note doing
+            // the work, and the button would be a no-op without one.
+            disabled={busy || !note.trim()}
+            onClick={onAdjust}
+            title={
+              note.trim()
+                ? undefined
+                : "Say what you want changed in the box below first"
+            }
+          >
+            {reading ? "Working…" : "Adjust these colours"}
+          </button>
+        )}
         <button type="button" className="btn btn-quiet" disabled={busy} onClick={onGenerate}>
           {reading
             ? "Reading…"
             : themed
-              ? "Re-generate from website"
+              ? "Read the website again"
               : "Generate from website"}
         </button>
       </div>
@@ -255,7 +285,10 @@ export default function ThemeEditor({
         </label>
         <div style={hint}>
           Optional. It steers the colours and the type, and the table card is
-          drawn from the same four colours, so it steers that too.
+          drawn from the same four colours, so it steers that too — say which
+          you mean and it will be followed: &ldquo;the table card is too
+          dark&rdquo;, &ldquo;warmer on the review page&rdquo;.
+          {themed && " Adjust uses this without re-reading your site."}
         </div>
 
         {/*

@@ -246,8 +246,13 @@ export default async function BusinessSettingsPage({
    * Reading a site measures what it is painted with, which is not always what
    * the business wants to be seen in — the review app's themenote.js has the
    * long version, and is what checks and enforces it.
+   *
+   * `adjust` asks to change the colours that are already there and read
+   * nothing: seconds instead of a minute, and a result where only the colour
+   * somebody mentioned has moved. It needs a note and an existing palette,
+   * and the review app refuses it without either.
    */
-  async function draftTheme(note?: string): Promise<ThemeDraft> {
+  async function draftTheme(note?: string, adjust = false): Promise<ThemeDraft> {
     "use server";
 
     const current = await sessionToken();
@@ -257,7 +262,7 @@ export default async function BusinessSettingsPage({
       return await call<ThemeDraft>(`/businesses/${slug}/theme/draft`, {
         method: "POST",
         token: current,
-        body: { note: note ?? "" },
+        body: { note: note ?? "", adjust },
       });
     } catch (err) {
       return {

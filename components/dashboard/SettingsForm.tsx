@@ -150,6 +150,15 @@ export type ThemeDraft = {
   measured?: MeasuredColour[];
   /** Why the site's own files could not be read, when they could not. */
   readNote?: string | null;
+  /**
+   * The website was not read: these are the colours that were already here,
+   * changed as asked.
+   *
+   * Everything this reply leaves out — the mark, the photograph, the grabbed
+   * typefaces, the site's measured palette — is not missing but untouched,
+   * and must be kept rather than cleared.
+   */
+  adjustedOnly?: boolean;
   error?: string;
 };
 
@@ -326,7 +335,7 @@ export default function SettingsForm({
   /** Writes one topic's description from its name and whatever is in the box. */
   describeTopic: (label: string, hint: string) => Promise<Described>;
   /** Reads the website and picks four colours. */
-  draftTheme: (note?: string) => Promise<ThemeDraft>;
+  draftTheme: (note?: string, adjust?: boolean) => Promise<ThemeDraft>;
   /** Everything the writer is told about this business, as markdown. */
   rulebook: () => Promise<{ markdown?: string; error?: string }>;
   /** Asks what four colours derive to, so the preview is the served palette. */
@@ -595,45 +604,96 @@ export default function SettingsForm({
     });
   }
 
-    function onDraftTheme() {
-    read("theme", () => draftTheme(themeNote), (result) => {
+    function onDraftTheme(adjust = false) {
+    read("theme", () => draftTheme(themeNote, adjust), (result) => {
       if (!result.theme) return "No usable colours came back.";
       setPalette(result.theme);
       setPaletteSources(result.sources ?? {});
 
       // The files, and the descriptions drawn from them. A slot that could not
       // be grabbed comes back null and falls to the shortlist.
-      setBackground(
-        result.background
-          ? {
-              type: result.background.type,
-              source: result.background.source,
-              bytes: Math.round((result.background.dataUri.length * 3) / 4),
-              from: "site",
-            }
-          : null
-      );
-      setBackgroundFile(result.background ?? null);
-      setFound(result.found ?? { logoUrl: null, backgroundUrl: null });
-      setMeasured(result.measured ?? []);
+      /*
+       * An adjustment changes the colours and nothing else.
+       *
+       * Everything below is downloaded during a full read and simply absent
+       * from an adjustment's reply — so running it would take the venue's
+       * logo, photograph and typefaces off because the reply that changed
+       * their colours did not mention them.
+       */
+      if (!result.adjustedOnly) {
+        setBackground(
+          result.background
+            ? {
+                type: result.background.type,
+                source: result.background.source,
+                bytes: Math.round((result.background.dataUri.length * 3) / 4),
+                from: "site",
+              }
+            : null
+        );
+        setBackgroundFile(result.background ?? null);
+        setFound(result.found ?? { logoUrl: null, backgroundUrl: null });
+        setMeasured(result.measured ?? []);
 
-      const got = result.fonts ?? { display: null, ui: null };
-      setFontFiles(got);
-      setFonts({
-        display: summarise(got.display),
-        ui: summarise(got.ui),
-      });
-      // Re-confirmed per draft: these may be different files from the ones the
-      // customer agreed to last time.
-      setRights(false);
+        const got = result.fonts ?? { display: null, ui: null };
+        setFontFiles(got);
+        setFonts({
+          display: summarise(got.display),
+          ui: summarise(got.ui),
+        });
+        // Re-confirmed per read: these may be different files from the ones
+        // the customer agreed to last time. An adjustment fetches nothing, so
+        // there is nothing new to agree to.
+        setRights(false);
+      }
 
       /*
        * Where the colours came from, which is the question this whole feature
        * turned on. "Picked colours from your site" was said whether they had
        * been read off it or invented, and it was not true half the time.
        */
-      const measured = result.measured?.length ?? 0;
       const moved = result.adjusted?.length ?? 0;
+      const nudged = moved
+        ? ` ${moved} ${moved === 1 ? "was" : "were"} nudged for readability.`
+        : "";
+
+      /*
+       * An adjustment says what it changed, colour by colour.
+       *
+       * "Chose colours from your site" would be a lie here — nothing was read
+       * — and it is also the wrong thing to say. Somebody who typed "warmer"
+       * wants to know whether anything actually moved, and the per-colour
+       * `source` the model returns answers that: "unchanged", or a few words
+       * saying what it did.
+       */
+      if (result.adjustedOnly) {
+        const changed = (["ground", "paper", "accent", "highlight"] as const).filter(
+          (slot) => {
+            const why = result.sources?.[slot];
+            return why && !/^unchanged\.?$/i.test(why.trim());
+          }
+        );
+
+        return [
+          changed.length
+            ? `Changed ${changed.length} of the four colours: ${changed
+                .map((slot) => `${slot} — ${result.sources?.[slot]}`)
+                .join("; ")}.`
+            : "Nothing changed. Try saying it a different way, or read the website again.",
+          nudged.trim(),
+          // Said plainly, because the two buttons look alike and behave
+          // differently, and somebody expecting a fresh read should be able
+          // to tell which one they got.
+          changed.length
+            ? "Your logo, photo and typefaces were left alone."
+            : "",
+          changed.length ? "Then Save." : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+      }
+
+      const measured = result.measured?.length ?? 0;
 
       const how = measured
         ? `Read ${measured} colour${measured === 1 ? "" : "s"} out of your site's own stylesheets`
@@ -641,9 +701,7 @@ export default function SettingsForm({
           ? "Chose colours from the page"
           : "Chose colours from your site";
 
-      const colours = moved
-        ? `${how}, ${moved} nudged for readability.`
-        : `${how}.`;
+      const colours = `${how}.${nudged}`;
 
       // The logo and each font are fetched over the network and can fail on
       // their own while the rest of the draft is perfectly good, so each says
@@ -1247,7 +1305,8 @@ export default function SettingsForm({
               onDropBackground={onDropBackground}
               onDropFont={onDropFont}
               onRights={setRights}
-              onGenerate={onDraftTheme}
+              onGenerate={() => onDraftTheme(false)}
+              onAdjust={() => onDraftTheme(true)}
               found={found}
               measured={measured}
               note={themeNote}
