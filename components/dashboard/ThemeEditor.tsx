@@ -651,7 +651,11 @@ export default function ThemeEditor({
               }}
             />
           )}
-          <div style={{ color: v("--jade-dim"), ...eyebrow }}>YOUR BUSINESS</div>
+          {/* The colour the page actually sets secondary text in. It was
+              --jade-dim, the accent at half alpha, which composites to about
+              2.3:1 over the ground — the preview has to show what the guest
+              gets, not a softer version of it. */}
+          <div style={{ color: v("--jade-soft"), ...eyebrow }}>YOUR BUSINESS</div>
           <div style={{ color: v("--paper"), fontSize: "1.4rem", lineHeight: 1.1 }}>
             Thanks for visiting<span style={{ color: v("--marigold") }}>.</span>
           </div>
