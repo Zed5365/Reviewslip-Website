@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import CardLogo from "@/components/dashboard/CardLogo";
 import PrintPoster from "@/components/dashboard/PrintPoster";
 import {
   call,
@@ -196,19 +197,22 @@ export default async function PosterPage({
                 up. eslint-disable because next/image cannot optimise a data
                 URI and this is print output, not a page to score. */}
             {data.settings.theme.value.logo && (
-              <span className={styles.logoWindow}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  className={styles.logo}
-                  src={data.settings.theme.value.logo}
-                  /*
-                   * The mark carries the name when the name is not printed
-                   * under it. Empty otherwise, because saying it twice to a
-                   * screen reader is noise rather than access.
-                   */
-                  alt={showsName ? "" : business.name}
-                />
-              </span>
+              /*
+               * The white plate behind the mark is decided by looking at the
+               * mark, not assumed. A logo that already carries its own white
+               * background was being plated twice — a white slab inside the
+               * block, with the real mark floating in the middle of it.
+               *
+               * The alt carries the name when the name is not printed under
+               * the mark. Empty otherwise, because saying it twice to a
+               * screen reader is noise rather than access.
+               */
+              <CardLogo
+                src={data.settings.theme.value.logo}
+                alt={showsName ? "" : business.name}
+                plateClass={styles.logoWindow}
+                logoClass={styles.logo}
+              />
             )}
             {/*
               Most logos are a wordmark. Printing the name under one says it

@@ -155,7 +155,10 @@
      below the corner marks, so it never crowds either. */
   margin: 0 -3mm 5mm;
   align-self: stretch;
-  padding: 6mm 6mm 5.5mm;
+  /* Tighter than it was. With the mark on its own white plate inside a block
+     of colour there were three nested rectangles of padding, and the mark
+     ended up small in the middle of a lot of nothing. */
+  padding: 4.5mm 6mm 4mm;
   border-radius: 1.5mm;
   /*
    * A hairline round the block, in the frame's own colour.
@@ -193,6 +196,7 @@
 }
 
 .masthead .rule {
+  margin-top: 3mm;
   margin-bottom: 0;
 }
 
@@ -208,8 +212,9 @@
 .logoWindow {
   background: #fff;
   border-radius: 1mm;
-  padding: 3mm 4mm;
-  margin-bottom: 4.5mm;
+  /* Hugging the mark. This is a plate to make it legible, not a frame. */
+  padding: 2mm 2.5mm;
+  margin-bottom: 3mm;
   /* Block, not flex. As a flex container it stretched the mark on the cross
      axis and left it nothing on the main one, and a logo measured 0 x 0 — the
      window shrinks to the mark, so the mark has to be what is measured. */
