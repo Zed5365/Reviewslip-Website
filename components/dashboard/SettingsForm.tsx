@@ -190,8 +190,27 @@ const label: React.CSSProperties = { fontSize: "0.85rem", fontWeight: 500 };
 /* The description editor. Its surface is in globals.css, because a backdrop
    cannot be reached from here; everything below is the layout inside it. */
 const editorBody: React.CSSProperties = {
+  /*
+   * `.editor` is a flex container, and this is its only item.
+   *
+   * Without `flex: 1` a flex item is sized by its content on the main axis —
+   * and the tallest thing in here is a <textarea>, whose intrinsic width is
+   * its default `cols` of 20, about 20rem. So the whole editor sat in a
+   * 20rem column against the left edge of a 48rem dialog with the rest of it
+   * empty. `BookingPanel` uses the `.editor-body` class, which carries
+   * `width: 100%` and has never had the problem.
+   */
+  flex: 1,
+  minWidth: 0,
+
   display: "grid",
   gridTemplateRows: "auto minmax(0, 1fr) auto",
+  /*
+   * And an explicit column, so the textarea's own `width: 100%` resolves
+   * against the dialog rather than against an `auto` track that was sized
+   * from the textarea in the first place.
+   */
+  gridTemplateColumns: "minmax(0, 1fr)",
   gap: "1rem",
   padding: "1.25rem",
   maxHeight: "inherit",
