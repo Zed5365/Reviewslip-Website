@@ -656,7 +656,9 @@ export default function ThemeEditor({
               2.3:1 over the ground — the preview has to show what the guest
               gets, not a softer version of it. */}
           <div style={{ color: v("--jade-soft"), ...eyebrow }}>YOUR BUSINESS</div>
-          <div style={{ color: v("--paper"), fontSize: "1.4rem", lineHeight: 1.1 }}>
+          {/* Text on the page, not the card's own colour. On a light theme
+              the page is the pale one, and this was white on white. */}
+          <div style={{ color: v("--on-shade"), fontSize: "1.4rem", lineHeight: 1.1 }}>
             Thanks for visiting<span style={{ color: v("--marigold") }}>.</span>
           </div>
 
@@ -676,7 +678,17 @@ export default function ThemeEditor({
             ))}
           </div>
 
-          <div style={{ background: v("--paper"), borderRadius: 3, padding: "0.8rem 0.75rem" }}>
+          {/* The hairline is what finds the card on a light page, where it
+              may be the same shade as the page behind it. Transparent on a
+              dark theme, so nothing there changes. */}
+          <div
+            style={{
+              background: v("--paper"),
+              border: `1px solid ${v("--paper-edge") || "transparent"}`,
+              borderRadius: 3,
+              padding: "0.8rem 0.75rem",
+            }}
+          >
             <div style={{ color: v("--ink"), fontSize: "0.95rem", lineHeight: 1.5 }}>
               Popped in on the way past and they sorted it in ten minutes. No fuss.
             </div>
