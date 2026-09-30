@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import { call, sessionToken, type StaffTicket } from "@/lib/customer";
 
 function ago(iso: string | null): string {
@@ -13,9 +14,9 @@ function ago(iso: string | null): string {
 }
 
 const STATUS: Record<string, { label: string; colour: string; tint: string }> = {
-  open: { label: "Open", colour: "var(--marigold)", tint: "rgba(233,160,59,0.16)" },
-  answered: { label: "Answered", colour: "var(--jade)", tint: "rgba(130,180,155,0.16)" },
-  closed: { label: "Closed", colour: "var(--admin-muted)", tint: "rgba(243,236,220,0.08)" },
+  open: { label: "Open", colour: "var(--marigold)", tint: "color-mix(in srgb, var(--alert) 16%, transparent)" },
+  answered: { label: "Answered", colour: "var(--success)", tint: "color-mix(in srgb, var(--success) 16%, transparent)" },
+  closed: { label: "Closed", colour: "var(--admin-muted)", tint: "color-mix(in srgb, var(--cream) 8%, transparent)" },
 };
 
 export default async function StaffTicketsPage() {
@@ -28,20 +29,12 @@ export default async function StaffTicketsPage() {
 
   return (
     <>
-      <h1 className="admin-title">Tickets</h1>
-      <p className="admin-sub">
-        {open.length === 0 ? (
-          "Nothing waiting."
-        ) : (
-          <>
-            <span style={{ color: "var(--marigold)" }}>
-              {open.length} waiting on us
-            </span>
-            {" · oldest first"}
-          </>
-        )}
-      </p>
-
+      <PageHeader
+        title="Tickets"
+        sub={open.length === 0 ? "Nothing waiting" : `${open.length} waiting on us · oldest first`}
+        back="/"
+      />
+      <div className="page-body">
       {tickets.length === 0 ? (
         <p className="admin-empty">
           No tickets yet. They arrive here the moment a customer opens one.
@@ -62,7 +55,7 @@ export default async function StaffTicketsPage() {
                 const state = STATUS[t.status] ?? {
                   label: t.status,
                   colour: "var(--cream)",
-                  tint: "rgba(243,236,220,0.08)",
+                  tint: "color-mix(in srgb, var(--cream) 8%, transparent)",
                 };
                 return (
                   <tr key={t.id}>
@@ -109,6 +102,7 @@ export default async function StaffTicketsPage() {
           </table>
         </div>
       )}
+      </div>
     </>
   );
 }

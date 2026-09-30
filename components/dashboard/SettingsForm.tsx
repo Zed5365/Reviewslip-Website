@@ -180,8 +180,8 @@ const input: React.CSSProperties = {
   padding: "0.65rem 0.8rem",
   borderRadius: 10,
   border: "1px solid var(--jade-line)",
-  background: "rgba(243,236,220,0.06)",
-  color: "var(--paper)",
+  background: "color-mix(in srgb, var(--cream) 6%, transparent)",
+  color: "var(--cream)",
   font: "inherit",
 };
 
@@ -234,14 +234,15 @@ const editorTitle: React.CSSProperties = {
 
 const editorDone: React.CSSProperties = {
   flex: "0 0 auto",
-  // The way out of a modal, and the thing a thumb reaches for first. Sized to
-  // the 44px both platforms ask of a touch target rather than to its text.
-  minHeight: "2.75rem",
-  padding: "0.5rem 1.25rem",
+  // The dialog's confirming button, so the one primary inside it. 32px like
+  // every other button: this app is Desktop only, so there is no thumb to size
+  // a touch target for.
+  minHeight: "32px",
+  padding: "0 0.75rem",
   borderRadius: 999,
-  border: "1px solid var(--marigold)",
-  background: "var(--marigold)",
-  color: "var(--marigold-ink)",
+  border: "1px solid var(--primary)",
+  background: "var(--primary)",
+  color: "var(--primary-foreground)",
   fontFamily: "inherit",
   fontSize: "0.85rem",
   fontWeight: 600,
@@ -396,6 +397,12 @@ export default function SettingsForm({
       // The server fills a blank note in with the label, so showing that back
       // would turn "no note" into a note the moment it was saved twice.
       focus: c.focus === c.label ? "" : c.focus,
+      // Carried, not dropped. Leaving it out here is what made the padlock look
+      // broken: the flag saved correctly, the next page load rebuilt every row
+      // without it, every padlock came back open, and the following Save wrote
+      // that back — so a lock survived until the customer next opened the page,
+      // and the re-generation it existed to survive came after that.
+      locked: c.locked,
     }))
   );
 
@@ -551,6 +558,24 @@ export default function SettingsForm({
 
   function setCat(index: number, patch: Partial<Suggestion>) {
     setCats(cats.map((cat, i) => (i === index ? { ...cat, ...patch } : cat)));
+  }
+
+  /**
+   * Swap a topic with its neighbour, and follow it.
+   *
+   * `setEditing` matters: the open dialog is addressed by index, so without it
+   * moving a topic would leave the editor on whichever row slid into the old
+   * position — the title and the text would change under the person who pressed
+   * the button, and they would be editing the wrong topic without being told.
+   */
+  function moveCat(index: number, step: -1 | 1) {
+    const to = index + step;
+    if (to < 0 || to >= cats.length) return;
+
+    const next = [...cats];
+    [next[index], next[to]] = [next[to], next[index]];
+    setCats(next);
+    if (editing === index) setEditing(to);
   }
 
   /** Roving tabindex plus arrows, which is what a tablist is expected to do. */
@@ -892,7 +917,7 @@ export default function SettingsForm({
           </TopAction>
 
           <div style={field}>
-            <label style={label} htmlFor="name">Business name</label>
+            <label style={label} htmlFor="name">Business Name</label>
             {/* Not `required`. With panels hidden rather than unmounted, the
                 browser cannot focus an invalid control on a panel you are not
                 looking at, and blocks the submit with nothing on screen. The
@@ -902,7 +927,7 @@ export default function SettingsForm({
 
           <div style={field}>
             <label style={label} htmlFor="websiteUrl">
-              Business website
+              Business Website
               <Origin source={settings.websiteUrl.source} />
             </label>
             <input
@@ -955,7 +980,7 @@ export default function SettingsForm({
             return (
               <div style={field} key={platform.id}>
                 <label style={label} htmlFor={key}>
-                  {platform.label} review link
+                  {platform.label} Review Link
                   <Origin source={setting?.source ?? "default"} />
                 </label>
                 <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
@@ -1027,14 +1052,14 @@ export default function SettingsForm({
               {reading === "suggest"
                 ? "Reading…"
                 : cats.length
-                  ? "Re-generate from website"
-                  : "Generate from website"}
+                  ? "Re-generate from Website"
+                  : "Generate from Website"}
             </button>
           </TopAction>
 
           <div style={field}>
             <span style={label}>
-              Review topics
+              Review Topics
               <Origin source={settings.categories.source} />
               <em style={{ ...hint, fontStyle: "normal", marginLeft: "0.4rem" }}>
                 {cats.length}/{settings.limits.categories}
@@ -1089,7 +1114,7 @@ export default function SettingsForm({
                       // so it takes the readable cream rather than the faint
                       // one — which sat at 3.6:1 against this surface.
                       color: cat.focus.trim()
-                        ? "var(--paper)"
+                        ? "var(--cream)"
                         : "var(--cream-soft)",
                       // One line, cut with an ellipsis. The whole thing is a
                       // few hundred characters and belongs in the editor; what
@@ -1124,12 +1149,14 @@ export default function SettingsForm({
                           ? "Locked — Generate from website will leave this one alone"
                           : "Lock this topic against Generate from website"
                       }
+                      // Locked inverts in neutral, the way a chosen filter does. It is a
+                      // state, and the accent is kept for the one action a screen has.
                       style={{
                         ...lock,
-                        color: cat.locked ? "var(--ink)" : "var(--ink-soft)",
-                        background: cat.locked ? "var(--jade)" : "transparent",
+                        color: cat.locked ? "var(--shade)" : "var(--ink-soft)",
+                        background: cat.locked ? "var(--cream)" : "transparent",
                         borderColor: cat.locked
-                          ? "var(--jade)"
+                          ? "var(--cream)"
                           : "var(--jade-line)",
                       }}
                     >
@@ -1155,7 +1182,7 @@ export default function SettingsForm({
                 disabled={full}
                 onClick={() => setCats([...cats, { label: "", focus: "" }])}
               >
-                {full ? `${settings.limits.categories} is the maximum` : "Add topic"}
+                {full ? `${settings.limits.categories} is the maximum` : "Add Topic"}
               </button>
             </div>
 
@@ -1216,9 +1243,36 @@ export default function SettingsForm({
                         Everything a review about this may say
                       </span>
                     </div>
-                    <button type="button" onClick={closeEditor} style={editorDone}>
-                      Done
-                    </button>
+                    <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                      {/* The same toggle as the row's, repeated here because
+                          this is where somebody decides a topic is finished —
+                          having just written it is exactly when they want it
+                          held against the next Generate from website, and
+                          closing the editor to find the padlock loses that. */}
+                      <button
+                        type="button"
+                        onClick={() => setCat(editing, { locked: !cats[editing].locked })}
+                        aria-pressed={Boolean(cats[editing].locked)}
+                        title={
+                          cats[editing].locked
+                            ? "Locked — Generate from website will leave this one alone"
+                            : "Lock this topic against Generate from website"
+                        }
+                        style={{
+                          ...lock,
+                          color: cats[editing].locked ? "var(--shade)" : "var(--cream-soft)",
+                          background: cats[editing].locked ? "var(--cream)" : "transparent",
+                          borderColor: cats[editing].locked
+                            ? "var(--cream)"
+                            : "var(--jade-line)",
+                        }}
+                      >
+                        {cats[editing].locked ? "Locked" : "Lock"}
+                      </button>
+                      <button type="button" onClick={closeEditor} style={editorDone}>
+                        Done
+                      </button>
+                    </div>
                   </div>
 
                   <textarea
@@ -1239,43 +1293,78 @@ export default function SettingsForm({
                   />
 
                   <div style={editorFoot}>
-                    <span
-                      style={{
-                        ...hint,
+                    <div
+                      style={{ display: "flex", gap: "0.75rem", alignItems: "baseline" }}
+                    >
+                      <span
+                        style={{
+                          ...hint,
                         // cream-soft, not cream-faint: this is a number
                         // somebody watches as they approach the limit, and the
                         // faint one sits at 3.5:1 on this surface. It goes
-                        // marigold in the last forty characters.
-                        color:
-                          cats[editing].focus.length >
-                          (settings.limits.description ?? 600) - 40
-                            ? "var(--marigold)"
-                            : "var(--cream-soft)",
-                      }}
-                    >
-                      {cats[editing].focus.length} /{" "}
-                      {settings.limits.description ?? 600}
-                    </span>
+                          // marigold in the last forty characters.
+                          color:
+                            cats[editing].focus.length >
+                            (settings.limits.description ?? 600) - 40
+                              ? "var(--marigold)"
+                              : "var(--cream-soft)",
+                        }}
+                      >
+                        {cats[editing].focus.length} /{" "}
+                        {settings.limits.description ?? 600}
+                      </span>
 
-                    <button
-                      type="button"
-                      className="btn btn-quiet"
-                      disabled={busy || Boolean(cats[editing].locked)}
-                      onClick={() => onDescribe(editing)}
-                      title={
-                        cats[editing].locked
-                          ? "Locked. Unlock it to rewrite it."
+                      {/* Where this topic sits in the list guests are shown.
+                          Stated as a position rather than left to the arrows,
+                          because "3 of 12" is the thing being changed and two
+                          arrows on their own never say what they moved. */}
+                      <span style={{ ...hint, color: "var(--cream-soft)" }}>
+                        {editing + 1} of {cats.length}
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                      <button
+                        type="button"
+                        onClick={() => moveCat(editing, -1)}
+                        disabled={editing === 0}
+                        aria-label="Move topic up"
+                        title="Move up"
+                        style={lock}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveCat(editing, 1)}
+                        disabled={editing === cats.length - 1}
+                        aria-label="Move topic down"
+                        title="Move down"
+                        style={lock}
+                      >
+                        ↓
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-quiet"
+                        disabled={busy || Boolean(cats[editing].locked)}
+                        onClick={() => onDescribe(editing)}
+                        title={
+                          cats[editing].locked
+                            ? "Locked. Unlock it to rewrite it."
+                            : cats[editing].focus.trim()
+                              ? "Rewrite this, building on what is here"
+                              : "Write this from the topic name and your website"
+                        }
+                      >
+                        {writing === editing
+                          ? "Writing…"
                           : cats[editing].focus.trim()
-                            ? "Rewrite this, building on what is here"
-                            : "Write this from the topic name and your website"
-                      }
-                    >
-                      {writing === editing
-                        ? "Writing…"
-                        : cats[editing].focus.trim()
-                          ? "Rewrite"
-                          : "Write"}
-                    </button>
+                            ? "Rewrite"
+                            : "Write"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1379,7 +1468,7 @@ export default function SettingsForm({
           style={{
             minHeight: "1.25rem",
             fontSize: "0.88rem",
-            color: state.error ? "#e98b7b" : "var(--jade)",
+            color: state.error ? "var(--destructive)" : "var(--success)",
           }}
         >
           {/* `notice ?? …` never fell through: an empty string is not nullish,
@@ -1389,7 +1478,7 @@ export default function SettingsForm({
 
         <div>
           <button className="btn btn-go" type="submit" disabled={pending || busy}>
-            {pending ? "Saving…" : "Save settings"}
+            {pending ? "Saving…" : "Save Settings"}
           </button>
         </div>
       </form>
@@ -1416,7 +1505,7 @@ function tabStyle(on: boolean): React.CSSProperties {
     border: 0,
     borderBottom: `2px solid ${on ? "var(--jade)" : "transparent"}`,
     background: "transparent",
-    color: on ? "var(--paper)" : "var(--ink-soft)",
+    color: on ? "var(--cream)" : "var(--ink-soft)",
     font: "inherit",
     fontSize: "0.9rem",
     fontWeight: 500,

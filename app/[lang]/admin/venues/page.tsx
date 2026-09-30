@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import { call, sessionToken, type StaffVenue } from "@/lib/customer";
 
 function when(iso: string | null): string {
@@ -20,19 +21,12 @@ export default async function StaffVenuesPage() {
 
   return (
     <>
-      <h1 className="admin-title">Venues</h1>
-      <p className="admin-sub">
-        {venues.length} venue{venues.length === 1 ? "" : "s"}
-        {orphans > 0 ? (
-          <>
-            {" · "}
-            <span style={{ color: "var(--marigold)" }}>
-              {orphans} with no owner
-            </span>
-          </>
-        ) : null}
-      </p>
-
+      <PageHeader
+        title="Venues"
+        sub={`${venues.length} venue${venues.length === 1 ? "" : "s"}${orphans > 0 ? ` · ${orphans} with no owner` : ""}`}
+        back="/"
+      />
+      <div className="page-body">
       {orphans > 0 ? (
         /* Deleting an account sets subscribers.account_id to null rather than
            removing the venue, so these keep serving guests with nobody able to
@@ -40,9 +34,9 @@ export default async function StaffVenuesPage() {
         <p
           className="admin-card"
           style={{
-            borderColor: "rgba(233,160,59,0.4)",
+            borderColor: "color-mix(in srgb, var(--alert) 40%, transparent)",
             borderLeftWidth: 3,
-            background: "rgba(233,160,59,0.08)",
+            background: "color-mix(in srgb, var(--alert) 8%, transparent)",
             padding: "0.8rem 1rem",
             fontSize: "0.9rem",
           }}
@@ -104,6 +98,7 @@ export default async function StaffVenuesPage() {
           </table>
         </div>
       )}
+      </div>
     </>
   );
 }

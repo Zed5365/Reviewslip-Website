@@ -52,7 +52,7 @@ export default function RoomTypeFilter({
         className="rt-chip"
         aria-current={active === "" ? "true" : undefined}
       >
-        All types
+        All Types
       </Link>
       {groups.map((g) => (
         <Link

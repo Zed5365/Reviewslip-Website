@@ -82,7 +82,7 @@ export default function HousekeepingPin({
 
   return (
     <section style={card}>
-      <h2 style={heading}>Housekeeping board</h2>
+      <h2 style={heading}>Housekeeping Board</h2>
       <p style={lede}>
         A page your housekeepers open on their own phone. It lists today&rsquo;s
         rooms in the order they need doing — turnarounds first — and they tap a
@@ -92,9 +92,9 @@ export default function HousekeepingPin({
       <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
         <code style={link}>{url}</code>
         <button type="button" className="btn btn-quiet" onClick={() => void copy()}>
-          {copied ? "Copied" : "Copy link"}
+          {copied ? "Copied" : "Copy Link"}
         </button>
-        <span style={{ fontSize: "0.8rem", color: on ? "var(--jade)" : "var(--admin-muted)" }}>
+        <span style={{ fontSize: "0.8rem", color: on ? "var(--success)" : "var(--admin-muted)" }}>
           {on ? "On" : "Off — the link will not open"}
         </span>
       </div>
@@ -128,14 +128,14 @@ export default function HousekeepingPin({
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end" }}>
           <button
             type="submit"
-            className="btn btn-go"
+            className="btn btn-quiet"
             disabled={pending || pin.length !== 6}
           >
-            {pending ? "Saving…" : on ? "Change it" : "Switch it on"}
+            {pending ? "Saving…" : on ? "Change It" : "Switch It On"}
           </button>
           {on && (
             <button type="button" className="btn btn-quiet" disabled={pending} onClick={switchOff}>
-              Switch off
+              Switch Off
             </button>
           )}
         </div>
@@ -147,7 +147,7 @@ export default function HousekeepingPin({
           style={{
             margin: "0.7rem 0 0",
             fontSize: "0.82rem",
-            color: said.ok ? "var(--jade)" : "var(--warn, #d98c3a)",
+            color: said.ok ? "var(--success)" : "var(--warning)",
           }}
         >
           {said.text}
@@ -189,7 +189,7 @@ const link: React.CSSProperties = {
   fontSize: "0.82rem",
   padding: "0.3rem 0.55rem",
   borderRadius: 8,
-  background: "rgba(27,42,35,0.06)",
+  background: "color-mix(in srgb, var(--ink) 6%, transparent)",
   wordBreak: "break-all",
 };
 
@@ -215,7 +215,7 @@ const input: React.CSSProperties = {
   width: "8rem",
   padding: "0.45rem 0.6rem",
   borderRadius: 8,
-  border: "1px solid rgba(27,42,35,0.2)",
+  border: "1px solid color-mix(in srgb, var(--ink) 20%, transparent)",
   background: "var(--paper)",
   color: "var(--ink)",
 };

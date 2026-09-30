@@ -190,7 +190,7 @@ export default function ListingReviews({
     <div style={card}>
       <div style={head}>
         <div>
-          <h2 style={heading}>On your listings</h2>
+          <h2 style={heading}>On Your Listings</h2>
           <p style={{ fontSize: "0.8rem", color: "var(--ink-soft)", margin: "0.15rem 0 0" }}>
             What guests wrote on the sites themselves, over the last{" "}
             {data.days} days.
@@ -200,7 +200,7 @@ export default function ListingReviews({
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
           {automatic.length > 0 && (
             <button type="button" onClick={onCheck} disabled={pending} style={quiet}>
-              {pending ? "Looking…" : "Check for new"}
+              {pending ? "Looking…" : "Check for New"}
             </button>
           )}
           <button
@@ -208,7 +208,7 @@ export default function ListingReviews({
             onClick={() => { setAdding((v) => !v); setError(null); }}
             style={quiet}
           >
-            {adding ? "Cancel" : "Add one"}
+            {adding ? "Cancel" : "Add One"}
           </button>
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function ListingReviews({
           {data.total === 1 ? "" : "s"}
           {data.unanswered > 0 ? (
             <>
-              , <strong style={{ fontWeight: 500, color: "#a8541a" }}>
+              , <strong style={{ fontWeight: 500, color: "var(--warning)" }}>
                 {data.unanswered} not answered
               </strong>
             </>
@@ -231,7 +231,7 @@ export default function ListingReviews({
       )}
 
       {error && (
-        <p role="status" style={{ fontSize: "0.8rem", color: "#a8541a", margin: "0.6rem 0 0" }}>
+        <p role="status" style={{ fontSize: "0.8rem", color: "var(--warning)", margin: "0.6rem 0 0" }}>
           {error}
         </p>
       )}
@@ -350,7 +350,7 @@ export default function ListingReviews({
                           onClick={() => onReplied(review)}
                           style={mark(isReplied(review))}
                         >
-                          {isReplied(review) ? "✓ Answered" : "Mark answered"}
+                          {isReplied(review) ? "✓ Answered" : "Mark Answered"}
                         </button>
 
                         {review.url && (
@@ -383,7 +383,7 @@ export default function ListingReviews({
       {waiting.length > 0 && (
         <details style={{ marginTop: "1.4rem" }}>
           <summary style={{ fontSize: "0.8rem", color: "var(--ink-soft)", cursor: "pointer" }}>
-            Reading these automatically
+            Reading These Automatically
           </summary>
           <ul style={{ margin: "0.6rem 0 0", paddingLeft: "1.1rem", display: "grid", gap: "0.35rem" }}>
             {waiting.map((c) => (
@@ -455,7 +455,7 @@ function AddReview({
         </label>
 
         <label style={field}>
-          <span style={label}>Who wrote it</span>
+          <span style={label}>Who Wrote It</span>
           <input value={author} onChange={(e) => setAuthor(e.target.value)} style={input} />
         </label>
 
@@ -481,7 +481,7 @@ function AddReview({
       </div>
 
       <label style={field}>
-        <span style={label}>What it says</span>
+        <span style={label}>What It Says</span>
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
@@ -491,13 +491,13 @@ function AddReview({
       </label>
 
       <label style={field}>
-        <span style={label}>Link to it (optional)</span>
+        <span style={label}>Link to It (Optional)</span>
         <input value={url} onChange={(e) => setUrl(e.target.value)} style={input} />
       </label>
 
       <div>
         <button type="submit" disabled={pending || (!body.trim() && rating === "")} style={go}>
-          {pending ? "Saving…" : "Add it"}
+          {pending ? "Saving…" : "Add It"}
         </button>
       </div>
     </form>
@@ -548,7 +548,7 @@ const ranList: React.CSSProperties = {
   margin: "0.8rem 0 0",
   padding: "0.7rem 0.9rem",
   borderRadius: 10,
-  background: "rgba(27,42,35,0.04)",
+  background: "color-mix(in srgb, var(--ink) 4%, transparent)",
   display: "grid",
   gap: "0.3rem",
 };
@@ -556,14 +556,14 @@ const ranList: React.CSSProperties = {
 const badge: React.CSSProperties = {
   fontSize: "0.7rem",
   fontWeight: 500,
-  color: "#8a4412",
-  background: "rgba(192,125,23,0.14)",
+  color: "var(--warning)",
+  background: "color-mix(in srgb, var(--warning) 14%, transparent)",
   borderRadius: 999,
   padding: "0.1rem 0.45rem",
 };
 
 const row: React.CSSProperties = {
-  borderTop: "1px solid rgba(27,42,35,0.12)",
+  borderTop: "1px solid color-mix(in srgb, var(--ink) 12%, transparent)",
   paddingTop: "0.9rem",
 };
 
@@ -579,7 +579,7 @@ const reply: React.CSSProperties = {
   lineHeight: 1.5,
   margin: "0.5rem 0 0",
   paddingLeft: "0.7rem",
-  borderLeft: "2px solid rgba(27,42,35,0.18)",
+  borderLeft: "2px solid color-mix(in srgb, var(--ink) 18%, transparent)",
   color: "var(--ink-soft)",
 };
 
@@ -605,9 +605,9 @@ function mark(on: boolean): React.CSSProperties {
     cursor: "pointer",
     borderRadius: 999,
     padding: "0.22rem 0.6rem",
-    border: on ? "1px solid transparent" : "1px solid rgba(27,42,35,0.24)",
-    background: on ? "rgba(47,95,76,0.14)" : "transparent",
-    color: on ? "#2f5f4c" : "var(--ink)",
+    border: on ? "1px solid transparent" : "1px solid color-mix(in srgb, var(--ink) 24%, transparent)",
+    background: on ? "color-mix(in srgb, var(--success) 14%, transparent)" : "transparent",
+    color: on ? "var(--success)" : "var(--ink)",
   };
 }
 
@@ -617,7 +617,7 @@ const form: React.CSSProperties = {
   margin: "1rem 0 0",
   padding: "1rem",
   borderRadius: 10,
-  background: "rgba(27,42,35,0.04)",
+  background: "color-mix(in srgb, var(--ink) 4%, transparent)",
 };
 
 const field: React.CSSProperties = {
@@ -636,7 +636,7 @@ const input: React.CSSProperties = {
   fontSize: "0.85rem",
   padding: "0.4rem 0.5rem",
   borderRadius: 8,
-  border: "1px solid rgba(27,42,35,0.2)",
+  border: "1px solid color-mix(in srgb, var(--ink) 20%, transparent)",
   background: "var(--paper)",
   color: "var(--ink)",
   width: "100%",
@@ -648,7 +648,7 @@ const quiet: React.CSSProperties = {
   cursor: "pointer",
   borderRadius: 999,
   padding: "0.3rem 0.75rem",
-  border: "1px solid rgba(27,42,35,0.24)",
+  border: "1px solid color-mix(in srgb, var(--ink) 24%, transparent)",
   background: "transparent",
   color: "var(--ink)",
 };
@@ -662,5 +662,5 @@ const go: React.CSSProperties = {
   padding: "0.4rem 1rem",
   border: 0,
   background: "var(--jade)",
-  color: "#fff",
+  color: "var(--shade-deep)",
 };

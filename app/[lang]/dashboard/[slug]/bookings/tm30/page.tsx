@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import Tm30Board from "@/components/dashboard/Tm30Board";
-import { call, currentUser, sessionToken, type Tm30Pending } from "@/lib/customer";
+import { call, currentUser, sessionToken, type Tm30Pending, venueName } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import { shift, todayAt } from "@/lib/nights";
@@ -71,10 +72,17 @@ export default async function Tm30Page({
     return {};
   }
 
+  const venue = await venueName(slug);
+
   return (
     <>
-    <h1 style={{ margin: "1.25rem 0 0.4rem" }}>TM30</h1>
-    <p className="lede" style={{ marginBottom: "1.5rem" }}>
+    <PageHeader
+      title="TM30"
+      sub={`${venue} · arrivals ${from} to ${to}`}
+      back={localizedPath(locale, `/dashboard/${slug}`)}
+    />
+    <div className="page-body">
+    <p className="lede" style={{ marginBottom: "1rem" }}>
       Foreign guests have to be notified to Immigration within 24 hours of
       arriving. Download the file, upload it at{" "}
       <a
@@ -95,6 +103,7 @@ export default async function Tm30Page({
       downloadUrl={`/api/tm30/${slug}?from=${from}&to=${to}`}
       markNotified={markNotified}
     />
+    </div>
   </>
   );
 }

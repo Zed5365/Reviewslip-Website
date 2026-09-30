@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import { currentUser } from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -50,7 +51,7 @@ function Meter({
         style={{
           height: 7,
           borderRadius: 999,
-          background: "rgba(27,42,35,0.12)",
+          background: "color-mix(in srgb, var(--ink) 12%, transparent)",
           overflow: "hidden",
         }}
         role="progressbar"
@@ -85,45 +86,24 @@ export default async function DashboardPage({
   const businessLimit = me.plan.businesses === null ? "unlimited" : me.plan.businesses;
 
   return (
-    <section className="section">
-      <div className="wrap">
-        <span className="eyebrow">{me.account.email}</span>
-        <h1 style={{ marginBottom: "0.4rem" }}>Your businesses</h1>
-        <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          {me.usage.businesses} of {businessLimit} on {me.plan.name} ·{" "}
-          {me.usage.reviewsThisMonth.toLocaleString()} of{" "}
-          {me.plan.reviewAllowance.toLocaleString()} reviews this month
-        </p>
-
-        <p
-          style={{
-            marginBottom: "2rem",
-            display: "flex",
-            gap: "0.6rem",
-            flexWrap: "wrap",
-          }}
+    <>
+      {/* The second line is the plan's two meters in words: what this list is
+          measured against. Refer a Business and Support are Sidebar entries, so
+          the header carries the one action this screen has. */}
+      <PageHeader
+        title="Businesses"
+        sub={`${me.usage.businesses} of ${businessLimit} on ${me.plan.name} · ${me.usage.reviewsThisMonth.toLocaleString()} of ${me.plan.reviewAllowance.toLocaleString()} reviews this month`}
+      >
+        {/* At the cap this still goes to the same page, which explains the
+            limit and offers plans — better than a button that does nothing. */}
+        <Link
+          className="btn btn-go"
+          href={localizedPath(lang, "/dashboard/businesses/new")}
         >
-          {/* At the cap this still goes to the same page, which explains the
-              limit and offers plans — better than a button that does nothing. */}
-          <Link
-            className="btn btn-go"
-            href={localizedPath(lang, "/dashboard/businesses/new")}
-          >
-            Add a business
-          </Link>
-          <Link
-            className="btn btn-quiet"
-            href={localizedPath(lang, "/dashboard/referrals")}
-          >
-            Refer &amp; save 20%
-          </Link>
-          <Link
-            className="btn btn-quiet"
-            href={localizedPath(lang, "/dashboard/support")}
-          >
-            Support
-          </Link>
-        </p>
+          Add a Business
+        </Link>
+      </PageHeader>
+      <div className="page-body">
 
         {me.businesses.length === 0 ? (
           <p>
@@ -135,8 +115,8 @@ export default async function DashboardPage({
           <div
             style={{
               display: "grid",
-              gap: "1.25rem",
-              gridTemplateColumns: "repeat(auto-fit, minmax(19rem, 1fr))",
+              gap: "0.75rem",
+              gridTemplateColumns: "repeat(auto-fill, minmax(19rem, 1fr))",
             }}
           >
             {me.businesses.map((business) => (
@@ -145,8 +125,9 @@ export default async function DashboardPage({
                 style={{
                   background: "var(--paper)",
                   color: "var(--ink)",
-                  borderRadius: 14,
-                  padding: "1.4rem",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius)",
+                  padding: "1rem",
                 }}
               >
                 <div
@@ -165,16 +146,16 @@ export default async function DashboardPage({
                       fontSize: "0.75rem",
                       whiteSpace: "nowrap",
                       background: business.ready
-                        ? "rgba(130,180,155,0.22)"
-                        : "rgba(233,160,59,0.22)",
-                      color: business.ready ? "#2f5f4c" : "#8a5a12",
+                        ? "color-mix(in srgb, var(--success) 16%, transparent)"
+                        : "color-mix(in srgb, var(--warning) 16%, transparent)",
+                      color: business.ready ? "var(--success)" : "var(--warning)",
                     }}
                   >
                     {business.status !== "active"
                       ? business.status
                       : business.ready
-                        ? "live"
-                        : "no review link"}
+                        ? "Live"
+                        : "No Review Link"}
                   </span>
                 </div>
 
@@ -210,16 +191,16 @@ export default async function DashboardPage({
                     marginTop: "0.5rem",
                   }}
                 >
+                  {/* Outlined, both: the screen's one primary is Add a Business,
+                      and a filled button on every card would be one per row. */}
                   <Link
-                    className="btn btn-go"
+                    className="btn btn-quiet"
                     href={localizedPath(lang, `/dashboard/${business.slug}`)}
                   >
                     Open
                   </Link>
-                  {/* -ink, not -quiet: the quiet button is outlined for the dark
-                      canvas and renders as an empty box on this cream card. */}
                   <Link
-                    className="btn btn-quiet-ink"
+                    className="btn btn-quiet"
                     href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
                   >
                     Settings
@@ -230,6 +211,6 @@ export default async function DashboardPage({
           </div>
         )}
       </div>
-    </section>
+    </>
   );
 }

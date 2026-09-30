@@ -23,6 +23,27 @@ export default function SetupProgress({
   /** This venue's settings page, where every one of these is fixed. */
   settings: string;
 }) {
+  /*
+   * Their side is done and the writing key is ours to fit. Said plainly, with
+   * nothing to click: the alternative is the panel vanishing on `complete` while
+   * the guest page still refuses, which is the same invisible failure this
+   * component exists to prevent — only now with the venue certain they had
+   * finished.
+   */
+  if (setup.waitingOnUs) {
+    return (
+      <div className="setup">
+        <div className="setup-head">
+          <h2>Nearly there</h2>
+        </div>
+        <p className="setup-note">
+          Everything on your side is done. We are fitting the last piece and your review page
+          will start working shortly — there is nothing else for you to do.
+        </p>
+      </div>
+    );
+  }
+
   if (setup.complete) return null;
 
   const blocked = !setup.canTakeReviews;
@@ -64,7 +85,7 @@ export default function SetupProgress({
       </ul>
 
       <Link className="btn btn-go" href={settings}>
-        {blocked ? "Fix this now" : "Finish setup"}
+        {blocked ? "Fix This Now" : "Finish Setup"}
       </Link>
     </div>
   );

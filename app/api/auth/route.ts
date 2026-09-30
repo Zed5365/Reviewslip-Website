@@ -1,4 +1,10 @@
-import { call, setSessionCookie, type Session } from "@/lib/customer";
+import {
+  call,
+  clearSessionCookie,
+  sessionToken,
+  setSessionCookie,
+  type Session,
+} from "@/lib/customer";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 
@@ -70,4 +76,30 @@ export async function POST(request: Request) {
       { status }
     );
   }
+}
+
+/**
+ * Sign out.
+ *
+ * Both halves, in this order: end the session on the review app, then drop the
+ * cookie. Dropping only the cookie would leave a live token in the sessions
+ * table for a day, valid for anybody who had copied it.
+ *
+ * The cookie goes even when the review app cannot be reached. Somebody who
+ * pressed Sign Out and is still signed in has been told something untrue, and
+ * the row they leave behind expires on its own.
+ */
+export async function DELETE() {
+  const token = await sessionToken();
+
+  if (token) {
+    try {
+      await call('/logout', { method: 'POST', token });
+    } catch (err) {
+      console.error('Sign out could not end the session on the review app:', err);
+    }
+  }
+
+  await clearSessionCookie();
+  return Response.json({ ok: true });
 }

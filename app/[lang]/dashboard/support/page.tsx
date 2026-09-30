@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import Thread from "@/components/dashboard/Thread";
 import {
   NewTicketForm,
@@ -33,7 +33,7 @@ function when(iso: string): string {
 
 const STATUS: Record<string, { label: string; colour: string }> = {
   open: { label: "Waiting on us", colour: "var(--marigold)" },
-  answered: { label: "Answered", colour: "var(--jade)" },
+  answered: { label: "Answered", colour: "var(--success)" },
   closed: { label: "Closed", colour: "var(--cream-faint)" },
 };
 
@@ -151,17 +151,13 @@ export default async function SupportPage({
   const active = thread?.ticket ?? null;
 
   return (
-    <section className="section">
-      <div className="wrap" style={{ maxWidth: "46rem" }}>
-        <Link
-          href={localizedPath(lang, "/dashboard")}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Dashboard
-        </Link>
-
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Support</h1>
-
+    <>
+      <PageHeader
+        title="Support"
+        sub={active ? active.title : "No open ticket"}
+        back={localizedPath(lang, "/dashboard")}
+      />
+      <div className="page-body is-narrow">
         {active && thread ? (
           <>
             <p className="lede" style={{ marginBottom: "2rem" }}>
@@ -217,7 +213,7 @@ export default async function SupportPage({
               <form action={closeTicket}>
                 <input type="hidden" name="id" value={active.id} />
                 <button type="submit" className="btn btn-quiet">
-                  This is sorted — close it
+                  This Is Sorted — Close It
                 </button>
               </form>
               <p
@@ -273,6 +269,6 @@ export default async function SupportPage({
           </div>
         ) : null}
       </div>
-    </section>
+    </>
   );
 }

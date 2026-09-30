@@ -85,7 +85,7 @@ export default function InviteForm({
           }}
         />
         <button type="submit" className="btn btn-go" disabled={pending}>
-          {pending ? "Creating…" : "Create invitation"}
+          {pending ? "Creating…" : "Create Invitation"}
         </button>
       </form>
 

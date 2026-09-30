@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import SlugPicker, {
   type CreateBusinessState,
 } from "@/components/dashboard/SlugPicker";
+import PageHeader from "@/components/app-shell/PageHeader";
 import { call, currentUser, sessionToken } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
@@ -69,42 +70,38 @@ export default async function NewBusinessPage({
   // someone fill in a form that was always going to be refused.
   if (!me.canAddBusiness) {
     return (
-      <section className="section">
-        <div className="wrap">
-          <h1 style={{ marginBottom: "0.4rem" }}>No room for another business</h1>
-          <p className="lede" style={{ marginBottom: "2rem" }}>
-            {me.plan.name} covers {me.plan.businesses} business
-            {me.plan.businesses === 1 ? "" : "s"}, and you have {me.usage.businesses}.
+      <>
+        <PageHeader
+          title="Add a Business"
+          sub={`${me.usage.businesses} of ${me.plan.businesses} used on ${me.plan.name}`}
+          back={localizedPath(lang, "/dashboard")}
+        />
+        <div className="page-body is-narrow">
+          <p className="lede" style={{ marginBottom: "1rem" }}>
+            No room for another business. {me.plan.name} covers {me.plan.businesses}{" "}
+            business{me.plan.businesses === 1 ? "" : "es"}, and you have{" "}
+            {me.usage.businesses}.
           </p>
           <Link className="btn btn-go" href={localizedPath(lang, "/pricing")}>
-            See plans
+            See Plans
           </Link>
         </div>
-      </section>
+      </>
     );
   }
 
   const baseDomain = process.env.BASE_DOMAIN ?? "reviewslip.com";
 
   return (
-    <section className="section">
-      <div className="wrap">
-        <Link
-          href={localizedPath(lang, "/dashboard")}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← All businesses
-        </Link>
-
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Add a business</h1>
-        <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          {me.usage.businesses} of{" "}
-          {me.plan.businesses === null ? "unlimited" : me.plan.businesses} used on{" "}
-          {me.plan.name}
-        </p>
-
+    <>
+      <PageHeader
+        title="Add a Business"
+        sub={`${me.usage.businesses} of ${me.plan.businesses === null ? "unlimited" : me.plan.businesses} used on ${me.plan.name}`}
+        back={localizedPath(lang, "/dashboard")}
+      />
+      <div className="page-body is-narrow">
         <SlugPicker action={create} baseDomain={baseDomain} />
       </div>
-    </section>
+    </>
   );
 }

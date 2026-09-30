@@ -112,7 +112,7 @@ export default function CleaningStandard({
   return (
     <>
       <section style={card}>
-        <h2 style={heading}>What cleaning a room means</h2>
+        <h2 style={heading}>What Cleaning a Room Means</h2>
         <p style={lede}>
           Housekeepers see this on their phone, under each room, and tick it off
           as they go. Lines with no room type apply to every room; put a type on
@@ -134,20 +134,20 @@ export default function CleaningStandard({
             aria-label="Which room type"
             style={select}
           >
-            <option value="">Every room</option>
+            <option value="">Every Room</option>
             {groups.map((g) => (
               <option key={g.id} value={g.id}>
                 {g.name} only
               </option>
             ))}
           </select>
-          <button type="submit" className="btn btn-go" disabled={pending || !label.trim()}>
+          <button type="submit" className="btn btn-quiet" disabled={pending || !label.trim()}>
             Add
           </button>
         </form>
 
         {problem && (
-          <p role="status" style={{ margin: "0.6rem 0 0", fontSize: "0.82rem", color: "var(--warn, #d98c3a)" }}>
+          <p role="status" style={{ margin: "0.6rem 0 0", fontSize: "0.82rem", color: "var(--warning)" }}>
             {problem}
           </p>
         )}
@@ -185,7 +185,7 @@ export default function CleaningStandard({
       </section>
 
       <section style={card}>
-        <h2 style={heading}>Rooms out of use</h2>
+        <h2 style={heading}>Rooms Out of Use</h2>
         <p style={lede}>
           {states.map((s) => (
             <span key={s.id} style={{ display: "block" }}>
@@ -353,7 +353,7 @@ function Photo({
         onClick={() => picker.current?.click()}
         disabled={busy || working}
         style={well}
-        title={has ? "Replace this photo" : "Add a photo"}
+        title={has ? "Replace This Photo" : "Add a Photo"}
         aria-label={
           has ? `Replace the photo for ${item.label}` : `Add a photo for ${item.label}`
         }
@@ -406,7 +406,7 @@ const well: React.CSSProperties = {
   overflow: "hidden",
   borderRadius: 8,
   border: "1px dashed var(--ink-soft, #7b8a82)",
-  background: "rgba(0,0,0,0.04)",
+  background: "color-mix(in srgb, var(--ink) 4%, transparent)",
   cursor: "pointer",
 };
 
@@ -450,7 +450,7 @@ const input: React.CSSProperties = {
   minWidth: 0,
   padding: "0.45rem 0.6rem",
   borderRadius: 8,
-  border: "1px solid rgba(27,42,35,0.2)",
+  border: "1px solid color-mix(in srgb, var(--ink) 20%, transparent)",
   background: "var(--paper)",
   color: "var(--ink)",
 };
@@ -460,7 +460,7 @@ const select: React.CSSProperties = {
   fontSize: "0.85rem",
   padding: "0.4rem 0.5rem",
   borderRadius: 8,
-  border: "1px solid rgba(27,42,35,0.2)",
+  border: "1px solid color-mix(in srgb, var(--ink) 20%, transparent)",
   background: "var(--paper)",
   color: "var(--ink)",
 };
@@ -483,7 +483,7 @@ const row: React.CSSProperties = {
   gap: "0.75rem",
   padding: "0.4rem 0",
   fontSize: "0.9rem",
-  borderTop: "1px solid rgba(27,42,35,0.1)",
+  borderTop: "1px solid color-mix(in srgb, var(--ink) 10%, transparent)",
 };
 
 const empty: React.CSSProperties = {

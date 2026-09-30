@@ -108,11 +108,11 @@ export default function Desk({
                   ) : (
                     <button
                       type="button"
-                      className="btn btn-go"
+                      className="btn btn-quiet"
                       disabled={busy !== null}
                       onClick={() => void run(b.id, () => checkIn(b.id))}
                     >
-                      {busy === b.id ? "…" : "Check in"}
+                      {busy === b.id ? "…" : "Check In"}
                     </button>
                   )}
                 </li>
@@ -148,11 +148,11 @@ export default function Desk({
                 {b.status === "in_house" ? (
                   <button
                     type="button"
-                    className="btn btn-go"
+                    className="btn btn-quiet"
                     disabled={busy !== null}
                     onClick={() => void run(b.id, () => checkOut(b.id))}
                   >
-                    {busy === b.id ? "…" : "Check out"}
+                    {busy === b.id ? "…" : "Check Out"}
                   </button>
                 ) : (
                   <span className="desk-done">
@@ -169,7 +169,7 @@ export default function Desk({
 
       <section className="desk-card">
         <h2>
-          Staying tonight <span className="desk-count">{day.counts.inHouse}</span>
+          Staying Tonight <span className="desk-count">{day.counts.inHouse}</span>
         </h2>
 
         {day.inHouse.length === 0 ? (
@@ -228,7 +228,7 @@ export default function Desk({
                       void run(-room.id, () => setHousekeeping(room.id, "clean"))
                     }
                   >
-                    {busy === -room.id ? "…" : "Mark clean"}
+                    {busy === -room.id ? "…" : "Mark Clean"}
                   </button>
                 ) : (
                   // Turning a clean room dirty is rare but real — somebody

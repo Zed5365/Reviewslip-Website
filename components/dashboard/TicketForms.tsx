@@ -112,7 +112,7 @@ export function NewTicketForm({
             disabled={pending}
             style={{ ...field, appearance: "auto" }}
           >
-            <option value="">Not about one in particular</option>
+            <option value="">Not About One in Particular</option>
             {venues.map((v) => (
               <option key={v.slug} value={v.slug}>
                 {v.name}
@@ -124,7 +124,7 @@ export function NewTicketForm({
 
       <div>
         <label htmlFor="ticket-body" style={label}>
-          What happened
+          What Happened
         </label>
         <textarea
           ref={body}
@@ -141,7 +141,7 @@ export function NewTicketForm({
 
       <div>
         <button type="submit" className="btn btn-go" disabled={pending}>
-          {pending ? "Sending…" : "Send it"}
+          {pending ? "Sending…" : "Send It"}
         </button>
         <Problem error={state.error} />
       </div>

@@ -143,7 +143,7 @@ export default function GuestList({
           className="btn btn-quiet"
           onClick={() => setOpen((o) => !o)}
         >
-          {open ? "Cancel" : "Add guest"}
+          {open ? "Cancel" : "Add Guest"}
         </button>
       </div>
 
@@ -163,7 +163,7 @@ export default function GuestList({
                 alignItems: "center",
                 gap: "0.75rem",
                 padding: "0.45rem 0",
-                borderBottom: "1px solid rgba(130,180,155,0.12)",
+                borderBottom: "1px solid color-mix(in srgb, var(--wash) 12%, transparent)",
               }}
             >
               <span style={{ minWidth: 0, fontSize: "0.88rem" }}>
@@ -202,8 +202,8 @@ export default function GuestList({
                   <option value="">
                     TM30: {g.reportable ? "yes" : "no"}, by nationality
                   </option>
-                  <option value="yes">TM30: always</option>
-                  <option value="no">TM30: exempt</option>
+                  <option value="yes">TM30: Always</option>
+                  <option value="no">TM30: Exempt</option>
                 </select>
 
                 <button
@@ -231,7 +231,7 @@ export default function GuestList({
           >
             <div>
               <label htmlFor="g-first" style={label}>
-                First name
+                First Name
               </label>
               <input
                 id="g-first"
@@ -243,7 +243,7 @@ export default function GuestList({
             </div>
             <div>
               <label htmlFor="g-family" style={label}>
-                Family name
+                Family Name
               </label>
               <input
                 id="g-family"
@@ -268,7 +268,7 @@ export default function GuestList({
             </div>
             <div>
               <label htmlFor="g-passport" style={label}>
-                Passport number
+                Passport Number
               </label>
               <input
                 id="g-passport"

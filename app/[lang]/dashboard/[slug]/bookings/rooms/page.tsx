@@ -10,6 +10,7 @@ import CleaningStandard, {
 import HousekeepingPin, {
   type HousekeepingState,
 } from "@/components/dashboard/HousekeepingPin";
+import PageHeader from "@/components/app-shell/PageHeader";
 import RoomsSetup, { type RoomsState } from "@/components/dashboard/RoomsSetup";
 import {
   call,
@@ -17,6 +18,7 @@ import {
   sessionToken,
   type Room,
   type RoomGroup,
+  venueName,
 } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
@@ -297,10 +299,17 @@ export default async function RoomsPage({
     }
   }
 
+  const venueLabel = await venueName(slug);
+
   return (
     <>
-    <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Rooms</h1>
-    <p className="lede" style={{ marginBottom: "2.5rem" }}>
+    <PageHeader
+      title="Rooms"
+      sub={`${venueLabel} · ${data.rooms.length} room${data.rooms.length === 1 ? "" : "s"} in ${data.groups.length} type${data.groups.length === 1 ? "" : "s"}`}
+      back={localizedPath(locale, `/dashboard/${slug}`)}
+    />
+    <div className="page-body">
+    <p className="lede" style={{ marginBottom: "1rem" }}>
       Set these up once. The calendar and every booking read from them.
     </p>
 
@@ -344,9 +353,10 @@ export default async function RoomsPage({
         className="btn btn-go"
         href={localizedPath(lang, `/dashboard/${slug}/bookings/calendar`)}
       >
-        Open the calendar
+        Open the Calendar
       </Link>
     </p>
+    </div>
   </>
   );
 }

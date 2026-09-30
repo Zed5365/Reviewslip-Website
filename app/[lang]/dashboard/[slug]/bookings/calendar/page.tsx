@@ -3,6 +3,8 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import PageHeader from "@/components/app-shell/PageHeader";
 import Diary from "@/components/dashboard/Diary";
 import RoomTypeFilter from "@/components/dashboard/RoomTypeFilter";
 import ViewToggle from "@/components/dashboard/ViewToggle";
@@ -13,6 +15,7 @@ import {
   type Booking,
   type CalendarWindow,
   type RatePlan,
+  venueName,
 } from "@/lib/customer";
 import {
   addMonths,
@@ -255,32 +258,36 @@ export default async function CalendarPage({
     return q ? `${here}?${q}` : here;
   }
 
+  const venue = await venueName(slug);
+
   return (
     <>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "baseline",
-        justifyContent: "space-between",
-        gap: "1rem",
-        flexWrap: "wrap",
-        margin: "1.25rem 0 2rem",
-      }}
+    <PageHeader
+      title="Calendar"
+      sub={`${venue} · ${monthLabel(start, locale)}`}
+      back={localizedPath(locale, `/dashboard/${slug}`)}
     >
-      <h1 style={{ margin: 0 }}>{monthLabel(start, locale)}</h1>
-
-      <nav style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-        <Link className="btn btn-quiet" href={month(addMonths(start, -1))}>
-          ←
-        </Link>
-        <Link className="btn btn-quiet" href={month("")}>
-          This month
-        </Link>
-        <Link className="btn btn-quiet" href={month(addMonths(start, 1))}>
-          →
-        </Link>
-      </nav>
-    </div>
+      <Link
+        className="icon-btn"
+        href={month(addMonths(start, -1))}
+        aria-label="Previous Month"
+        title="Previous Month"
+      >
+        <ChevronLeft size={16} aria-hidden="true" />
+      </Link>
+      <Link className="btn btn-quiet" href={month("")}>
+        This Month
+      </Link>
+      <Link
+        className="icon-btn"
+        href={month(addMonths(start, 1))}
+        aria-label="Next Month"
+        title="Next Month"
+      >
+        <ChevronRight size={16} aria-hidden="true" />
+      </Link>
+    </PageHeader>
+    <div className="page-body">
 
     <ViewToggle
       calendar={localizedPath(locale, `/dashboard/${slug}/bookings/calendar`)}
@@ -321,6 +328,7 @@ export default async function CalendarPage({
       />
     )}
 
+    </div>
   </>
   );
 }

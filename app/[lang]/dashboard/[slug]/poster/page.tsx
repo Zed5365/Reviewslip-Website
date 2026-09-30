@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import CardLogo from "@/components/dashboard/CardLogo";
 import PrintPoster from "@/components/dashboard/PrintPoster";
 import {
@@ -31,8 +31,8 @@ const pick: React.CSSProperties = {
   fontSize: "0.85rem",
   padding: "0.3rem 0.45rem",
   borderRadius: 8,
-  border: "1px solid rgba(243,236,220,0.22)",
-  background: "rgba(243,236,220,0.06)",
+  border: "1px solid color-mix(in srgb, var(--cream) 22%, transparent)",
+  background: "color-mix(in srgb, var(--cream) 6%, transparent)",
   color: "inherit",
 };
 
@@ -112,16 +112,13 @@ export default async function PosterPage({
 
   return (
     <>
-      <section className={`section ${styles.page}`}>
-        <div className="wrap">
-          <Link
-            href={localizedPath(lang, `/dashboard/${business.slug}`)}
-            style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-          >
-            ← {business.name}
-          </Link>
-
-          <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Table card</h1>
+      <PageHeader
+        title="Table Card"
+        sub={business.name}
+        back={localizedPath(lang, `/dashboard/${business.slug}`)}
+      />
+      <section className={`page-body ${styles.page}`}>
+        <div>
           <p className="lede">
             An A5 card with the QR code for {business.name}. Guests scan it and land
             on the review page.
@@ -129,15 +126,15 @@ export default async function PosterPage({
 
           <form method="get" className={styles.actions} style={{ marginBottom: "0.4rem" }}>
             <label style={{ fontSize: "0.85rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
-              Second language
+              Second Language
               <select name="with" defaultValue={asked} style={pick}>
-                <option value="none">None — English only</option>
+                <option value="none">None — English Only</option>
                 {cardLanguages().filter((l) => l.code !== "en").map((l) => (
                   <option key={l.code} value={l.code}>{l.name}</option>
                 ))}
               </select>
             </label>
-            <button type="submit" className="btn btn-quiet">Change</button>
+            <button type="submit" className="btn btn-quiet">Apply</button>
           </form>
 
           <div className={styles.actions}>
@@ -148,7 +145,7 @@ export default async function PosterPage({
               rel="noreferrer"
               style={{ color: "var(--jade)", fontSize: "0.9rem" }}
             >
-              Open the review page
+              Open the Review Page
             </a>
           </div>
 
@@ -174,7 +171,10 @@ export default async function PosterPage({
           reasons in poster.module.css that a theme does not get to override.
           Falling back to the shipped values when there is no theme is the
           module's own job — every rule carries them as var() fallbacks. */}
-      <div className={styles.sheet} style={cardVars(data.settings.theme.derived)}>
+      <div
+        className={`venue-look ${styles.sheet}`}
+        style={cardVars(data.settings.theme.derived)}
+      >
         <div className={styles.frame}>
           {/* Four corner marks, sitting across both rules of the frame. Empty
               spans because they are drawn with their own borders — two sides

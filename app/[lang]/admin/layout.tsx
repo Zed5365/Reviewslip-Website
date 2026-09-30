@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import AdminNav from "@/components/dashboard/AdminNav";
+import AppShell from "@/components/app-shell/AppShell";
 import { currentStaff, sessionToken } from "@/lib/customer";
+import "../../app.css";
 
 export const metadata: Metadata = {
   title: "Staff",
@@ -45,41 +45,8 @@ export default async function AdminLayout({
   if (!me) notFound();
 
   return (
-    <section className="section admin-shell">
-      <div className="wrap" style={{ maxWidth: "72rem" }}>
-        <header
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem 1.5rem",
-            flexWrap: "wrap",
-            marginBottom: "2rem",
-            paddingBottom: "1rem",
-            borderBottom: "1px solid var(--jade-line)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
-            <Link
-              href="/"
-              style={{
-                fontFamily: "var(--display)",
-                fontSize: "1.15rem",
-                color: "var(--cream)",
-              }}
-            >
-              Reviewslip <span style={{ color: "var(--jade)" }}>staff</span>
-            </Link>
-            <AdminNav />
-          </div>
-
-          <span style={{ color: "var(--admin-muted)", fontSize: "0.85rem" }}>
-            {me.account.email}
-          </span>
-        </header>
-
-        {children}
-      </div>
-    </section>
+    <AppShell kind="staff" email={me.account.email}>
+      {children}
+    </AppShell>
   );
 }

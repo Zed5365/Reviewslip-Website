@@ -217,7 +217,7 @@ export default function ReviewList({
   if (failed) {
     return (
       <div style={card}>
-        <h2 style={heading}>Latest reviews</h2>
+        <h2 style={heading}>Latest Reviews</h2>
         <p style={{ fontSize: "0.85rem", color: "var(--ink-soft)" }}>
           These could not be loaded just now — which is not the same as there
           being none. The counts above come from a different query and are still
@@ -230,7 +230,7 @@ export default function ReviewList({
   if (reviews.length === 0) {
     return (
       <div style={card}>
-        <h2 style={heading}>Latest reviews</h2>
+        <h2 style={heading}>Latest Reviews</h2>
         {notTaken > 0 ? (
           /*
            * The reviews exist. There was nowhere to take them.
@@ -266,7 +266,7 @@ export default function ReviewList({
 
   return (
     <div style={card}>
-      <h2 style={heading}>Latest reviews</h2>
+      <h2 style={heading}>Latest Reviews</h2>
       {notTaken > 0 && (
         <p style={{ fontSize: "0.8rem", color: "var(--ink-soft)", margin: "0 0 0.6rem" }}>
           These are the ones a guest took to a listing.{" "}
@@ -415,7 +415,7 @@ function dot(hex: string): React.CSSProperties {
 }
 
 const row: React.CSSProperties = {
-  borderTop: "1px solid rgba(27,42,35,0.12)",
+  borderTop: "1px solid color-mix(in srgb, var(--ink) 12%, transparent)",
   paddingTop: "0.9rem",
 };
 
@@ -446,6 +446,6 @@ function star(filled: boolean, top: boolean): React.CSSProperties {
     padding: 0,
     border: 0,
     background: "transparent",
-    color: filled ? (top ? "#c07d17" : "#2f5f4c") : "rgba(27,42,35,0.28)",
+    color: filled ? (top ? "var(--warning)" : "var(--success)") : "color-mix(in srgb, var(--ink) 28%, transparent)",
   };
 }

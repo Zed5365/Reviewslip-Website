@@ -86,9 +86,13 @@ export default async function RootLayout({
   const t = getDictionary(lang);
 
   return (
+    // suppressHydrationWarning: the authenticated app's theme (next-themes) writes
+    // `dark` onto this element before React hydrates, which is what prevents a
+    // flash of the wrong theme. It covers this element's own attributes only.
     <html
       lang={lang}
       className={`${trirong.variable} ${baiJamjuree.variable}`}
+      suppressHydrationWarning
     >
       <body suppressHydrationWarning>
         <CurrencyProvider>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import DeskBoard from "@/components/dashboard/DeskBoard";
 import {
   call,
@@ -13,6 +14,7 @@ import {
   type RatePlan,
   type Room,
   type RoomGroup,
+  venueName,
 } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
@@ -193,36 +195,30 @@ export default async function TodayPage({
     return {};
   }
 
+  const venue = await venueName(slug);
+
   return (
     <>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "baseline",
-        justifyContent: "space-between",
-        gap: "1rem",
-        flexWrap: "wrap",
-        margin: "1.25rem 0 0.3rem",
-      }}
+    {/* The day is the second line, beside the venue: it is what this screen is
+        showing, and it changes with the three buttons on the right. */}
+    <PageHeader
+      title="Today"
+      sub={`${venue} · ${longDate(date)}`}
+      back={localizedPath(locale, `/dashboard/${slug}`)}
     >
-      <h1 style={{ margin: 0 }}>{longDate(date)}</h1>
-      {/* Wraps. Three buttons labelled Yesterday / Today / Tomorrow come to
-          377px, which is two pixels wider than a 375px phone — and the
-          overflow takes the whole page sideways, not just the nav. */}
-      <nav style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-        <Link className="btn btn-quiet" href={link(shift(date, -1))}>
-          ← Yesterday
-        </Link>
-        <Link className="btn btn-quiet" href={here}>
-          Today
-        </Link>
-        <Link className="btn btn-quiet" href={link(shift(date, 1))}>
-          Tomorrow →
-        </Link>
-      </nav>
-    </div>
+      <Link className="btn btn-quiet" href={link(shift(date, -1))}>
+        Yesterday
+      </Link>
+      <Link className="btn btn-quiet" href={here}>
+        Today
+      </Link>
+      <Link className="btn btn-quiet" href={link(shift(date, 1))}>
+        Tomorrow
+      </Link>
+    </PageHeader>
+    <div className="page-body">
 
-    <p className="admin-sub" style={{ marginBottom: "2rem" }}>
+    <p className="admin-sub" style={{ marginBottom: "1rem" }}>
       {day.counts.unassignedArrivals > 0 ? (
         <span style={{ color: "var(--marigold)" }}>
           {day.counts.unassignedArrivals} arrival
@@ -254,6 +250,7 @@ export default async function TodayPage({
       assign={assign}
       markStatus={mark}
     />
+    </div>
   </>
   );
 }

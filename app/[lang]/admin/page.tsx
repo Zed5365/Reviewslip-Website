@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import { call, sessionToken, type StaffAccount } from "@/lib/customer";
 
 interface Overview {
@@ -68,9 +69,11 @@ export default async function AdminAccountsPage() {
 
   return (
     <>
-      <h1 className="admin-title">Overview</h1>
-      <p className="admin-sub">Everything on the platform, right now.</p>
-
+      <PageHeader
+        title="Accounts"
+        sub={`${accounts.length} account${accounts.length === 1 ? "" : "s"} · everything on the platform, right now`}
+      />
+      <div className="page-body">
       <div className="admin-tiles">
         <Tile
           label="Accounts"
@@ -167,6 +170,7 @@ export default async function AdminAccountsPage() {
           </table>
         </div>
       )}
+      </div>
     </>
   );
 }

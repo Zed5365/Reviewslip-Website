@@ -19,6 +19,16 @@
   --marigold: #e9a03b; /* primary CTA */
   --marigold-ink: #22190a; /* text on marigold */
 
+  /* What the translucent washes are mixed from. Named apart from --jade and
+     --marigold because the authenticated app (app.css) points them somewhere
+     different: there a wash is neutral and an alert is the warning colour,
+     while --jade is the one accent. Out here they are the brand colours. */
+  --wash: #82b49b;
+  --alert: #e9a03b;
+  --success: #82b49b;
+  --warning: #e9a03b;
+  --destructive: #e98b7b;
+
   /* Text on dark canvas */
   --cream: #f3ecdc;
   --cream-soft: rgba(243, 236, 220, 0.68);
@@ -617,9 +627,9 @@ img {
    a bigger change than this one, needing its own look. Those pages have the
    same problem and it is worth fixing separately. */
 :root {
-  --admin-muted: rgba(243, 236, 220, 0.55);
+  --admin-muted: color-mix(in srgb, var(--cream) 55%, transparent);
   /* The line the month's day cells are drawn with. */
-  --cal-line: rgba(130, 180, 155, 0.22);
+  --cal-line: color-mix(in srgb, var(--wash) 22%, transparent);
 }
 
 
@@ -627,31 +637,6 @@ img {
    four page files — which is what these were, and how two of them had already
    drifted a pixel apart. */
 
-.admin-nav {
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
-
-.admin-nav a {
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  color: var(--cream-soft);
-  transition: background 0.15s var(--ease), color 0.15s var(--ease);
-}
-
-.admin-nav a:hover {
-  background: rgba(130, 180, 155, 0.12);
-  color: var(--cream);
-}
-
-/* aria-current is the accessible fact; the styling follows it rather than a
-   second class that could disagree with it. */
-.admin-nav a[aria-current="page"] {
-  background: rgba(130, 180, 155, 0.16);
-  color: var(--cream);
-}
 
 /* --- stat tiles ---------------------------------------------------------- */
 
@@ -698,8 +683,8 @@ img {
 /* Reserved for a tile whose number means somebody has to do something. Never
    used for "the fourth tile". */
 .admin-tile-attention {
-  border-color: rgba(233, 160, 59, 0.45);
-  background: rgba(233, 160, 59, 0.08);
+  border-color: color-mix(in srgb, var(--alert) 45%, transparent);
+  background: color-mix(in srgb, var(--alert) 8%, transparent);
 }
 
 .admin-tile-attention .admin-tile-value {
@@ -738,11 +723,11 @@ img {
   padding: 0.75rem;
   vertical-align: top;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--wash) 12%, transparent);
 }
 
 .admin-table tbody tr:hover td {
-  background: rgba(130, 180, 155, 0.05);
+  background: color-mix(in srgb, var(--wash) 5%, transparent);
 }
 
 .admin-table .num {
@@ -814,26 +799,6 @@ img {
   .admin-tile-value { font-size: 1.5rem; }
 }
 
-/* The staff host wears no marketing chrome.
-
-   :has() on the body rather than a header/footer check in the root layout,
-   which would have to read the Host header — and reading headers() there opts
-   every marketing page out of static rendering to hide a nav on one host. This
-   costs a selector and nothing else.
-
-   The pairing is: the staff layout renders .admin-shell, and these two rules
-   remove the public nav and footer wrapped around it. */
-body:has(.admin-shell) > header,
-body:has(.admin-shell) > footer,
-body:has(.admin-shell) > * > header,
-body:has(.admin-shell) > * > footer {
-  display: none;
-}
-
-/* Without the site header above it, the page needs its own top breathing room. */
-.admin-shell {
-  padding-top: 2.5rem;
-}
 
 /* -------------------------------------------------------------------------- */
 /* Reservations calendar                                                      */
@@ -842,10 +807,10 @@ body:has(.admin-shell) > * > footer {
 /* A refusal, above the grid. role="alert" carries it to a screen reader; this
    is what carries it to everyone else. */
 .cal-problem {
-  border: 1px solid rgba(233, 160, 59, 0.45);
+  border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
   border-left-width: 3px;
   border-radius: var(--radius-card);
-  background: rgba(233, 160, 59, 0.1);
+  background: color-mix(in srgb, var(--alert) 10%, transparent);
   color: var(--marigold);
   padding: 0.75rem 1rem;
   margin: 0 0 1rem;
@@ -869,8 +834,8 @@ body:has(.admin-shell) > * > footer {
   text-align: center;
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
-  border-left: 1px solid rgba(12, 31, 25, 0.6);
-  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+  border-left: 1px solid color-mix(in srgb, var(--shade) 60%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--wash) 12%, transparent);
 }
 
 /* The base price is the quiet default — most of the year is this, and if it
@@ -882,7 +847,7 @@ body:has(.admin-shell) > * > footer {
 /* A night priced deliberately. Jade because it is a fact, not a warning. */
 .rate-cell.override {
   color: var(--cream);
-  background: rgba(130, 180, 155, 0.14);
+  background: color-mix(in srgb, var(--wash) 14%, transparent);
 }
 
 /* Not selling. Struck through as well as dimmed: colour alone would leave a
@@ -890,7 +855,7 @@ body:has(.admin-shell) > * > footer {
    colourblind reader. */
 .rate-cell.closed {
   color: var(--admin-muted);
-  background: rgba(243, 236, 220, 0.05);
+  background: color-mix(in srgb, var(--cream) 5%, transparent);
   text-decoration: line-through;
 }
 
@@ -898,7 +863,7 @@ body:has(.admin-shell) > * > footer {
    go and fix — a night that cannot be quoted cannot be sold. */
 .rate-cell.unpriced {
   color: var(--marigold);
-  background: rgba(233, 160, 59, 0.08);
+  background: color-mix(in srgb, var(--alert) 8%, transparent);
   font-weight: 600;
 }
 
@@ -935,9 +900,9 @@ body:has(.admin-shell) > * > footer {
 }
 
 .rate-legend .swatch.base { background: transparent; }
-.rate-legend .swatch.override { background: rgba(130, 180, 155, 0.35); }
-.rate-legend .swatch.closed { background: rgba(243, 236, 220, 0.12); }
-.rate-legend .swatch.unpriced { background: rgba(233, 160, 59, 0.35); }
+.rate-legend .swatch.override { background: color-mix(in srgb, var(--wash) 35%, transparent); }
+.rate-legend .swatch.closed { background: color-mix(in srgb, var(--cream) 12%, transparent); }
+.rate-legend .swatch.unpriced { background: color-mix(in srgb, var(--alert) 35%, transparent); }
 .rate-legend .swatch.flagged {
   background: transparent;
   position: relative;
@@ -1007,7 +972,7 @@ body:has(.admin-shell) > * > footer {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.6rem 0;
-  border-bottom: 1px solid rgba(130, 180, 155, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--wash) 12%, transparent);
 }
 
 .desk-row:last-child {
@@ -1175,15 +1140,15 @@ body:has(.admin-shell) > * > footer {
   display: inline-block;
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid rgba(233, 160, 59, 0.45);
-  background: rgba(233, 160, 59, 0.1);
+  border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
+  background: color-mix(in srgb, var(--alert) 10%, transparent);
   color: var(--marigold);
   font-size: 0.82rem;
   white-space: nowrap;
 }
 
 .bw-needs:hover {
-  background: rgba(233, 160, 59, 0.18);
+  background: color-mix(in srgb, var(--alert) 18%, transparent);
 }
 
 @media (max-width: 30rem) {
@@ -1226,7 +1191,7 @@ body:has(.admin-shell) > * > footer {
 }
 
 .rt-chip:hover {
-  background: rgba(130, 180, 155, 0.12);
+  background: color-mix(in srgb, var(--wash) 12%, transparent);
   color: var(--cream);
 }
 
@@ -1279,7 +1244,7 @@ body:has(.admin-shell) > * > footer {
   margin-bottom: 1rem;
   border: 1px solid var(--jade-line);
   border-radius: var(--radius-card);
-  background: rgba(243, 236, 220, 0.03);
+  background: color-mix(in srgb, var(--cream) 3%, transparent);
 }
 
 .bl-statuses {
@@ -1354,7 +1319,7 @@ body:has(.admin-shell) > * > footer {
 }
 
 .bl-row:hover {
-  background: rgba(130, 180, 155, 0.08);
+  background: color-mix(in srgb, var(--wash) 8%, transparent);
 }
 
 .bl-who {
@@ -1376,11 +1341,11 @@ body:has(.admin-shell) > * > footer {
 }
 
 .bl-status-confirmed {
-  border-color: rgba(130, 180, 155, 0.5);
+  border-color: color-mix(in srgb, var(--wash) 50%, transparent);
 }
 
 .bl-status-in_house {
-  border-color: rgba(233, 160, 59, 0.55);
+  border-color: color-mix(in srgb, var(--alert) 55%, transparent);
   color: var(--marigold);
 }
 
@@ -1458,7 +1423,7 @@ body:has(.admin-shell) > * > footer {
 }
 
 .rm-day:hover {
-  background: rgba(130, 180, 155, 0.1);
+  background: color-mix(in srgb, var(--wash) 10%, transparent);
 }
 
 /* The one cell that is not a button: padding for a month that does not start
@@ -1490,11 +1455,11 @@ body:has(.admin-shell) > * > footer {
 }
 
 .rm-day.override {
-  background: rgba(130, 180, 155, 0.22);
+  background: color-mix(in srgb, var(--wash) 22%, transparent);
 }
 
 .rm-day.override:hover {
-  background: rgba(130, 180, 155, 0.3);
+  background: color-mix(in srgb, var(--wash) 30%, transparent);
 }
 
 .rm-day.closed .rm-price,
@@ -1503,7 +1468,7 @@ body:has(.admin-shell) > * > footer {
 }
 
 .rm-day.closed {
-  background: rgba(243, 236, 220, 0.07);
+  background: color-mix(in srgb, var(--cream) 7%, transparent);
 }
 
 .rm-day.closed .rm-price {
@@ -1524,11 +1489,11 @@ body:has(.admin-shell) > * > footer {
  */
 .rm-day.selected {
   box-shadow: inset 0 0 0 1px var(--marigold);
-  background: rgba(233, 160, 59, 0.06);
+  background: color-mix(in srgb, var(--alert) 6%, transparent);
 }
 
 .rm-day.override.selected {
-  background: rgba(130, 180, 155, 0.24);
+  background: color-mix(in srgb, var(--wash) 24%, transparent);
 }
 
 .rm-day:focus-visible {
@@ -1623,14 +1588,14 @@ body:has(.admin-shell) > * > footer {
   margin-bottom: 1.5rem;
   border: 1px solid var(--jade-line);
   border-radius: var(--radius-card);
-  background: rgba(243, 236, 220, 0.04);
+  background: color-mix(in srgb, var(--cream) 4%, transparent);
 }
 
 /* Louder when the guest page cannot work at all — the difference between
    "there is more to do" and "nothing you have set up is reaching anybody". */
 .setup-blocked {
   border-color: var(--marigold);
-  background: rgba(233, 160, 59, 0.08);
+  background: color-mix(in srgb, var(--alert) 8%, transparent);
 }
 
 .setup-head {
@@ -1659,7 +1624,7 @@ body:has(.admin-shell) > * > footer {
 .setup-bar {
   height: 4px;
   border-radius: 999px;
-  background: rgba(243, 236, 220, 0.12);
+  background: color-mix(in srgb, var(--cream) 12%, transparent);
   overflow: hidden;
 }
 
@@ -1784,10 +1749,10 @@ body:has(.admin-shell) > * > footer {
   border-radius: 8px;
   background:
     linear-gradient(
-      rgba(130, 180, 155, calc(var(--mg-heat, 0) * 0.16)),
-      rgba(130, 180, 155, calc(var(--mg-heat, 0) * 0.16))
+      color-mix(in srgb, var(--wash) calc(var(--mg-heat, 0) * 16%), transparent),
+      color-mix(in srgb, var(--wash) calc(var(--mg-heat, 0) * 16%), transparent)
     ),
-    rgba(243, 236, 220, 0.02);
+    color-mix(in srgb, var(--cream) 2%, transparent);
 }
 
 /* Days belonging to the months either side. Not drawn at all rather than
@@ -1807,7 +1772,7 @@ body:has(.admin-shell) > * > footer {
 /* No room left that night: the one occupancy figure worth interrupting for,
    because it is the one that turns somebody away. */
 .mg-cell.full {
-  border-color: rgba(233, 160, 59, 0.5);
+  border-color: color-mix(in srgb, var(--alert) 50%, transparent);
 }
 
 /* In front. `--mg-lanes` reserves the rows the bars need; the last two rows
@@ -1880,7 +1845,7 @@ body:has(.admin-shell) > * > footer {
   border: 0;
   border-left: 2px solid var(--jade);
   border-radius: 0;
-  background: rgba(130, 180, 155, 0.22);
+  background: color-mix(in srgb, var(--wash) 22%, transparent);
   color: var(--cream);
   font: inherit;
   font-size: 0.74rem;
@@ -1893,7 +1858,7 @@ body:has(.admin-shell) > * > footer {
 }
 
 .mg-bar:hover {
-  background: rgba(130, 180, 155, 0.34);
+  background: color-mix(in srgb, var(--wash) 34%, transparent);
 }
 
 .mg-bar.opens {
@@ -1902,7 +1867,7 @@ body:has(.admin-shell) > * > footer {
 
 .mg-bar.closes {
   border-radius: 0 4px 4px 0;
-  border-right: 2px solid rgba(130, 180, 155, 0.5);
+  border-right: 2px solid color-mix(in srgb, var(--wash) 50%, transparent);
 }
 
 .mg-bar.opens.closes {
@@ -1919,26 +1884,26 @@ body:has(.admin-shell) > * > footer {
 
 .mg-bar.in_house {
   border-left-color: var(--marigold);
-  background: rgba(233, 160, 59, 0.2);
+  background: color-mix(in srgb, var(--alert) 20%, transparent);
 }
 
 .mg-bar.in_house:hover {
-  background: rgba(233, 160, 59, 0.3);
+  background: color-mix(in srgb, var(--alert) 30%, transparent);
 }
 
 .mg-bar.checked_out,
 .mg-bar.cancelled,
 .mg-bar.no_show {
-  border-left-color: rgba(243, 236, 220, 0.4);
-  background: rgba(243, 236, 220, 0.08);
-  color: rgba(243, 236, 220, 0.66);
+  border-left-color: color-mix(in srgb, var(--cream) 40%, transparent);
+  background: color-mix(in srgb, var(--cream) 8%, transparent);
+  color: color-mix(in srgb, var(--cream) 66%, transparent);
 }
 
 /* No room yet. Outlined rather than filled, so it reads as unfinished. */
 .mg-bar.noroom {
   border: 1px dashed var(--marigold);
   border-left-width: 2px;
-  background: rgba(233, 160, 59, 0.1);
+  background: color-mix(in srgb, var(--alert) 10%, transparent);
   color: var(--marigold);
   border-radius: 4px;
 }
@@ -2039,9 +2004,9 @@ body:has(.admin-shell) > * > footer {
 .mg-alert {
   margin: 0 0 1rem;
   padding: 0.6rem 0.85rem;
-  border: 1px solid rgba(233, 160, 59, 0.45);
+  border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
   border-radius: var(--radius-card);
-  background: rgba(233, 160, 59, 0.08);
+  background: color-mix(in srgb, var(--alert) 8%, transparent);
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--cream-soft);
@@ -2128,7 +2093,7 @@ body:has(.admin-shell) > * > footer {
   width: var(--tl-room);
   padding: 0.45rem 0.6rem;
   /* Opaque: the nights slide underneath it. */
-  background: #0c1f19;
+  background: var(--shade);
   border-right: 1px solid var(--cal-rule);
   border-bottom: 1px solid var(--cal-line);
   font-size: 0.85rem;
@@ -2179,7 +2144,7 @@ body:has(.admin-shell) > * > footer {
 
 .tl-day.today,
 .tl-cell.today {
-  background: rgba(130, 180, 155, 0.12);
+  background: color-mix(in srgb, var(--wash) 12%, transparent);
   border-left-color: var(--jade);
 }
 
@@ -2201,7 +2166,7 @@ body:has(.admin-shell) > * > footer {
 .tl-groupfill {
   flex: 1 1 auto;
   min-width: calc(var(--tl-cols) * var(--tl-day));
-  background: rgba(130, 180, 155, 0.06);
+  background: color-mix(in srgb, var(--wash) 6%, transparent);
   border-top: 1px solid var(--cal-rule);
   border-bottom: 1px solid var(--cal-line);
 }
@@ -2224,7 +2189,7 @@ body:has(.admin-shell) > * > footer {
 }
 
 .tl-cell:hover {
-  background: rgba(130, 180, 155, 0.1);
+  background: color-mix(in srgb, var(--wash) 10%, transparent);
 }
 
 /* A stay. Sits over the cells, and is the thing that gets dragged. */
@@ -2250,20 +2215,20 @@ body:has(.admin-shell) > * > footer {
   display: flex;
   align-items: stretch;
   border-radius: 4px;
-  background: rgba(130, 180, 155, 0.34);
-  box-shadow: inset 0 0 0 1px rgba(130, 180, 155, 0.55);
+  background: color-mix(in srgb, var(--wash) 34%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--wash) 55%, transparent);
   cursor: grab;
   overflow: hidden;
 }
 
 .tl-stay.in-house {
-  background: rgba(233, 160, 59, 0.32);
-  box-shadow: inset 0 0 0 1px rgba(233, 160, 59, 0.55);
+  background: color-mix(in srgb, var(--alert) 32%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--alert) 55%, transparent);
 }
 
 .tl-stay.out {
-  background: rgba(243, 236, 220, 0.1);
-  box-shadow: inset 0 0 0 1px rgba(243, 236, 220, 0.25);
+  background: color-mix(in srgb, var(--cream) 10%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cream) 25%, transparent);
 }
 
 /* Lifted while it is being dragged, so it reads as held rather than dropped. */
@@ -2304,8 +2269,8 @@ body:has(.admin-shell) > * > footer {
   cursor: ew-resize;
   background: linear-gradient(
     to right,
-    rgba(243, 236, 220, 0.28),
-    rgba(243, 236, 220, 0.28)
+    color-mix(in srgb, var(--cream) 28%, transparent),
+    color-mix(in srgb, var(--cream) 28%, transparent)
   );
   background-size: 2px 100%;
   background-repeat: no-repeat;
@@ -2341,7 +2306,7 @@ body:has(.admin-shell) > * > footer {
 .tl-row.holding .tl-track {
   background-image: repeating-linear-gradient(
     45deg,
-    rgba(243, 236, 220, 0.045) 0 6px,
+    color-mix(in srgb, var(--cream) 4.5%, transparent) 0 6px,
     transparent 6px 12px
   );
 }
@@ -2367,8 +2332,8 @@ body:has(.admin-shell) > * > footer {
   padding: 0 0.3rem;
   border-radius: 999px;
   text-align: center;
-  background: rgba(233, 160, 59, 0.9);
-  color: #24180a;
+  background: color-mix(in srgb, var(--alert) 90%, transparent);
+  color: var(--marigold-ink);
 }
 
 /* A holding cell is a drop target and not a button, so it does not light up. */
@@ -2384,9 +2349,9 @@ body:has(.admin-shell) > * > footer {
  * nothing to size it against until it has a room.
  */
 .tl-stay.unplaced {
-  background: rgba(233, 160, 59, 0.18);
+  background: color-mix(in srgb, var(--alert) 18%, transparent);
   box-shadow: none;
-  outline: 1px dashed rgba(233, 160, 59, 0.75);
+  outline: 1px dashed color-mix(in srgb, var(--alert) 75%, transparent);
   outline-offset: -1px;
 }
 
@@ -2402,7 +2367,7 @@ body:has(.admin-shell) > * > footer {
   padding: 0.5rem 0.7rem;
   border-radius: 8px;
   border-left: 3px solid var(--marigold);
-  background: rgba(233, 160, 59, 0.12);
+  background: color-mix(in srgb, var(--alert) 12%, transparent);
   font-size: 0.82rem;
   line-height: 1.5;
   color: var(--cream);

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import InviteForm, { type InviteState } from "@/components/dashboard/InviteForm";
 import ReferralList from "@/components/dashboard/ReferralList";
 import { call, currentUser, sessionToken, type Referrals } from "@/lib/customer";
@@ -104,17 +105,14 @@ export default async function ReferralsPage({
   const signupUrl = `${SITE_URL}${localizedPath(locale, "/signup")}`;
 
   return (
-    <section className="section">
-      <div className="wrap" style={{ maxWidth: "48rem" }}>
-        <Link
-          href={localizedPath(lang, "/dashboard")}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Dashboard
-        </Link>
-
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Refer a business</h1>
-        <p className="lede" style={{ marginBottom: "2.5rem" }}>
+    <>
+      <PageHeader
+        title="Refer a Business"
+        sub={`${progress.qualified} of ${progress.needed} joined`}
+        back={localizedPath(lang, "/dashboard")}
+      />
+      <div className="page-body is-narrow">
+        <p className="lede" style={{ marginBottom: "1rem" }}>
           Invite {progress.needed} businesses. When they have signed up and
           signed in, you get {progress.worth}% off your plan.
         </p>
@@ -123,9 +121,9 @@ export default async function ReferralsPage({
 
         <div
           style={{
-            background: progress.earned ? "rgba(233,160,59,0.14)" : "var(--paper)",
+            background: progress.earned ? "color-mix(in srgb, var(--alert) 14%, transparent)" : "var(--paper)",
             color: progress.earned ? "var(--cream)" : "var(--ink)",
-            border: progress.earned ? "1px solid rgba(233,160,59,0.5)" : "none",
+            border: progress.earned ? "1px solid color-mix(in srgb, var(--alert) 50%, transparent)" : "none",
             borderRadius: 14,
             padding: "1.6rem",
             marginBottom: "2rem",
@@ -170,8 +168,8 @@ export default async function ReferralsPage({
                     i < progress.qualified
                       ? "var(--marigold)"
                       : progress.earned
-                        ? "rgba(255,255,255,0.15)"
-                        : "rgba(27,42,35,0.12)",
+                        ? "color-mix(in srgb, var(--cream) 15%, transparent)"
+                        : "color-mix(in srgb, var(--ink) 12%, transparent)",
                 }}
               />
             ))}
@@ -186,8 +184,8 @@ export default async function ReferralsPage({
                   inherit the body colour with no underline and no weight
                   change, so on this card the only thing to do about an earned
                   discount was indistinguishable from the sentence around it. */}
-              <Link className="btn btn-go" href={localizedPath(lang, "/contact")}>
-                Claim it
+              <Link className="btn btn-quiet" href={localizedPath(lang, "/contact")}>
+                Claim It
               </Link>
             </div>
           ) : null}
@@ -196,14 +194,14 @@ export default async function ReferralsPage({
         {/* ------------------------------------------------------ the invite */}
 
         <h2 style={{ fontSize: "1.15rem", marginBottom: "0.3rem" }}>
-          Invite someone
+          Invite Someone
         </h2>
         <InviteForm action={invite} canEmail={canEmail} />
 
         {/* -------------------------------------------------------- the list */}
 
         <h2 style={{ fontSize: "1.15rem", marginBottom: "1rem" }}>
-          Your invitations
+          Your Invitations
         </h2>
 
         <ReferralList
@@ -212,6 +210,6 @@ export default async function ReferralsPage({
           revoke={revoke}
         />
       </div>
-    </section>
+    </>
   );
 }

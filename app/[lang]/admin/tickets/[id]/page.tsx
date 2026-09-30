@@ -2,6 +2,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import Thread from "@/components/dashboard/Thread";
 import { ReplyBox, type TicketState } from "@/components/dashboard/TicketForms";
 import {
@@ -25,7 +26,7 @@ function when(iso: string): string {
 
 const STATUS: Record<string, { label: string; colour: string }> = {
   open: { label: "Waiting on us", colour: "var(--marigold)" },
-  answered: { label: "Answered — waiting on them", colour: "var(--jade)" },
+  answered: { label: "Answered — waiting on them", colour: "var(--success)" },
   closed: { label: "Closed", colour: "var(--admin-muted)" },
 };
 
@@ -91,13 +92,13 @@ export default async function StaffTicketPage({
 
   return (
     <>
-      <Link href="/tickets" style={{ color: "var(--jade)", fontSize: "0.9rem" }}>
-        ← Tickets
-      </Link>
-
-      <h1 style={{ fontSize: "1.4rem", margin: "1rem 0 0.4rem" }}>{ticket.title}</h1>
-
-      <p style={{ color: "var(--admin-muted)", fontSize: "0.85rem", margin: "0 0 1.75rem" }}>
+      <PageHeader
+        title={ticket.title}
+        sub={`${account.email}${ticket.venue ? ` · ${ticket.venue.name}` : ""} · ${state.label}`}
+        back="/tickets"
+      />
+      <div className="page-body is-narrow">
+      <p style={{ color: "var(--admin-muted)", fontSize: "0.85rem", margin: "0 0 1rem" }}>
         <Link href={`/accounts/${account.id}`} style={{ color: "var(--jade)" }}>
           {account.email}
         </Link>
@@ -115,14 +116,14 @@ export default async function StaffTicketPage({
       <ReplyBox
         action={reply}
         placeholder="Write a reply — it goes to them by email as well"
-        submitLabel="Send reply"
+        submitLabel="Send Reply"
       />
 
       {ticket.status !== "closed" ? (
         <div style={{ marginTop: "1.25rem" }}>
           <form action={closeTicket}>
             <button type="submit" className="btn btn-quiet">
-              Close it
+              Close It
             </button>
           </form>
           <p style={{ color: "var(--admin-muted)", fontSize: "0.85rem", margin: "0.6rem 0 0" }}>
@@ -131,6 +132,7 @@ export default async function StaffTicketPage({
           </p>
         </div>
       ) : null}
+      </div>
     </>
   );
 }

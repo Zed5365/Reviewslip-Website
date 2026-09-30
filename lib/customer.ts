@@ -728,7 +728,14 @@ export interface BusinessSettings {
    * is ever told about the business — the separate description, location and
    * verified-detail fields it used to sit beside are gone.
    */
-  categories: Setting<{ id: string; label: string; focus: string }[]>;
+  /**
+   * `locked` is absent rather than false on an unlocked topic — the review app
+   * stores it only when true, to keep a column read on every guest page load
+   * from carrying fifty `false`s.
+   */
+  categories: Setting<
+    { id: string; label: string; focus: string; locked?: boolean }[]
+  >;
   /**
    * Review sites this venue has said it is not on, by platform id.
    *
@@ -813,7 +820,10 @@ export interface SetupProgress {
   complete: boolean;
   /** Whether the guest page can do its job at all. */
   canTakeReviews: boolean;
+  /** What the venue still has to do. Never the writing key, which is ours. */
   blocking: string[];
+  /** The venue has finished its side and is waiting on us to fit the key. */
+  waitingOnUs: boolean;
 }
 
 export interface BusinessDetail {
@@ -842,6 +852,18 @@ export interface BusinessDetail {
  * unreachable, is thrown: showing a signed-out page when the truth is "we
  * cannot tell" would log people out on every blip.
  */
+/**
+ * A venue's name, for a page header's second line.
+ *
+ * Falls back to the slug rather than failing: the header is a label, and the
+ * page beneath it does its own ownership check and will refuse on its own
+ * terms if this account has no such venue.
+ */
+export async function venueName(slug: string): Promise<string> {
+  const me = await currentUser();
+  return me?.businesses.find((b) => b.slug === slug)?.name ?? slug;
+}
+
 export async function currentUser(): Promise<Me | null> {
   const token = await sessionToken();
   if (!token) return null;

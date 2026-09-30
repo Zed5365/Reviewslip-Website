@@ -10,7 +10,7 @@
    sheet rather than its parent, so printing can hide all of it in one rule
    without taking the sheet with it. */
 .page {
-  padding: 2.5rem 0 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .actions {

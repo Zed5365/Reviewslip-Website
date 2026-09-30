@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import BookingsWidget from "@/components/dashboard/BookingsWidget";
 import ReviewsWidget from "@/components/dashboard/ReviewsWidget";
 import SetupProgress from "@/components/dashboard/SetupProgress";
@@ -77,21 +77,16 @@ export default async function BusinessPage({
   const { business, stats } = data;
 
   return (
-    <section className="section">
-      <div className="wrap">
-        <Link
-          href={localizedPath(lang, "/dashboard")}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← All businesses
-        </Link>
-
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>{business.name}</h1>
-        <p className="lede" style={{ marginBottom: "2.5rem" }}>
-          <a href={business.url} target="_blank" rel="noreferrer">
-            {business.url}
-          </a>
-        </p>
+    <>
+      {/* The Home dashboard has nothing above it, so it has no Back. The second
+          line is the venue's public address — the thing most often copied off
+          this screen. */}
+      <PageHeader title={business.name} sub={business.url}>
+        <a className="btn btn-quiet" href={business.url} target="_blank" rel="noreferrer">
+          Open Review Page
+        </a>
+      </PageHeader>
+      <div className="page-body">
 
         {/* Above the doors, and gone once it is finished. An unfinished
             venue has one thing worth doing and it is not reading occupancy. */}
@@ -110,38 +105,16 @@ export default async function BusinessPage({
             summary={summary}
             base={localizedPath(lang, `/dashboard/${business.slug}/bookings`)}
           />
-          {/*
-            The reviews column, with the venue's own buttons under it.
-            
-            Inside the column rather than under the whole grid: a row beneath
-            two columns starts at the left edge, which reads as belonging to
-            the left one. Settings and the table card are about the review
-            side of the product — the card is the thing that sends guests to
-            the page in the first place — so they sit under reviews.
-          */}
+          {/* Settings and the Table Card are entries in the Sidebar, so this
+              column carries the figures and nothing to press. */}
           <div className="hub-col">
             <ReviewsWidget
               stats={stats}
               base={localizedPath(lang, `/dashboard/${business.slug}/reviews`)}
             />
-
-            <div className="hub-actions">
-              <Link
-                className="btn btn-go"
-                href={localizedPath(lang, `/dashboard/${business.slug}/settings`)}
-              >
-                Settings
-              </Link>
-              <Link
-                className="btn btn-quiet"
-                href={localizedPath(lang, `/dashboard/${business.slug}/poster`)}
-              >
-                Table card
-              </Link>
-            </div>
           </div>
         </div>
       </div>
-    </section>
+    </>
   );
 }

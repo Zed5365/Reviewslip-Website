@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import ListingReviews, {
   type Listings,
   type NewReview,
 } from "@/components/dashboard/ListingReviews";
+import PageHeader from "@/components/app-shell/PageHeader";
 import ReviewList, { type ReviewRow } from "@/components/dashboard/ReviewList";
 import { call, sessionToken, type BusinessDetail } from "@/lib/customer";
 import { isLocale } from "@/lib/i18n/config";
@@ -200,22 +200,19 @@ export default async function ReviewsPage({
   const { business } = data;
 
   return (
-    <section className="section">
-      <div className="wrap">
-        <Link
-          href={localizedPath(lang, `/dashboard/${business.slug}`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← {business.name}
-        </Link>
-
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Reviews</h1>
-        <p className="lede" style={{ marginBottom: "2rem" }}>
+    <>
+      <PageHeader
+        title="Reviews"
+        sub={business.name}
+        back={localizedPath(lang, `/dashboard/${business.slug}`)}
+      />
+      <div className="page-body">
+        <p className="lede" style={{ marginBottom: "1rem" }}>
           What guests have written here, and what they have written about you
           elsewhere.
         </p>
 
-        <div style={{ display: "grid", gap: "1.5rem" }}>
+        <div style={{ display: "grid", gap: "0.75rem" }}>
           <ReviewList
             reviews={reviews}
             notTaken={notTaken}
@@ -233,6 +230,6 @@ export default async function ReviewsPage({
           )}
         </div>
       </div>
-    </section>
+    </>
   );
 }

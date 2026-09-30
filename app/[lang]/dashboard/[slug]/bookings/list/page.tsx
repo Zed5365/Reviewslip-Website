@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import BookingListView from "@/components/dashboard/BookingListView";
 import RoomTypeFilter from "@/components/dashboard/RoomTypeFilter";
 import ViewToggle from "@/components/dashboard/ViewToggle";
@@ -14,6 +15,7 @@ import {
   type RatePlan,
   type Room,
   type RoomGroup,
+  venueName,
 } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
@@ -179,13 +181,16 @@ export default async function BookingListPage({
     return {};
   }
 
+  const venue = await venueName(slug);
+
   return (
     <>
-      <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Bookings</h1>
-      <p className="admin-sub" style={{ marginBottom: "1rem" }}>
-        Every stay, however you want to narrow it.
-      </p>
-
+      <PageHeader
+        title="Bookings"
+        sub={`${venue} · ${data.bookings.length} shown`}
+        back={localizedPath(locale, `/dashboard/${slug}`)}
+      />
+      <div className="page-body">
       <ViewToggle
         calendar={localizedPath(locale, `/dashboard/${slug}/bookings/calendar`)}
         list={here}
@@ -205,6 +210,7 @@ export default async function BookingListPage({
         assign={assign}
         setStatus={setStatus}
       />
+      </div>
     </>
   );
 }

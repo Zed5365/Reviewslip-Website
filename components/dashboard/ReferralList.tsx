@@ -22,9 +22,9 @@ import type { Referral } from "@/lib/customer";
  * close enough to invisible that the chip read as an empty pill.
  */
 const STATE_STYLE: Record<Referral["state"], { bg: string; fg: string; label: string }> = {
-  invited: { bg: "rgba(233,160,59,0.16)", fg: "var(--marigold)", label: "Invited" },
-  "signed up": { bg: "rgba(233,160,59,0.16)", fg: "var(--marigold)", label: "Signed up" },
-  joined: { bg: "rgba(130,180,155,0.18)", fg: "var(--jade)", label: "Joined" },
+  invited: { bg: "color-mix(in srgb, var(--alert) 16%, transparent)", fg: "var(--marigold)", label: "Invited" },
+  "signed up": { bg: "color-mix(in srgb, var(--alert) 16%, transparent)", fg: "var(--marigold)", label: "Signed up" },
+  joined: { bg: "color-mix(in srgb, var(--success) 18%, transparent)", fg: "var(--success)", label: "Joined" },
 };
 
 function inviteUrl(base: string, code: string) {
@@ -111,7 +111,7 @@ export default function ReferralList({
                     className="btn btn-quiet"
                     onClick={() => copy(referral)}
                   >
-                    {copied === referral.id ? "Copied" : "Copy link"}
+                    {copied === referral.id ? "Copied" : "Copy Link"}
                   </button>
 
                   <form action={revoke}>

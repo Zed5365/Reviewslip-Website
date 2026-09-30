@@ -72,7 +72,7 @@ export default function ReviewsWidget({
               height: `${Math.max((day.reviews / peak) * 100, 2)}%`,
               borderRadius: "2px 2px 0 0",
               background:
-                day.reviews === 0 ? "rgba(243,236,220,0.12)" : "var(--jade)",
+                day.reviews === 0 ? "color-mix(in srgb, var(--cream) 12%, transparent)" : "var(--jade)",
             }}
           />
         ))}

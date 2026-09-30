@@ -291,7 +291,7 @@ export default function RateMonth({
 
             <div style={{ flex: "1 1 10rem" }}>
               <label htmlFor="rm-base" style={label}>
-                Every night
+                Every Night
               </label>
               <div style={{ display: "flex", gap: "0.4rem" }}>
                 <input
@@ -305,7 +305,7 @@ export default function RateMonth({
                 />
                 <button
                   type="button"
-                  className="btn btn-go"
+                  className="btn btn-quiet"
                   disabled={busy || base === (plan?.base ?? "")}
                   onClick={() => void saveBase()}
                 >
@@ -378,7 +378,7 @@ export default function RateMonth({
 
           {/* ------------------------------------------ what to do to them */}
           <div className="admin-card">
-            <h2>Price these nights</h2>
+            <h2>Price These Nights</h2>
             <p className="admin-sub" style={{ marginBottom: "1rem" }}>
               {selected.length > 0
                 ? `${selected.length} night${selected.length === 1 ? "" : "s"} · ${from}${
@@ -401,7 +401,7 @@ export default function RateMonth({
             >
               <div>
                 <label htmlFor="rm-from" style={label}>
-                  First night
+                  First Night
                 </label>
                 <input
                   id="rm-from"
@@ -415,7 +415,7 @@ export default function RateMonth({
 
               <div>
                 <label htmlFor="rm-to" style={label}>
-                  Last night
+                  Last Night
                 </label>
                 <input
                   id="rm-to"
@@ -429,7 +429,7 @@ export default function RateMonth({
 
               <div>
                 <label htmlFor="rm-amount" style={label}>
-                  Price a night
+                  Price a Night
                 </label>
                 <input
                   id="rm-amount"
@@ -444,7 +444,7 @@ export default function RateMonth({
 
               <div>
                 <label htmlFor="rm-min-wish" style={label}>
-                  Minimum stay
+                  Minimum Stay
                 </label>
                 <div style={{ display: "flex", gap: "0.4rem" }}>
                   <select
@@ -454,9 +454,9 @@ export default function RateMonth({
                     onChange={(e) => setStay(e.target.value as Wish)}
                     style={{ ...field, flex: "1 1 0", minWidth: 0, appearance: "auto" }}
                   >
-                    <option value="keep">Leave as it is</option>
-                    <option value="on">At least</option>
-                    <option value="off">No minimum</option>
+                    <option value="keep">Leave as It Is</option>
+                    <option value="on">At Least</option>
+                    <option value="off">No Minimum</option>
                   </select>
                   {stay === "on" ? (
                     <input
@@ -485,9 +485,9 @@ export default function RateMonth({
                   onChange={(e) => setClosed(e.target.value as Wish)}
                   style={{ ...field, appearance: "auto" }}
                 >
-                  <option value="keep">Leave as it is</option>
-                  <option value="on">Not selling these nights</option>
-                  <option value="off">Selling these nights</option>
+                  <option value="keep">Leave as It Is</option>
+                  <option value="on">Not Selling These Nights</option>
+                  <option value="off">Selling These Nights</option>
                 </select>
               </div>
 
@@ -502,9 +502,9 @@ export default function RateMonth({
                   onChange={(e) => setCta(e.target.value as Wish)}
                   style={{ ...field, appearance: "auto" }}
                 >
-                  <option value="keep">Leave as it is</option>
-                  <option value="on">No arrivals on these nights</option>
-                  <option value="off">Arrivals allowed</option>
+                  <option value="keep">Leave as It Is</option>
+                  <option value="on">No Arrivals on These Nights</option>
+                  <option value="off">Arrivals Allowed</option>
                 </select>
               </div>
             </div>
@@ -524,7 +524,7 @@ export default function RateMonth({
 
       {/* --------------------------------------------------------- a new rate */}
       <div className="admin-card">
-        <h2>Add a rate</h2>
+        <h2>Add a Rate</h2>
         <p className="admin-sub" style={{ marginBottom: "1rem" }}>
           One per room type is enough to start. The price you give is what every
           night costs; seasons are the exceptions you set afterwards.
@@ -565,7 +565,7 @@ export default function RateMonth({
 
           <button
             type="button"
-            className="btn btn-go"
+            className="btn btn-quiet"
             disabled={busy}
             onClick={() => void addPlan()}
           >

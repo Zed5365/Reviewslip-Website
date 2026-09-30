@@ -33,7 +33,7 @@ export default function DeleteBusiness({
   if (!open) {
     return (
       <div style={frame}>
-        <h2 style={heading}>Delete this business</h2>
+        <h2 style={heading}>Delete This Business</h2>
         <p style={body}>
           Its reviews, ratings and settings go with it, and{" "}
           <strong>{slug}</strong> becomes available for someone else to claim —
@@ -41,7 +41,7 @@ export default function DeleteBusiness({
           business.
         </p>
         <button type="button" className="btn btn-quiet" onClick={() => setOpen(true)}>
-          Delete business
+          Delete Business
         </button>
       </div>
     );
@@ -49,7 +49,7 @@ export default function DeleteBusiness({
 
   return (
     <div style={frame}>
-      <h2 style={heading}>Delete this business</h2>
+      <h2 style={heading}>Delete This Business</h2>
       <p style={body}>
         This cannot be undone. Type <strong>{slug}</strong> to confirm.
       </p>
@@ -67,22 +67,22 @@ export default function DeleteBusiness({
           maxWidth: "20rem",
           padding: "0.65rem 0.8rem",
           borderRadius: 10,
-          border: "1px solid rgba(233,139,123,0.5)",
-          background: "rgba(243,236,220,0.06)",
-          color: "var(--paper)",
+          border: "1px solid color-mix(in srgb, var(--destructive) 50%, transparent)",
+          background: "color-mix(in srgb, var(--cream) 6%, transparent)",
+          color: "var(--cream)",
           font: "inherit",
           marginBottom: "0.9rem",
         }}
       />
 
-      <p aria-live="polite" style={{ ...body, color: "#e98b7b", minHeight: "1.2rem" }}>
+      <p aria-live="polite" style={{ ...body, color: "var(--destructive)", minHeight: "1.2rem" }}>
         {error}
       </p>
 
       <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
         <button
           type="button"
-          className="btn btn-go"
+          className="btn btn-danger"
           disabled={!matches || busy}
           onClick={() =>
             startBusy(async () => {
@@ -118,7 +118,7 @@ export default function DeleteBusiness({
 const frame: React.CSSProperties = {
   marginTop: "3rem",
   padding: "1.4rem",
-  border: "1px solid rgba(233,139,123,0.35)",
+  border: "1px solid color-mix(in srgb, var(--destructive) 35%, transparent)",
   borderRadius: 14,
   maxWidth: "34rem",
 };
@@ -126,7 +126,7 @@ const frame: React.CSSProperties = {
 const heading: React.CSSProperties = {
   fontSize: "1.1rem",
   margin: "0 0 0.4rem",
-  color: "#e98b7b",
+  color: "var(--destructive)",
 };
 
 const body: React.CSSProperties = {

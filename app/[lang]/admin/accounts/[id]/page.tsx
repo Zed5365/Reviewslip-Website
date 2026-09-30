@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import { call, sessionToken, type StaffAccountDetail } from "@/lib/customer";
 
 function when(iso: string | null): string {
@@ -15,7 +16,7 @@ function when(iso: string | null): string {
 const STATE: Record<string, { label: string; colour: string }> = {
   invited: { label: "Invited", colour: "var(--marigold)" },
   "signed up": { label: "Signed up", colour: "var(--marigold)" },
-  joined: { label: "Joined", colour: "var(--jade)" },
+  joined: { label: "Joined", colour: "var(--success)" },
 };
 
 export default async function StaffAccountPage({
@@ -39,18 +40,12 @@ export default async function StaffAccountPage({
 
   return (
     <>
-      <Link href="/" style={{ color: "var(--jade)", fontSize: "0.9rem" }}>
-        ← Accounts
-      </Link>
-
-      <h1 className="admin-title" style={{ marginTop: "1rem", overflowWrap: "anywhere" }}>
-        {account.email}
-      </h1>
-      <p className="admin-sub">
-        {account.username} · {plan.name} · {account.status}
-        {account.isAdmin ? " · staff" : ""} · joined {when(account.createdAt)}
-      </p>
-
+      <PageHeader
+        title={account.email}
+        sub={`${account.username} · ${plan.name} · ${account.status}${account.isAdmin ? " · staff" : ""} · joined ${when(account.createdAt)}`}
+        back="/"
+      />
+      <div className="page-body">
       {/* ------------------------------------------------------------ plan */}
 
       <div className="admin-card">
@@ -102,7 +97,7 @@ export default async function StaffAccountPage({
                       </a>
                       <span className="sub">{v.slug}</span>
                     </td>
-                    <td style={{ color: v.ready ? "var(--jade)" : "var(--marigold)" }}>
+                    <td style={{ color: v.ready ? "var(--success)" : "var(--marigold)" }}>
                       {v.status !== "active" ? v.status : v.ready ? "live" : "no review link"}
                     </td>
                     <td className="num">{v.reviews.toLocaleString()}</td>
@@ -197,6 +192,7 @@ export default async function StaffAccountPage({
             </table>
           </div>
         )}
+      </div>
       </div>
     </>
   );

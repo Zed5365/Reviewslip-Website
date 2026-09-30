@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import PrintButton from "@/components/dashboard/PrintButton";
 import {
   call,
@@ -70,18 +70,16 @@ export default async function RegistrationCard({
   const blanks = Math.max(0, rows - guests.length);
 
   return (
+    <>
+    <PageHeader
+      title="Registration Card"
+      sub={`${venue} · No. ${booking.id}`}
+      back={localizedPath(lang, `/dashboard/${slug}/bookings/calendar`)}
+    >
+      <PrintButton />
+    </PageHeader>
     <div className="card-page">
-      <div className="card-bar">
-        <Link
-          href={localizedPath(lang, `/dashboard/${slug}/bookings/calendar`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← Back to the calendar
-        </Link>
-        <PrintButton />
-      </div>
-
-      <article className="card">
+      <article className="card venue-look">
         <header className="card-head">
           <h1>{venue}</h1>
           <p>Guest registration</p>
@@ -201,5 +199,6 @@ export default async function RegistrationCard({
         </section>
       </article>
     </div>
+    </>
   );
 }

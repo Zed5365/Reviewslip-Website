@@ -19,10 +19,10 @@ import type {
 
 const STATUSES: { id: BookingStatus; label: string }[] = [
   { id: "confirmed", label: "Confirmed" },
-  { id: "in_house", label: "In house" },
-  { id: "checked_out", label: "Checked out" },
+  { id: "in_house", label: "In House" },
+  { id: "checked_out", label: "Checked Out" },
   { id: "cancelled", label: "Cancelled" },
-  { id: "no_show", label: "No show" },
+  { id: "no_show", label: "No Show" },
 ];
 
 const MODES: { id: string; label: string }[] = [
@@ -123,14 +123,14 @@ export default function BookingListView({
           })}
           {filters.statuses ? (
             <Link href={href({ status: null })} className="bl-clear">
-              show every status
+              Show Every Status
             </Link>
           ) : null}
         </div>
 
         <div className="bl-controls">
           <label className="bl-control">
-            <span>Room type</span>
+            <span>Room Type</span>
             <select
               value={filters.groupId ? String(filters.groupId) : ""}
               onChange={(e) =>
@@ -154,7 +154,7 @@ export default function BookingListView({
               onChange={(e) => go({ room: e.target.value || null })}
             >
               <option value="">Any</option>
-              <option value="0">No room yet</option>
+              <option value="0">No Room Yet</option>
               {roomsForType.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name}
@@ -217,7 +217,7 @@ export default function BookingListView({
           ? null
           : `${data.total.toLocaleString()} booking${data.total === 1 ? "" : "s"}`}
         <button type="button" className="btn btn-go" onClick={() => setOpen("new")}>
-          Take a booking
+          Take a Booking
         </button>
       </div>
 

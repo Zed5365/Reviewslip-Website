@@ -125,7 +125,7 @@ function ImageByUrl({
           role="status"
           style={{
             ...hint,
-            color: said.ok ? "var(--jade)" : "var(--warn, #d98c3a)",
+            color: said.ok ? "var(--success)" : "var(--warning)",
           }}
         >
           {said.text}
@@ -260,15 +260,15 @@ export default function ThemeEditor({
                 : "Say what you want changed in the box below first"
             }
           >
-            {reading ? "Working…" : "Adjust these colours"}
+            {reading ? "Working…" : "Adjust These Colours"}
           </button>
         )}
         <button type="button" className="btn btn-quiet" disabled={busy} onClick={onGenerate}>
           {reading
             ? "Reading…"
             : themed
-              ? "Read the website again"
-              : "Generate from website"}
+              ? "Read the Website Again"
+              : "Generate from Website"}
         </button>
       </div>
 
@@ -281,7 +281,7 @@ export default function ThemeEditor({
       */}
       <div style={{ display: "grid", gap: "0.5rem" }}>
         <label htmlFor="theme-note" style={{ fontSize: "0.85rem", fontWeight: 500 }}>
-          Anything we should know?
+          Anything We Should Know?
         </label>
         <div style={hint}>
           Optional. It steers the colours and the type, and the table card is
@@ -381,7 +381,7 @@ export default function ThemeEditor({
                           background: c.hex,
                           // The one in use gets the ring. Without it a row of
                           // swatches says nothing about which was taken.
-                          outline: chosen ? "2px solid var(--marigold)" : "none",
+                          outline: chosen ? "2px solid var(--ring)" : "none",
                           outlineOffset: 1,
                         }}
                       />
@@ -436,7 +436,7 @@ export default function ThemeEditor({
                     className="btn btn-quiet"
                     onClick={() => onDropFont(row.key)}
                   >
-                    Use a standard font instead
+                    Use a Standard Font Instead
                   </button>
                 </div>
               ) : (
@@ -545,7 +545,7 @@ export default function ThemeEditor({
               checked={value.showName === true}
               onChange={(e) => onChange({ showName: e.target.checked })}
             />
-            Print the name under the logo as well
+            Print the Name Under the Logo as Well
           </label>
           <input
             type="hidden"
@@ -623,6 +623,7 @@ export default function ThemeEditor({
         </div>
 
         <div
+          className="venue-look"
           style={{
             ...previewFrame,
             // Layered the same way body is in the guest page's stylesheet: the
@@ -743,8 +744,8 @@ const urlBox: React.CSSProperties = {
   minWidth: 0,
   padding: "0.4rem 0.55rem",
   borderRadius: 8,
-  border: "1px solid rgba(243,236,220,0.22)",
-  background: "rgba(243,236,220,0.06)",
+  border: "1px solid color-mix(in srgb, var(--cream) 22%, transparent)",
+  background: "color-mix(in srgb, var(--cream) 6%, transparent)",
   color: "inherit",
 };
 
@@ -769,7 +770,7 @@ const fromSite: React.CSSProperties = {
   borderRadius: 4,
   // A hairline, so a swatch the colour of the panel behind it is still a
   // swatch. Half the colours a site is painted with are near-black.
-  border: "1px solid rgba(243,236,220,0.35)",
+  border: "1px solid color-mix(in srgb, var(--cream) 35%, transparent)",
   cursor: "pointer",
 };
 
@@ -787,8 +788,8 @@ const noteBox: React.CSSProperties = {
   padding: "0.55rem 0.7rem",
   borderRadius: 10,
   border: "1px solid var(--jade-line)",
-  background: "rgba(243,236,220,0.06)",
-  color: "var(--paper)",
+  background: "color-mix(in srgb, var(--cream) 6%, transparent)",
+  color: "var(--cream)",
   resize: "vertical",
   minHeight: "3.4rem",
 };
@@ -844,8 +845,8 @@ const select: React.CSSProperties = {
   padding: "0.55rem 0.7rem",
   borderRadius: 10,
   border: "1px solid var(--jade-line)",
-  background: "rgba(243,236,220,0.06)",
-  color: "var(--paper)",
+  background: "color-mix(in srgb, var(--cream) 6%, transparent)",
+  color: "var(--cream)",
   font: "inherit",
   fontSize: "0.85rem",
   // The dropdown list is drawn by the operating system, not by this page, and
@@ -873,8 +874,8 @@ const hexInput: React.CSSProperties = {
   padding: "0.5rem 0.6rem",
   borderRadius: 10,
   border: "1px solid var(--jade-line)",
-  background: "rgba(243,236,220,0.06)",
-  color: "var(--paper)",
+  background: "color-mix(in srgb, var(--cream) 6%, transparent)",
+  color: "var(--cream)",
   font: "inherit",
   fontSize: "0.85rem",
 };

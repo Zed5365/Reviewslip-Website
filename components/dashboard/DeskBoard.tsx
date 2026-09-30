@@ -53,7 +53,7 @@ export default function DeskBoard({
           className="btn btn-go"
           onClick={() => setOpen("new")}
         >
-          Take a booking
+          Take a Booking
         </button>
       </div>
 

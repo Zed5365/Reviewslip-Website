@@ -78,7 +78,7 @@ export default function Tm30Board({
 
       {incomplete.length > 0 ? (
         <div className="admin-card">
-          <h2>Cannot be notified yet</h2>
+          <h2>Cannot Be Notified Yet</h2>
           <p className="admin-sub" style={{ marginBottom: "0.9rem" }}>
             These are missing something Immigration asks for. Open the booking on
             the calendar to fill it in.
@@ -89,7 +89,7 @@ export default function Tm30Board({
                 key={g.id}
                 style={{
                   padding: "0.5rem 0",
-                  borderBottom: "1px solid rgba(130,180,155,0.12)",
+                  borderBottom: "1px solid color-mix(in srgb, var(--wash) 12%, transparent)",
                   fontSize: "0.9rem",
                 }}
               >
@@ -157,7 +157,7 @@ export default function Tm30Board({
                 href={downloadUrl}
                 onClick={() => setDownloaded(true)}
               >
-                Download the file
+                Download the File
               </a>
 
               <button

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import PageHeader from "@/components/app-shell/PageHeader";
 import DeleteBusiness from "@/components/dashboard/DeleteBusiness";
 import SettingsForm, {
   type BusinessState,
@@ -363,17 +363,14 @@ export default async function BusinessSettingsPage({
   }
 
   return (
-    <section className="section">
-      <div className="wrap">
-        <Link
-          href={localizedPath(lang, `/dashboard/${slug}`)}
-          style={{ color: "var(--jade)", fontSize: "0.9rem" }}
-        >
-          ← {data.business.name}
-        </Link>
-
-        <h1 style={{ margin: "1.25rem 0 0.4rem" }}>Settings</h1>
-        <p className="lede" style={{ marginBottom: "2.5rem" }}>
+    <>
+      <PageHeader
+        title="Settings"
+        sub={data.business.name}
+        back={localizedPath(lang, `/dashboard/${slug}`)}
+      />
+      <div className="page-body is-narrow">
+        <p className="lede" style={{ marginBottom: "1rem" }}>
           Everything a review about this business is allowed to say.
         </p>
 
@@ -393,6 +390,6 @@ export default async function BusinessSettingsPage({
           <DeleteBusiness slug={slug} destroy={destroy} />
         </SettingsForm>
       </div>
-    </section>
+    </>
   );
 }

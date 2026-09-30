@@ -84,7 +84,7 @@ export default function RoomsSetup({
       {/* ------------------------------------------------------ room types */}
 
       <div className="admin-card">
-        <h2>Room types</h2>
+        <h2>Room Types</h2>
         <p className="admin-sub" style={{ marginBottom: "1rem" }}>
           What a guest books — a Deluxe Double, a Family Suite. Which room they
           get is decided later, on the calendar.
@@ -152,8 +152,8 @@ export default function RoomsSetup({
             aria-label="How many guests it sleeps"
             style={{ ...field, width: "6rem" }}
           />
-          <button type="submit" className="btn btn-go" disabled={groupPending}>
-            {groupPending ? "Adding…" : "Add type"}
+          <button type="submit" className="btn btn-quiet" disabled={groupPending}>
+            {groupPending ? "Adding…" : "Add Type"}
           </button>
         </form>
         <Problem error={groupState.error} />
@@ -232,8 +232,8 @@ export default function RoomsSetup({
                   </option>
                 ))}
               </select>
-              <button type="submit" className="btn btn-go" disabled={roomPending}>
-                {roomPending ? "Adding…" : "Add room"}
+              <button type="submit" className="btn btn-quiet" disabled={roomPending}>
+                {roomPending ? "Adding…" : "Add Room"}
               </button>
             </form>
             <Problem error={roomState.error} />

@@ -95,8 +95,8 @@ export default function SlugPicker({
     padding: "0.65rem 0.8rem",
     borderRadius: 10,
     border: "1px solid var(--jade-line)",
-    background: "rgba(243,236,220,0.06)",
-    color: "var(--paper)",
+    background: "color-mix(in srgb, var(--cream) 6%, transparent)",
+    color: "var(--cream)",
     font: "inherit",
   };
 
@@ -104,7 +104,7 @@ export default function SlugPicker({
     <form action={formAction} style={{ display: "grid", gap: "1.25rem", maxWidth: "34rem" }}>
       <div style={{ display: "grid", gap: "0.35rem" }}>
         <label htmlFor="name" style={{ fontSize: "0.85rem", fontWeight: 500 }}>
-          Business name
+          Business Name
         </label>
         <input
           id="name"
@@ -172,9 +172,9 @@ export default function SlugPicker({
             minHeight: "1.2rem",
             color:
               check.state === "ok"
-                ? "var(--jade)"
+                ? "var(--success)"
                 : check.state === "bad"
-                  ? "#e98b7b"
+                  ? "var(--destructive)"
                   : "var(--ink-soft)",
           }}
         >
@@ -192,13 +192,13 @@ export default function SlugPicker({
         </span>
       </div>
 
-      <p aria-live="polite" style={{ minHeight: "1.25rem", color: "#e98b7b", fontSize: "0.88rem" }}>
+      <p aria-live="polite" style={{ minHeight: "1.25rem", color: "var(--destructive)", fontSize: "0.88rem" }}>
         {state.error ?? ""}
       </p>
 
       <div>
         <button className="btn btn-go" type="submit" disabled={pending || !ready}>
-          {pending ? "Creating…" : "Create business"}
+          {pending ? "Creating…" : "Create Business"}
         </button>
       </div>
     </form>

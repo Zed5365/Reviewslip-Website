@@ -43,9 +43,9 @@ const label: React.CSSProperties = {
 
 const STATUS: { id: Booking["status"]; label: string }[] = [
   { id: "confirmed", label: "Confirmed" },
-  { id: "in_house", label: "Checked in" },
-  { id: "checked_out", label: "Checked out" },
-  { id: "no_show", label: "No show" },
+  { id: "in_house", label: "Checked In" },
+  { id: "checked_out", label: "Checked Out" },
+  { id: "no_show", label: "No Show" },
   { id: "cancelled", label: "Cancelled" },
 ];
 
@@ -428,7 +428,7 @@ export default function BookingPanel({
                 color: "var(--cream)",
               }}
             >
-              {taking ? "Take a booking" : form.guestName || current?.guestName}
+              {taking ? "Take a Booking" : form.guestName || current?.guestName}
             </h2>
             <span style={{ fontSize: "0.85rem", color: "var(--admin-muted)" }}>
               {taking
@@ -529,7 +529,7 @@ export default function BookingPanel({
 
           <div>
             <label htmlFor="p-group" style={label}>
-              Room type
+              Room Type
             </label>
             <select
               id="p-group"
@@ -566,7 +566,7 @@ export default function BookingPanel({
               onChange={(e) => set("roomId", e.target.value)}
               style={{ ...field, appearance: "auto" }}
             >
-              <option value="">Not in a room</option>
+              <option value="">Not in a Room</option>
               {forGroup.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name}
@@ -619,7 +619,7 @@ export default function BookingPanel({
                 onChange={(e) => set("ratePlanId", e.target.value)}
                 style={{ ...field, appearance: "auto" }}
               >
-                <option value="">No rate</option>
+                <option value="">No Rate</option>
                 {forGroupPlans.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -669,7 +669,7 @@ export default function BookingPanel({
               disabled={busy || count === 0 || !form.guestName.trim() || !groupId}
               onClick={() => void take()}
             >
-              {busy ? "Taking…" : "Take the booking"}
+              {busy ? "Taking…" : "Take the Booking"}
             </button>
           ) : (
             <>
@@ -694,7 +694,7 @@ export default function BookingPanel({
                   href={`${cardBase}/${current.id}`}
                   target="_blank"
                 >
-                  Registration card
+                  Registration Card
                 </Link>
               ) : null}
 

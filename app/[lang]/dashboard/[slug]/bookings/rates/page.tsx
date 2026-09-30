@@ -3,6 +3,8 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import PageHeader from "@/components/app-shell/PageHeader";
 import RateMonth from "@/components/dashboard/RateMonth";
 import {
   call,
@@ -11,6 +13,7 @@ import {
   type RateCalendar,
   type Room,
   type RoomGroup,
+  venueName,
 } from "@/lib/customer";
 import {
   addMonths,
@@ -144,33 +147,38 @@ export default async function RatesPage({
     return {};
   }
 
+  const venue = await venueName(slug);
+
   return (
     <>
-    <div
-      style={{
-        display: "flex",
-        alignItems: "baseline",
-        justifyContent: "space-between",
-        gap: "1rem",
-        flexWrap: "wrap",
-        margin: "1.25rem 0 0.4rem",
-      }}
+    <PageHeader
+      title="Rates"
+      sub={`${venue} · ${monthLabel(start, locale)}`}
+      back={localizedPath(locale, `/dashboard/${slug}`)}
     >
-      <h1 style={{ margin: 0 }}>{monthLabel(start, locale)}</h1>
-      <nav style={{ display: "flex", gap: "0.5rem" }}>
-        <Link className="btn btn-quiet" href={`${here}?start=${addMonths(start, -1)}`}>
-          ←
-        </Link>
-        <Link className="btn btn-quiet" href={here}>
-          This month
-        </Link>
-        <Link className="btn btn-quiet" href={`${here}?start=${addMonths(start, 1)}`}>
-          →
-        </Link>
-      </nav>
-    </div>
+      <Link
+        className="icon-btn"
+        href={`${here}?start=${addMonths(start, -1)}`}
+        aria-label="Previous Month"
+        title="Previous Month"
+      >
+        <ChevronLeft size={16} aria-hidden="true" />
+      </Link>
+      <Link className="btn btn-quiet" href={here}>
+        This Month
+      </Link>
+      <Link
+        className="icon-btn"
+        href={`${here}?start=${addMonths(start, 1)}`}
+        aria-label="Next Month"
+        title="Next Month"
+      >
+        <ChevronRight size={16} aria-hidden="true" />
+      </Link>
+    </PageHeader>
+    <div className="page-body">
 
-    <p className="lede" style={{ marginBottom: "2rem" }}>
+    <p className="lede" style={{ marginBottom: "1rem" }}>
       What a night costs, and when you are not selling.
     </p>
 
@@ -182,6 +190,7 @@ export default async function RatesPage({
       setBase={setBase}
       setRange={setRange}
     />
+    </div>
   </>
   );
 }
