@@ -6,8 +6,8 @@
   margin: 0 auto 3.5rem;
   padding: 1.35rem 1.5rem;
   border-radius: var(--radius-card);
-  background: rgba(233, 160, 59, 0.1);
-  border: 1px solid rgba(233, 160, 59, 0.45);
+  background: color-mix(in srgb, var(--alert) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
   color: var(--cream-soft);
   line-height: 1.7;
 }
@@ -75,12 +75,7 @@
 }
 
 .cta {
-  background: radial-gradient(
-      120% 120% at 50% 0%,
-      rgba(233, 160, 59, 0.16),
-      transparent 55%
-    ),
-    var(--shade-deep);
+  background: var(--shade-soft);
   padding-block: clamp(3.5rem, 9vw, 5.5rem);
   border-top: 1px solid var(--jade-line);
 }

@@ -43,7 +43,7 @@
   font-family: var(--ui);
   font-size: 0.95rem;
   color: var(--cream);
-  background: rgba(6, 17, 14, 0.5);
+  background: var(--shade);
   border: 1px solid var(--jade-line);
   border-radius: var(--radius-btn);
   padding: 0.7rem 0.85rem;
@@ -61,7 +61,7 @@
 .input:focus {
   outline: none;
   border-color: var(--jade);
-  box-shadow: 0 0 0 3px rgba(130, 180, 155, 0.15);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wash) 15%, transparent);
 }
 
 .textarea {
@@ -71,17 +71,17 @@
 }
 
 .invalid {
-  border-color: #d9704a;
+  border-color: var(--destructive);
 }
 
 .invalid:focus {
-  border-color: #d9704a;
-  box-shadow: 0 0 0 3px rgba(217, 112, 74, 0.18);
+  border-color: var(--destructive);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--destructive) 18%, transparent);
 }
 
 .errorText {
   font-size: 0.8rem;
-  color: #e08a68;
+  color: var(--destructive);
 }
 
 .errorBanner {
@@ -90,14 +90,14 @@
   gap: 0.15rem;
   padding: 0.85rem 1rem;
   border-radius: var(--radius-btn);
-  background: rgba(217, 112, 74, 0.12);
-  border: 1px solid rgba(217, 112, 74, 0.4);
-  color: #f0b49c;
+  background: var(--destructive-surface);
+  border: 1px solid color-mix(in srgb, var(--destructive) 40%, transparent);
+  color: var(--destructive);
   font-size: 0.9rem;
 }
 
 .errorBanner strong {
-  color: #f3c9b6;
+  color: var(--destructive);
 }
 
 .submit {

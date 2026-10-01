@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(12, 31, 25, 0.82);
+  background: color-mix(in srgb, var(--shade) 85%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--jade-line);
 }
@@ -174,4 +174,24 @@
   .burger {
     display: none;
   }
+}
+
+/* The theme toggle: icon-only, so square, and outlined like the quiet button
+   beside it so the row reads as one set of controls. */
+.theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--jade-line);
+  border-radius: var(--radius-btn);
+  background: transparent;
+  color: var(--cream);
+  cursor: pointer;
+}
+
+.theme:hover {
+  border-color: var(--jade-dim);
 }

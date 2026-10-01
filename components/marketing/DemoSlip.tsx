@@ -106,7 +106,7 @@ export default function DemoSlip({ t, venue, autoStart = false }: Props) {
   };
 
   return (
-    <div className={`slip ${styles.slip}`} role="group" aria-label="Review demo">
+    <div className={`slip venue-look ${styles.slip}`} role="group" aria-label="Review demo">
       <div className={styles.head}>
         <div>
           <div className="slip-eyebrow">{venue ?? "Baanpong Lodge"}</div>

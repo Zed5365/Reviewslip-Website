@@ -8,17 +8,29 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { CurrencyProvider } from "@/lib/CurrencyProvider";
 import Nav from "@/components/marketing/Nav";
 import Footer from "@/components/marketing/Footer";
+import Theme from "@/components/Theme";
 import "../globals.css";
 
-// `thai` is included so Thai copy renders in the brand fonts rather than a
-// fallback. CJK (zh/ja/ko) has no Google-font subset here and intentionally
-// falls back to the system UI font, which ships proper CJK glyphs.
+/*
+ * The venue's typefaces, not the site's.
+ *
+ * The site and the app are set in the system font and load no webfont
+ * (05-frontend.md). These two are what the guest page ships with, so they are
+ * still needed by the pictures of it — the demo slip, the table card, the theme
+ * preview — and by nothing else. `preload: false` keeps them off every page's
+ * critical path: a browser only fetches a face something on the page uses.
+ *
+ * `thai` is included so a Thai venue name renders in the venue's face rather
+ * than a fallback. CJK has no subset here and falls back to the system font,
+ * which ships proper CJK glyphs.
+ */
 const trirong = Trirong({
   variable: "--font-display",
   subsets: ["latin", "thai"],
   weight: ["300", "400"],
   style: ["normal", "italic"],
   display: "swap",
+  preload: false,
 });
 
 const baiJamjuree = Bai_Jamjuree({
@@ -26,6 +38,7 @@ const baiJamjuree = Bai_Jamjuree({
   subsets: ["latin", "thai"],
   weight: ["400", "500", "600"],
   display: "swap",
+  preload: false,
 });
 
 /** Prerender every language at build time. */
@@ -73,7 +86,10 @@ export async function generateMetadata({
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0c1f19",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#050505" },
+  ],
 };
 
 export default async function RootLayout({
@@ -86,15 +102,16 @@ export default async function RootLayout({
   const t = getDictionary(lang);
 
   return (
-    // suppressHydrationWarning: the authenticated app's theme (next-themes) writes
-    // `dark` onto this element before React hydrates, which is what prevents a
-    // flash of the wrong theme. It covers this element's own attributes only.
+    // suppressHydrationWarning: the theme (next-themes) writes `dark` onto this
+    // element before React hydrates, which is what prevents a flash of the
+    // wrong theme. It covers this element's own attributes only.
     <html
       lang={lang}
       className={`${trirong.variable} ${baiJamjuree.variable}`}
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
+        <Theme>
         <CurrencyProvider>
           <Nav
             lang={lang}
@@ -105,6 +122,7 @@ export default async function RootLayout({
           <main>{children}</main>
           <Footer lang={lang} t={t} />
         </CurrencyProvider>
+        </Theme>
       </body>
     </html>
   );

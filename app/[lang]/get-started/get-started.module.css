@@ -1,11 +1,6 @@
 .wrapSection {
   padding-block: clamp(3rem, 8vw, 5.5rem);
-  background: radial-gradient(
-      120% 80% at 85% -10%,
-      rgba(130, 180, 155, 0.14),
-      transparent 60%
-    ),
-    var(--shade);
+  background: var(--shade);
 }
 
 .grid {

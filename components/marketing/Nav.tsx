@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 import { localizedPath } from "@/lib/i18n/routing";
+import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelect from "./LanguageSelect";
 import styles from "./Nav.module.css";
 
@@ -63,6 +64,7 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
 
         <div className={styles.actions}>
           <LanguageSelect lang={lang} label={selectors.language} />
+          <ThemeToggle className={styles.theme} />
           {signedIn ? (
             <Link
               href={localizedPath(lang, "/dashboard")}
@@ -119,6 +121,7 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
           </Link>
           <div className={styles.mobileControls}>
             <LanguageSelect lang={lang} label={selectors.language} />
+            <ThemeToggle className={styles.theme} />
           </div>
           {!signedIn && (
             <Link

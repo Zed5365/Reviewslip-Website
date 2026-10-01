@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { ThemeProvider, useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
-import { LogOut, Moon, PanelLeft, Sun, UserRound } from "lucide-react";
+import { LogOut, PanelLeft, UserRound } from "lucide-react";
 
+import ThemeToggle from "@/components/ThemeToggle";
 import type { Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import {
@@ -49,15 +49,6 @@ function watchCollapsed(notify: () => void) {
 
 const readCollapsed = () => localStorage.getItem(COLLAPSED_KEY) === "1";
 
-/** True once the client is running: false on the server and while hydrating. */
-function useHydrated() {
-  return useSyncExternalStore(
-    () => () => undefined,
-    () => true,
-    () => false
-  );
-}
-
 interface Props {
   kind: "customer" | "staff";
   /** Absent on the staff host, which has no locale routing. */
@@ -67,25 +58,10 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function AppShell(props: Props) {
-  return (
-    /* attribute="class" and system by default: the OS decides until somebody
-       presses the toggle, and then their choice sticks. enableColorScheme is
-       off because it writes color-scheme onto <html>, which the marketing pages
-       share; .app sets its own. */
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      enableColorScheme={false}
-      disableTransitionOnChange
-    >
-      <Shell {...props} />
-    </ThemeProvider>
-  );
-}
-
-function Shell({ kind, lang, email, venues = [], children }: Props) {
+/* The theme itself is the site's (components/Theme.tsx, in the root layout):
+   one system for the marketing pages and the app, so a choice made here holds
+   on the public site too. */
+export default function AppShell({ kind, lang, email, venues = [], children }: Props) {
   const pathname = usePathname();
   const params = useParams<{ slug?: string }>();
 
@@ -165,7 +141,7 @@ function Shell({ kind, lang, email, venues = [], children }: Props) {
 
         <div className="sidebar-footer">
           <AccountMenu email={email} login={to("/login")} collapsed={collapsed} />
-          <ThemeToggle />
+          <ThemeToggle className="icon-btn theme-toggle" />
         </div>
       </aside>
 
@@ -214,24 +190,3 @@ function AccountMenu({
   );
 }
 
-function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-
-  // The theme is not known until the client has looked, so the label waits for
-  // it. The icon does not: both are rendered and `.dark` picks one, which is
-  // what keeps the button from flashing the wrong glyph on load.
-  const dark = useHydrated() && resolvedTheme === "dark";
-
-  return (
-    <button
-      type="button"
-      className="icon-btn theme-toggle"
-      onClick={() => setTheme(dark ? "light" : "dark")}
-      title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      aria-label={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-    >
-      <Sun size={16} className="theme-sun" aria-hidden="true" />
-      <Moon size={16} className="theme-moon" aria-hidden="true" />
-    </button>
-  );
-}

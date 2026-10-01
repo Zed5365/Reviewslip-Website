@@ -122,18 +122,9 @@
   --radius-card: var(--radius);
 }
 
-/* The venue's own look, where the app shows it.
-
-   Three things inside the app are not the app: the table card and the
-   registration card, which are printed, and the theme preview, which is a
-   picture of the guest page. They are drawn in the venue's typefaces and must
-   not pick up the app's. This puts back the two font tokens the bridge above
-   re-pointed; their colours are passed in by name and were never bridged. */
-.venue-look {
-  --display: var(--font-display), Georgia, "Times New Roman", serif;
-  --ui: var(--font-ui), system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-family: var(--ui);
-}
+/* `.venue-look`, in globals.css, puts the venue's own palette and typefaces
+   back for the things inside the app that are pictures of the product: the
+   table card, the registration card and the theme preview. */
 
 /* -------------------------------------------------------------------------- */
 /* The shell                                                                  */
@@ -315,17 +306,6 @@ body:has(.app) {
   text-overflow: ellipsis;
 }
 
-/* Both glyphs are in the markup and the theme class picks one, so the toggle
-   never flashes the wrong icon before the client has read the theme. It shows
-   where a press will take you: the moon in light, the sun in dark. */
-.theme-sun,
-.dark .theme-moon {
-  display: none;
-}
-
-.dark .theme-sun {
-  display: inline;
-}
 
 .app-main {
   display: flex;

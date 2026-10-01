@@ -93,7 +93,6 @@
 
 .recommended {
   border-color: var(--marigold);
-  box-shadow: 0 24px 50px -28px rgba(233, 160, 59, 0.5);
 }
 
 .badge {

@@ -1,50 +1,144 @@
 /* ==========================================================================
-   Reviewslip design system
-   Ported from the app's visual identity: dark teal canvas, cream "slip"
-   cards with torn edges, jade accents, marigold CTA, Trirong + Bai Jamjuree.
+   Reviewslip — the public site
+
+   The marketing pages wear the Vibe Crafted Software monochrome brand
+   (05-frontend.md): one pinned grey ramp, zero hue, the system font, and
+   light and dark from the same theme system as the app. The one colour
+   allowed is a functional red, for a form field that is wrong.
+
+   The authenticated app re-points these tokens again in app.css, and
+   `.venue-look` (below) puts the venue's own palette back for the things
+   that are pictures of the product rather than the site.
    ========================================================================== */
 
 :root {
-  /* Color */
-  --shade: #0c1f19; /* canvas / dark teal */
-  --shade-deep: #06110e; /* deepest sections */
-  --shade-soft: #0f251e; /* raised surfaces on dark */
-  --paper: #f3ecdc; /* card / "slip" */
-  --paper-shadow: #ded3bc;
-  --ink: #1b2a23; /* text on paper */
-  --ink-soft: #5d6b62; /* muted text on paper */
-  --jade: #82b49b; /* accent */
-  --jade-dim: rgba(130, 180, 155, 0.5);
-  --jade-line: rgba(130, 180, 155, 0.24);
-  --marigold: #e9a03b; /* primary CTA */
-  --marigold-ink: #22190a; /* text on marigold */
+  /* The ramp, as vibecraftedsoftware.com pins it. */
+  --gray-950: #050505;
+  --gray-900: #0c0c0c;
+  --gray-800: #262626;
+  --gray-700: #404040;
+  --gray-600: #525252;
+  --gray-500: #6b6b6b;
+  --gray-400: #a3a3a3;
+  --gray-300: #d4d4d4;
+  --gray-200: #e5e5e5;
+  --gray-100: #f0f0f0;
+  --gray-50: #f7f7f7;
 
-  /* What the translucent washes are mixed from. Named apart from --jade and
-     --marigold because the authenticated app (app.css) points them somewhere
-     different: there a wash is neutral and an alert is the warning colour,
-     while --jade is the one accent. Out here they are the brand colours. */
-  --wash: #82b49b;
-  --alert: #e9a03b;
-  --success: #82b49b;
-  --warning: #e9a03b;
-  --destructive: #e98b7b;
+  /* The shared token set, light. */
+  --background: #ffffff;
+  --foreground: var(--gray-900);
+  --muted: var(--gray-50);
+  /* 7.8:1 on white, 7.3 on a --muted panel. */
+  --muted-foreground: var(--gray-600);
+  --border: var(--gray-200);
+  --input: var(--gray-300);
+  --destructive: #b91c1c;
+  --destructive-surface: #fef2f2;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", "Noto Sans", "Noto Sans Thai", sans-serif;
+  color-scheme: light;
 
-  /* Text on dark canvas */
-  --cream: #f3ecdc;
-  --cream-soft: rgba(243, 236, 220, 0.68);
-  --cream-faint: rgba(243, 236, 220, 0.42);
+  /* The bridge. Every marketing component is written against the names the
+     site used to be built from — a teal canvas, cream "paper", jade and
+     marigold. They are re-pointed here rather than renamed across forty files.
 
-  /* Type */
-  --display: var(--font-display), Georgia, "Times New Roman", serif;
-  --ui: var(--font-ui), system-ui, -apple-system, "Segoe UI", sans-serif;
+     With no hue to spend, the call to action is the ink itself: --marigold,
+     which filled the primary button, becomes the foreground, and the text on
+     it the background. --jade, which marked links, ticks and active toggles,
+     becomes the foreground too. */
+  --shade: var(--background);
+  --shade-soft: var(--muted);
+  /* Only ever the text on a --jade fill now; the deep section grounds that
+     also used it read --shade-soft instead. */
+  --shade-deep: var(--background);
+  --paper: var(--muted);
+  --paper-shadow: var(--border);
+  --ink: var(--foreground);
+  --ink-soft: var(--muted-foreground);
+  --jade: var(--foreground);
+  --jade-dim: var(--input);
+  --jade-line: var(--border);
+  --marigold: var(--foreground);
+  --marigold-ink: var(--background);
+  --cream: var(--foreground);
+  --cream-soft: var(--muted-foreground);
+  --cream-faint: var(--muted-foreground);
+
+  /* What the translucent washes are mixed from: neutral, like everything. */
+  --wash: var(--foreground);
+  --alert: var(--foreground);
+  --success: var(--foreground);
+  --warning: var(--foreground);
+
+  /* Type: the system font, no webfont, no display face. */
+  --display: var(--sans);
+  --ui: var(--sans);
 
   /* Motion */
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
 
   /* Layout */
   --wrap: 68rem;
+  --radius-btn: 8px;
+  --radius-card: 8px;
+}
+
+/* Dark: the same ramp, inverted. next-themes puts `dark` on <html>. */
+.dark {
+  --background: var(--gray-950);
+  --foreground: var(--gray-50);
+  --muted: var(--gray-900);
+  /* 8.1:1 on the page, 7.75 on a --muted panel. */
+  --muted-foreground: var(--gray-400);
+  --border: var(--gray-800);
+  --input: var(--gray-700);
+  --destructive: #f87171;
+  --destructive-surface: color-mix(in srgb, #f87171 12%, transparent);
+  color-scheme: dark;
+}
+
+/* The venue's own look.
+
+   Some things on these pages are pictures of the product, not the site: the
+   demo slip, and inside the app the table card, the registration card and the
+   theme preview. They show what a guest or a printer gets, so they keep the
+   palette and the typefaces the product actually ships with. This is the
+   site's old token set, restored for them alone. */
+.venue-look {
+  --shade: #0c1f19;
+  --shade-deep: #06110e;
+  --shade-soft: #0f251e;
+  --paper: #f3ecdc;
+  --paper-shadow: #ded3bc;
+  --ink: #1b2a23;
+  --ink-soft: #5d6b62;
+  --jade: #82b49b;
+  --jade-dim: rgba(130, 180, 155, 0.5);
+  --jade-line: rgba(130, 180, 155, 0.24);
+  --marigold: #e9a03b;
+  --marigold-ink: #22190a;
+  --cream: #f3ecdc;
+  --cream-soft: rgba(243, 236, 220, 0.68);
+  --cream-faint: rgba(243, 236, 220, 0.42);
+  --wash: #82b49b;
+  --alert: #e9a03b;
+  --display: var(--font-display), Georgia, "Times New Roman", serif;
+  --ui: var(--font-ui), system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius-btn: 4px;
   --radius-card: 10px;
+  font-family: var(--ui);
+}
+
+/* The theme toggle carries both glyphs and the theme class shows one, so it
+   never flashes the wrong icon before the client has read the theme. */
+.theme-sun,
+.dark .theme-moon {
+  display: none;
+}
+
+.dark .theme-sun {
+  display: inline;
 }
 
 *,
@@ -69,13 +163,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* One weight for body text and one heavier for headings, in the system font.
+   The size scale stays roomy: these pages are read once, not worked in. */
 h1,
 h2,
 h3 {
   font-family: var(--display);
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
   margin: 0;
 }
 
@@ -114,7 +210,8 @@ img {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--jade);
+  /* A label over a heading, so it steps back rather than competing with it. */
+  color: var(--muted-foreground);
 }
 
 .lede {
@@ -152,12 +249,10 @@ img {
 .btn-go {
   background: var(--marigold);
   color: var(--marigold-ink);
-  box-shadow: 0 10px 22px -12px rgba(233, 160, 59, 0.9);
 }
 
 .btn-go:hover {
-  background: #f2ac4c;
-  box-shadow: 0 14px 26px -12px rgba(233, 160, 59, 1);
+  background: color-mix(in srgb, var(--marigold) 85%, var(--shade));
 }
 
 .btn-quiet {
@@ -168,7 +263,7 @@ img {
 
 .btn-quiet:hover {
   border-color: var(--jade-dim);
-  background: rgba(130, 180, 155, 0.08);
+  background: color-mix(in srgb, var(--wash) 8%, transparent);
 }
 
 /* On-paper variants (dark text, for use on the cream slip) */
@@ -178,18 +273,18 @@ img {
 }
 
 .btn-ink:hover {
-  background: #24362d;
+  background: color-mix(in srgb, var(--ink) 88%, var(--paper));
 }
 
 .btn-quiet-ink {
   background: transparent;
   color: var(--ink);
-  border-color: rgba(27, 42, 35, 0.28);
+  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
 }
 
 .btn-quiet-ink:hover {
-  border-color: rgba(27, 42, 35, 0.5);
-  background: rgba(27, 42, 35, 0.05);
+  border-color: color-mix(in srgb, var(--ink) 50%, transparent);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -230,12 +325,12 @@ img {
 
 /* Chips rendered on paper */
 .chip-ink {
-  border-color: rgba(27, 42, 35, 0.18);
+  border-color: color-mix(in srgb, var(--ink) 18%, transparent);
   color: var(--ink-soft);
 }
 
 .chip-ink:hover {
-  border-color: rgba(27, 42, 35, 0.4);
+  border-color: color-mix(in srgb, var(--ink) 40%, transparent);
   color: var(--ink);
 }
 
@@ -309,7 +404,7 @@ img {
 
 .slip-rule {
   border: none;
-  border-top: 1px dashed rgba(27, 42, 35, 0.25);
+  border-top: 1px dashed color-mix(in srgb, var(--ink) 25%, transparent);
   margin: 1rem 0;
 }
 
@@ -348,9 +443,9 @@ img {
   border-radius: 4px;
   background: linear-gradient(
     90deg,
-    rgba(27, 42, 35, 0.08) 25%,
-    rgba(27, 42, 35, 0.16) 37%,
-    rgba(27, 42, 35, 0.08) 63%
+    color-mix(in srgb, var(--ink) 8%, transparent) 25%,
+    color-mix(in srgb, var(--ink) 16%, transparent) 37%,
+    color-mix(in srgb, var(--ink) 8%, transparent) 63%
   );
   background-size: 400% 100%;
   animation: shimmer 1.4s var(--ease) infinite;
@@ -511,7 +606,7 @@ img {
 }
 
 .editor::backdrop {
-  background: rgba(6, 17, 14, 0.72);
+  background: color-mix(in srgb, #000 72%, transparent);
   backdrop-filter: blur(2px);
 }
 

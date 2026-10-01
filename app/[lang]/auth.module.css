@@ -2,12 +2,7 @@
 
 .section {
   padding-block: clamp(3rem, 8vw, 5.5rem);
-  background: radial-gradient(
-      120% 80% at 85% -10%,
-      rgba(130, 180, 155, 0.14),
-      transparent 60%
-    ),
-    var(--shade);
+  background: var(--shade);
 }
 
 .grid {
@@ -95,10 +90,10 @@
 .invited {
   margin: 0 0 1.1rem;
   padding: 0.7rem 0.95rem;
-  border: 1px solid rgba(233, 160, 59, 0.4);
+  border: 1px solid color-mix(in srgb, var(--alert) 40%, transparent);
   border-left-width: 3px;
   border-radius: 10px;
-  background: rgba(233, 160, 59, 0.1);
+  background: color-mix(in srgb, var(--alert) 10%, transparent);
   color: var(--cream);
   font-size: 0.9rem;
   line-height: 1.5;

@@ -5,12 +5,7 @@
 .hero {
   position: relative;
   padding-block: clamp(3rem, 8vw, 5.5rem);
-  background: radial-gradient(
-      120% 80% at 80% -10%,
-      rgba(130, 180, 155, 0.14),
-      transparent 60%
-    ),
-    var(--shade);
+  background: var(--shade);
   overflow: hidden;
 }
 
@@ -73,7 +68,7 @@
 
 .proof {
   border-block: 1px solid var(--jade-line);
-  background: var(--shade-deep);
+  background: var(--shade-soft);
   padding-block: 1.1rem;
 }
 
@@ -127,7 +122,6 @@
   padding: 1.75rem;
   border: 1px solid var(--jade-line);
   border-radius: var(--radius-card);
-  background: linear-gradient(180deg, rgba(130, 180, 155, 0.05), transparent);
 }
 
 .stepNum {
@@ -198,7 +192,7 @@
 /* -------------------------------------------------------------------------- */
 
 .metricsSection {
-  background: var(--shade-deep);
+  background: var(--shade-soft);
   border-block: 1px solid var(--jade-line);
   padding-block: clamp(2.5rem, 6vw, 4rem);
 }
@@ -271,12 +265,7 @@
 }
 
 .cta {
-  background: radial-gradient(
-      120% 120% at 50% 0%,
-      rgba(233, 160, 59, 0.16),
-      transparent 55%
-    ),
-    var(--shade-deep);
+  background: var(--shade-soft);
   padding-block: clamp(4rem, 10vw, 6rem);
   border-top: 1px solid var(--jade-line);
 }
