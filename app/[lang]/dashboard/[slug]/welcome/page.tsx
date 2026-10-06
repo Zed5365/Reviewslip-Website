@@ -18,16 +18,18 @@ import { localizedPath } from "@/lib/i18n/routing";
 import { qrCode } from "@/lib/qr";
 
 export const metadata: Metadata = {
-  title: "Welcome Page",
+  title: "Guest App",
   robots: { index: false, follow: false, nocache: true },
 };
 
 /**
- * The welcome page, from the venue's side.
+ * The guest app, from the venue's side.
  *
- * Three things: the QR code that opens the page, the links a guest sees once
- * they have signed up, and the guests who did — with the mailing list of the
- * ones who agreed to be emailed.
+ * The app is the welcome page a guest puts on their phone: the venue's links
+ * as tiles, in the venue's colours, under its name. Three things here: the QR
+ * code and printed card that open it, the links a guest sees once they have
+ * signed up, and the guests who did — with the mailing list of the ones who
+ * agreed to be emailed.
  */
 export default async function WelcomePage({
   params,
@@ -96,19 +98,20 @@ export default async function WelcomePage({
   return (
     <>
       <PageHeader
-        title="Welcome Page"
+        title="Guest App"
         sub={`${venue} · ${data.signups.length} guest${data.signups.length === 1 ? "" : "s"} signed up · ${agreed} on the mailing list`}
         back={localizedPath(locale, `/dashboard/${slug}`)}
       >
         <a className="btn btn-quiet" href={data.url} target="_blank" rel="noreferrer">
-          Open Welcome Page
+          Open Guest App
         </a>
       </PageHeader>
 
       <div className="page-body is-narrow">
         <p className="lede" style={{ marginBottom: "1rem" }}>
-          Guests scan the code, give their name and email, and get your links — and a way to keep
-          the page on their phone like an app.
+          Your own app for guests, in your colours. They scan the code, give their name and email,
+          and get your links as tiles — then put the app on their phone&apos;s home screen. No app
+          store.
         </p>
 
         <section className="group-box" aria-labelledby="qr-title">
@@ -128,15 +131,20 @@ export default async function WelcomePage({
             </svg>
             <div style={{ display: "grid", gap: "0.5rem", minWidth: 0 }}>
               <p style={{ margin: 0 }}>
-                Print it for rooms and tables. It opens{" "}
+                Print the welcome card for rooms and reception, or use the code on its own. It opens{" "}
                 <a href={data.url} target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>
                   {data.url}
                 </a>
                 .
               </p>
-              <a className="btn btn-quiet" href={download} download={`welcome-qr-${slug}.svg`} style={{ justifySelf: "start" }}>
-                Download QR Code
-              </a>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                <a className="btn btn-quiet" href={localizedPath(locale, `/dashboard/${slug}/poster?card=welcome`)}>
+                  Print Welcome Card
+                </a>
+                <a className="btn btn-quiet" href={download} download={`welcome-qr-${slug}.svg`}>
+                  Download QR Code
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -144,8 +152,10 @@ export default async function WelcomePage({
         <section className="group-box" aria-labelledby="links-title">
           <h2 id="links-title">Links</h2>
           <p style={{ margin: 0, color: "var(--muted-foreground)" }}>
-            What guests see once they have signed up, top to bottom. A web address, a phone number
-            (tel:+66…) or an email (mailto:…).
+            The tiles guests see once they have signed up, in this order. A web address, a phone
+            number (tel:+66…) or an email (mailto:…). The picture on each tile comes from the
+            label and address — &ldquo;Wi-Fi&rdquo;, &ldquo;Menu&rdquo;, a map or a LINE link each
+            get their own.
           </p>
           <WelcomeLinks
             initial={data.links}

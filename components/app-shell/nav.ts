@@ -76,7 +76,7 @@ export function customerNav(
           items: [
             { title: "Reviews", href: at("/reviews"), icon: MessageSquareText },
             { title: "Table Card", href: at("/poster"), icon: QrCode },
-            { title: "Welcome Page", href: at("/welcome"), icon: HandHeart },
+            { title: "Guest App", href: at("/welcome"), icon: HandHeart },
           ],
         },
         {

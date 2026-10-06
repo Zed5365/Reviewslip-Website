@@ -58,6 +58,21 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/**
+ * The two cards a venue prints.
+ *
+ * The same sheet with a different code and different words: the review card
+ * goes on the table at the end of a meal or by the door at checkout, the
+ * welcome card in the room or at reception on arrival. One page with a choice
+ * rather than two pages, so a change to the sheet is made once.
+ */
+const TEMPLATES = {
+  review: { label: "Review Card", opens: "the review page", open: "Open the Review Page" },
+  welcome: { label: "Welcome Card", opens: "the guest app", open: "Open the Guest App" },
+} as const;
+
+type Template = keyof typeof TEMPLATES;
+
 export default async function PosterPage({
   params,
   searchParams,
@@ -72,8 +87,11 @@ export default async function PosterPage({
    * once and pinned to a table, and a setting somebody has to find, change and
    * change back is more machinery than a link with `?with=th` on it.
    */
-  const asked = String((await searchParams)?.with ?? DEFAULT_SECOND);
+  const query = (await searchParams) ?? {};
+  const asked = String(query.with ?? DEFAULT_SECOND);
   const second = asked === "none" || asked === "en" ? null : cardText(asked);
+  const template: Template = query.card === "welcome" ? "welcome" : "review";
+  const english = cardText("en");
 
   const token = await sessionToken();
   if (!token) redirect(localizedPath(lang, "/login"));
@@ -89,7 +107,10 @@ export default async function PosterPage({
   }
 
   const { business } = data;
-  const code = qrCode(business.url);
+  // The guest app lives beside the review page on the venue's own address.
+  const target =
+    template === "welcome" ? `${business.url.replace(/\/$/, "")}/welcome` : business.url;
+  const code = qrCode(target);
 
   /*
    * Whether the name is printed under the mark.
@@ -108,23 +129,35 @@ export default async function PosterPage({
 
   // The scheme is noise on a printed card — nobody types it, and it costs a line
   // of width that a long slug needs more.
-  const printedUrl = business.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const printedUrl = target.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const words =
+    template === "welcome"
+      ? { scan: english.welcome, hint: english.welcomeHint, secondScan: second?.welcome, secondHint: second?.welcomeHint }
+      : { scan: english.scan, hint: english.minute, secondScan: second?.scan, secondHint: second?.minute };
 
   return (
     <>
       <PageHeader
         title="Table Card"
-        sub={business.name}
+        sub={`${business.name} · ${TEMPLATES[template].label}`}
         back={localizedPath(lang, `/dashboard/${business.slug}`)}
       />
       <section className={`page-body ${styles.page}`}>
         <div>
           <p className="lede">
             An A5 card with the QR code for {business.name}. Guests scan it and land
-            on the review page.
+            on {TEMPLATES[template].opens}.
           </p>
 
           <form method="get" className={styles.actions} style={{ marginBottom: "0.4rem" }}>
+            <label style={{ fontSize: "0.85rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              Card
+              <select name="card" defaultValue={template} style={pick}>
+                {(Object.keys(TEMPLATES) as Template[]).map((key) => (
+                  <option key={key} value={key}>{TEMPLATES[key].label}</option>
+                ))}
+              </select>
+            </label>
             <label style={{ fontSize: "0.85rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
               Second Language
               <select name="with" defaultValue={asked} style={pick}>
@@ -140,12 +173,12 @@ export default async function PosterPage({
           <div className={styles.actions}>
             <PrintPoster />
             <a
-              href={business.url}
+              href={target}
               target="_blank"
               rel="noreferrer"
               style={{ color: "var(--jade)", fontSize: "0.9rem" }}
             >
-              Open the Review Page
+              {TEMPLATES[template].open}
             </a>
           </div>
 
@@ -159,7 +192,7 @@ export default async function PosterPage({
             <p className={styles.note}>
               The second line is written plainly and literally rather than
               cleverly. Have somebody who speaks it read the card once before
-              you print a boxful — it is four words, and it is the line half
+              you print a boxful — it is a few words, and it is the line half
               your guests will actually be reading.
             </p>
           )}
@@ -226,10 +259,10 @@ export default async function PosterPage({
             </div>
           </div>
 
-          <p className={styles.headline}>Scan to leave us a review</p>
+          <p className={styles.headline}>{words.scan}</p>
           {second && (
             <p className={styles.second} lang={asked}>
-              {second.scan}
+              {words.secondScan}
             </p>
           )}
 
@@ -265,10 +298,10 @@ export default async function PosterPage({
           </div>
 
           <p className={styles.url}>{printedUrl}</p>
-          <p className={styles.hint}>Takes about a minute</p>
+          <p className={styles.hint}>{words.hint}</p>
           {second && (
             <p className={styles.secondHint} lang={asked}>
-              {second.minute}
+              {words.secondHint}
             </p>
           )}
           <p className={styles.brand}>Reviewslip</p>

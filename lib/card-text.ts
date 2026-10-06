@@ -27,6 +27,10 @@ export interface CardText {
   scan: string;
   /** How long it takes. The objection everybody has, answered before it. */
   minute: string;
+  /** The welcome card's instruction: the guest app, not the review page. */
+  welcome: string;
+  /** What the guest app holds, in the welcome card's second line. */
+  welcomeHint: string;
 }
 
 export const CARD_TEXT: Record<string, CardText> = {
@@ -34,56 +38,78 @@ export const CARD_TEXT: Record<string, CardText> = {
     name: "English",
     scan: "Scan to leave us a review",
     minute: "Takes about a minute",
+    welcome: "Scan for our guest app",
+    welcomeHint: "Everything for your stay, on your phone",
   },
   th: {
     name: "ไทย",
     scan: "สแกนเพื่อเขียนรีวิว",
     minute: "ใช้เวลาประมาณ 1 นาที",
+    welcome: "สแกนเพื่อเปิดแอปสำหรับแขก",
+    welcomeHint: "ทุกอย่างสำหรับการเข้าพัก ในโทรศัพท์ของคุณ",
   },
   zh: {
     name: "中文",
     scan: "扫码写评价",
     minute: "大约一分钟",
+    welcome: "扫码打开宾客应用",
+    welcomeHint: "住宿所需，尽在手机",
   },
   ja: {
     name: "日本語",
     scan: "スキャンしてレビューを書く",
     minute: "所要時間は約1分",
+    welcome: "スキャンしてゲストアプリを開く",
+    welcomeHint: "滞在に必要なものをスマホで",
   },
   ko: {
     name: "한국어",
     scan: "스캔해서 리뷰 남기기",
     minute: "약 1분이면 됩니다",
+    welcome: "스캔해서 게스트 앱 열기",
+    welcomeHint: "숙박에 필요한 모든 것을 휴대폰으로",
   },
   es: {
     name: "Español",
     scan: "Escanea para dejarnos una reseña",
     minute: "Tarda alrededor de un minuto",
+    welcome: "Escanea para abrir nuestra app de huéspedes",
+    welcomeHint: "Todo para tu estancia, en tu móvil",
   },
   fr: {
     name: "Français",
     scan: "Scannez pour nous laisser un avis",
     minute: "Cela prend environ une minute",
+    welcome: "Scannez pour ouvrir notre appli client",
+    welcomeHint: "Tout pour votre séjour, sur votre téléphone",
   },
   de: {
     name: "Deutsch",
     scan: "Scannen und Bewertung schreiben",
     minute: "Dauert etwa eine Minute",
+    welcome: "Scannen und unsere Gäste-App öffnen",
+    welcomeHint: "Alles für deinen Aufenthalt auf dem Handy",
   },
   it: {
     name: "Italiano",
     scan: "Scansiona per lasciarci una recensione",
     minute: "Ci vuole circa un minuto",
+    welcome: "Scansiona per aprire l'app per gli ospiti",
+    welcomeHint: "Tutto per il tuo soggiorno, sul telefono",
   },
   pt: {
     name: "Português",
     scan: "Digitalize para deixar uma avaliação",
     minute: "Leva cerca de um minuto",
+    welcome: "Digitalize para abrir o app de hóspedes",
+    welcomeHint: "Tudo para a sua estadia, no seu celular",
   },
   nl: {
     name: "Nederlands",
     scan: "Scan om een review achter te laten",
     minute: "Duurt ongeveer een minuut",
+    welcome: "Scan om onze gasten-app te openen",
+    welcomeHint: "Alles voor je verblijf op je telefoon",
   },
 };
 
