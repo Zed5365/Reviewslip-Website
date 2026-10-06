@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   CalendarDays,
   Gift,
+  HandHeart,
   LayoutDashboard,
   LifeBuoy,
   List,
@@ -75,6 +76,7 @@ export function customerNav(
           items: [
             { title: "Reviews", href: at("/reviews"), icon: MessageSquareText },
             { title: "Table Card", href: at("/poster"), icon: QrCode },
+            { title: "Welcome Page", href: at("/welcome"), icon: HandHeart },
           ],
         },
         {

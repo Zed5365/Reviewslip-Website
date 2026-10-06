@@ -723,3 +723,26 @@ body:has(.app) {
   background: color-mix(in srgb, #000 50%, transparent);
   backdrop-filter: none;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Group boxes                                                                */
+/* -------------------------------------------------------------------------- */
+
+/* One box per topic on a screen that is not a List or an Edit View — the
+   standard's `rounded-lg border border-border bg-muted p-4`. */
+.app .group-box {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--muted);
+}
+
+.app .group-box + .group-box {
+  margin-top: 0.75rem;
+}
+
+.app .group-box > h2 {
+  margin: 0;
+}

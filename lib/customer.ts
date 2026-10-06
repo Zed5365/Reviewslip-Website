@@ -876,3 +876,29 @@ export async function currentUser(): Promise<Me | null> {
     throw err;
   }
 }
+
+/* ------------------------------------------------------------ welcome page */
+
+export interface WelcomeLink {
+  label: string;
+  url: string;
+}
+
+/** A guest who signed up on the welcome page. */
+export interface WelcomeSignup {
+  id: number;
+  name: string;
+  email: string;
+  /** Agreed to marketing email. Only these are in the mailing list. */
+  consent: boolean;
+  consentedAt: string | null;
+  createdAt: string;
+}
+
+export interface WelcomeData {
+  /** The page the QR code opens, on the venue's own address. */
+  url: string;
+  links: WelcomeLink[];
+  limits: { links: number; label: number };
+  signups: WelcomeSignup[];
+}
