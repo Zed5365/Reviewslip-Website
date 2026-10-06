@@ -16,6 +16,9 @@ import {
   softwareAppJsonLd,
   faqJsonLd,
 } from "@/lib/seo/jsonLd";
+import StaySearch from "@/components/stays/StaySearch";
+import stays from "@/components/stays/stays.module.css";
+import { staysText } from "@/lib/stays-text";
 import styles from "./home.module.css";
 
 export async function generateMetadata({
@@ -32,6 +35,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
   const t = getDictionary(lang);
   const h = t.home;
+  const s = staysText(lang);
 
   return (
     <>
@@ -43,6 +47,21 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           faqJsonLd(h.faq),
         ]}
       />
+
+      {/* Find a stay: the marketplace's bar, first thing on the page. */}
+      <section className={stays.hero} aria-labelledby="stays-title">
+        <div className="wrap">
+          <span className="eyebrow">{s.heroEyebrow}</span>
+          <h2 className={stays.heroTitle} id="stays-title">{s.heroTitle}</h2>
+          <p className={stays.heroLede}>{s.heroLede}</p>
+          <StaySearch
+            action={localizedPath(lang, "/stays")}
+            stay={{ q: "", arrival: "", departure: "", adults: 2, children: 0, rooms: 1 }}
+            t={s}
+            lang={lang}
+          />
+        </div>
+      </section>
 
       {/* Hero */}
       <section className={styles.hero}>

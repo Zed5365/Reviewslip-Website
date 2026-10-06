@@ -14,9 +14,11 @@ interface Props {
   nav: Dictionary["nav"];
   ctaLabel: string;
   selectors: Dictionary["selectors"];
+  /** The marketplace's link, from its own strings rather than the pitch dictionary. */
+  staysLabel: string;
 }
 
-export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
+export default function Nav({ lang, nav, ctaLabel, selectors, staysLabel }: Props) {
   const [open, setOpen] = useState(false);
 
   // Read after mount, not during render: the server has no idea and guessing
@@ -28,6 +30,7 @@ export default function Nav({ lang, nav, ctaLabel, selectors }: Props) {
   }, []);
 
   const links = [
+    { route: "/stays", label: staysLabel },
     { route: "/how-it-works", label: nav.howItWorks },
     { route: "/#features", label: nav.features },
     { route: "/pricing", label: nav.pricing },

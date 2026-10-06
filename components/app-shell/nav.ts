@@ -1,4 +1,5 @@
 import {
+  Activity,
   BedDouble,
   Building2,
   CalendarCheck,
@@ -12,6 +13,7 @@ import {
   QrCode,
   Settings,
   Stamp,
+  Globe,
   Tag,
   Ticket,
   Users,
@@ -87,6 +89,7 @@ export function customerNav(
             { title: "Bookings", href: at("/bookings/list"), icon: List },
             { title: "Rooms", href: at("/bookings/rooms"), icon: BedDouble },
             { title: "Rates", href: at("/bookings/rates"), icon: Tag },
+            { title: "Online Booking", href: at("/bookings/online"), icon: Globe },
             { title: "TM30", href: at("/bookings/tm30"), icon: Stamp },
           ],
         },
@@ -122,6 +125,7 @@ export function staffNav(): { modules: NavGroup[]; last: NavGroup } {
         items: [
           { title: "Tickets", href: "/tickets", icon: Ticket },
           { title: "Venues", href: "/venues", icon: Building2 },
+          { title: "Server", href: "/server", icon: Activity },
         ],
       },
     ],

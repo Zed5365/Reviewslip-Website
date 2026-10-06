@@ -6,6 +6,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { alternateLanguages, localizedUrl } from "@/lib/i18n/routing";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { CurrencyProvider } from "@/lib/CurrencyProvider";
+import { staysText } from "@/lib/stays-text";
 import Nav from "@/components/marketing/Nav";
 import Footer from "@/components/marketing/Footer";
 import Theme from "@/components/Theme";
@@ -118,6 +119,7 @@ export default async function RootLayout({
             nav={t.nav}
             ctaLabel={t.common.getInTouch}
             selectors={t.selectors}
+            staysLabel={staysText(lang).navStays}
           />
           <main>{children}</main>
           <Footer lang={lang} t={t} />
