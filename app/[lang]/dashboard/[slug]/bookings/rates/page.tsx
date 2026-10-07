@@ -147,6 +147,25 @@ export default async function RatesPage({
     return {};
   }
 
+  /** A rate, gone. Its overrides cascade; bookings keep their quoted price. */
+  async function deletePlan(planId: number) {
+    "use server";
+
+    const t = await sessionToken();
+    if (!t) redirect(localizedPath(locale, "/login"));
+
+    try {
+      await call(`/businesses/${slug}/rates/${planId}`, { method: "DELETE", token: t });
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Could not delete that rate.",
+      };
+    }
+
+    revalidatePath(here);
+    return {};
+  }
+
   const venue = await venueName(slug);
 
   return (
@@ -189,6 +208,7 @@ export default async function RatesPage({
       createPlan={createPlan}
       setBase={setBase}
       setRange={setRange}
+      deletePlan={deletePlan}
     />
     </div>
   </>

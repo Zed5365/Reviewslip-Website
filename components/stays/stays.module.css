@@ -1110,3 +1110,73 @@
 .danger:hover {
   background: color-mix(in srgb, var(--destructive) 85%, #000);
 }
+
+/* Manage Booking. */
+.manageButton {
+  margin-top: 0.25rem;
+}
+
+.manage {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  scroll-margin-top: 5rem;
+}
+
+.manageHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.manage .boxTitle,
+.cancelSummary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.changeForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr 6rem 6rem auto;
+  align-items: end;
+  gap: 0.6rem;
+}
+
+.quote {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--input);
+  border-radius: 10px;
+  background: var(--muted);
+}
+
+.was {
+  color: var(--muted-foreground);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 700px) {
+  .changeForm {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .changeForm button {
+    grid-column: 1 / -1;
+  }
+}

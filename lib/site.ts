@@ -22,6 +22,14 @@ export const SITE_URL =
 
 export const CONTACT_EMAIL = "info@reviewslip.com";
 
+/**
+ * Reviewslip's own site key on the Vibe Crafted softphone: Call Sales on the
+ * Contact page, Call Support in the dashboard. Set VOICE_SITE at build time if
+ * the key the portal gave is not "reviewslip"; a wrong key shows no button, as
+ * the widget only shows one once the site answers.
+ */
+export const VOICE_SITE = process.env.VOICE_SITE?.trim() || "reviewslip";
+
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
   "Reviewslip enquiry"
 )}`;

@@ -746,3 +746,25 @@ body:has(.app) {
 .app .group-box > h2 {
   margin: 0;
 }
+
+/* A destructive action that sits under a field rather than beside the primary
+   button: a red text link, so it is found by anybody looking for it and not
+   pressed by anybody who is not. */
+.app .btn-link-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--destructive);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.app .btn-link-danger:hover:not(:disabled) {
+  text-decoration: underline;
+}

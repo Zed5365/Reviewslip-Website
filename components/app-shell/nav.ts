@@ -62,7 +62,8 @@ export interface Venue {
  */
 export function customerNav(
   venue: Venue | null,
-  to: (path: string) => string
+  to: (path: string) => string,
+  isAdmin = false
 ): { modules: NavGroup[]; last: NavGroup } {
   const at = (path = "") => to(`/dashboard/${venue?.slug}${path}`);
 
@@ -95,6 +96,15 @@ export function customerNav(
         },
       ]
     : [];
+
+  // Admin accounts see the server's health here too, without going to the
+  // staff host. Everybody else never sees the group.
+  if (isAdmin) {
+    modules.push({
+      label: "Admin",
+      items: [{ title: "Server", href: to("/dashboard/server"), icon: Activity }],
+    });
+  }
 
   return {
     modules,

@@ -14,6 +14,8 @@ export interface Contact {
   email: string;
   line: string;
   whatsapp: string;
+  /** The venue's softphone site key; empty when it has none. */
+  voiceSite?: string;
 }
 
 export interface MarketProfile {
@@ -99,6 +101,10 @@ export interface BookingView {
   cancelledAt: string | null;
   cancelledBy: "guest" | "venue" | null;
   cancellable: boolean;
+  /** Dates or guests can be changed online: inside the window, and the rate still exists. */
+  changeable: boolean;
+  /** Beds across the booking's rooms: the most guests a change can ask for. */
+  maxGuests: number;
   venue: { slug: string; name: string; place: string | null; contact: Contact };
   checkIn: string;
   checkOut: string;
@@ -181,4 +187,15 @@ export interface MarketSettings {
   amenities: { venue: string[]; room: string[] };
   limits: { venuePhotos: number; roomPhotos: number };
   rooms: MarketRoom[];
+}
+
+/** What changing a booking would cost, before anything changes. */
+export interface ChangeQuote {
+  arrival: string;
+  departure: string;
+  adults: number;
+  children: number;
+  totalMinor: number;
+  oldTotalMinor: number | null;
+  freeCancelUntil: string | null;
 }

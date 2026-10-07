@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
 import { weeksOf } from "@/lib/nights";
 import type { RateCalendar, RateNight, RoomGroup } from "@/lib/customer";
 
@@ -90,6 +91,7 @@ export default function RateMonth({
   createPlan,
   setBase,
   setRange,
+  deletePlan,
 }: {
   calendar: RateCalendar;
   groups: RoomGroup[];
@@ -98,6 +100,7 @@ export default function RateMonth({
   createPlan: (groupId: number, name: string, base: string) => Promise<RateResult>;
   setBase: (planId: number, base: string) => Promise<RateResult>;
   setRange: (planId: number, patch: Record<string, unknown>) => Promise<RateResult>;
+  deletePlan: (planId: number) => Promise<RateResult>;
 }) {
   const [problem, setProblem] = useState("");
   const [busy, setBusy] = useState(false);
@@ -232,6 +235,29 @@ export default function RateMonth({
     }
   }
 
+  /*
+   * Deleting a rate, asked once and plainly. What it costs is said in the
+   * question: the rate's own prices go, guests can no longer book it, and
+   * bookings already taken keep the price they were given.
+   */
+  async function removePlan(id: number, label: string) {
+    if (busy) return;
+    const sure = window.confirm(
+      `Delete the rate "${label}"?\n\nIts prices and closed nights go with it, and guests can no longer book it. Bookings already taken keep the price they were given.`
+    );
+    if (!sure) return;
+    setBusy(true);
+    setProblem("");
+    try {
+      const result = await deletePlan(id);
+      if (result.error) setProblem(result.error);
+    } catch {
+      setProblem("Could not reach the server. Reload the page and try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function addPlan() {
     if (busy) return;
     if (!newGroup) {
@@ -287,6 +313,16 @@ export default function RateMonth({
                   </option>
                 ))}
               </select>
+              {plan ? (
+                <button
+                  type="button"
+                  className="btn-link-danger"
+                  disabled={busy}
+                  onClick={() => void removePlan(plan.id, `${plan.groupName} — ${plan.name}`)}
+                >
+                  <Trash2 size={13} aria-hidden="true" /> Delete This Rate
+                </button>
+              ) : null}
             </div>
 
             <div style={{ flex: "1 1 10rem" }}>
@@ -521,6 +557,57 @@ export default function RateMonth({
           </div>
         </>
       )}
+
+      {/* ------------------------------------------------------- every rate */}
+      {calendar.plans.length > 0 ? (
+        <div className="admin-card">
+          <h2>All Rates</h2>
+          <p className="admin-sub" style={{ marginBottom: "0.75rem" }}>
+            Every rate on every room type. Delete one you no longer sell; bookings already taken keep
+            their price.
+          </p>
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Room Type</th>
+                <th>Rate</th>
+                <th>Every Night</th>
+                <th aria-label="Actions" />
+              </tr>
+            </thead>
+            <tbody>
+              {calendar.plans.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.groupName}</td>
+                  <td>
+                    {p.name}
+                    {p.id === plan?.id ? <span className="admin-sub"> · showing above</span> : null}
+                  </td>
+                  <td>{p.base ?? <span className="rm-warn">No price</span>}</td>
+                  <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                    <button
+                      type="button"
+                      className="btn btn-quiet"
+                      disabled={busy || p.id === plan?.id}
+                      onClick={() => setPlanId(p.id)}
+                    >
+                      Edit
+                    </button>{" "}
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      disabled={busy}
+                      onClick={() => void removePlan(p.id, `${p.groupName} — ${p.name}`)}
+                    >
+                      <Trash2 size={14} aria-hidden="true" /> Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
 
       {/* --------------------------------------------------------- a new rate */}
       <div className="admin-card">

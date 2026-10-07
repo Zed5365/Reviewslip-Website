@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import StaySearch from "@/components/stays/StaySearch";
+import VoiceCall from "@/components/VoiceCall";
 import { Photo, RatingBadge } from "@/components/stays/bits";
 import styles from "@/components/stays/stays.module.css";
 import { isLocale } from "@/lib/i18n/config";
@@ -69,7 +70,8 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
   if (!venue) notFound();
 
   const links = contactLinks(venue.profile.contact);
-  const hasContact = Object.values(links).some(Boolean);
+  const voiceSite = venue.profile.contact.voiceSite || null;
+  const hasContact = Object.values(links).some(Boolean) || Boolean(voiceSite);
   const nights = venue.stay ? count(t, "night", venue.stay.nights) : "";
   // One, three or five: the grid is a big photo and pairs beside it, and an
   // even count leaves a hole in it.
@@ -280,7 +282,15 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
                 <h2 className={styles.boxTitle}>{fill(t.contactTitle, { venue: venue.name })}</h2>
                 <p className={styles.muted} style={{ margin: 0, fontSize: "0.875rem" }}>{t.contactLede}</p>
                 <div className={styles.contactButtons}>
-                  {links.phone && <a className="btn btn-quiet" href={links.phone}><Phone size={15} aria-hidden /> {t.call}</a>}
+                  <VoiceCall
+                    site={voiceSite}
+                    team="sales"
+                    label={t.call}
+                    fallbackHref={links.phone}
+                    className="btn btn-quiet"
+                    icon={<Phone size={15} aria-hidden />}
+                    words={{ callTeam: t.voiceCallTeam, teamSales: t.voiceReservations, teamSupport: t.voiceFrontDesk, leave: t.voiceLeave }}
+                  />
                   {links.line && <a className="btn btn-quiet" href={links.line} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden /> {t.line}</a>}
                   {links.whatsapp && <a className="btn btn-quiet" href={links.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden /> {t.whatsapp}</a>}
                   {links.email && <a className="btn btn-quiet" href={links.email}><Mail size={15} aria-hidden /> {t.email}</a>}

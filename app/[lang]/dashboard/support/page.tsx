@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import { Phone } from "lucide-react";
+
 import PageHeader from "@/components/app-shell/PageHeader";
+import VoiceCall from "@/components/VoiceCall";
+import { VOICE_SITE } from "@/lib/site";
 import Thread from "@/components/dashboard/Thread";
 import {
   NewTicketForm,
@@ -156,7 +160,18 @@ export default async function SupportPage({
         title="Support"
         sub={active ? active.title : "No open ticket"}
         back={localizedPath(lang, "/dashboard")}
-      />
+      >
+        {/* Talk to us now instead of writing. The person answering sees who
+            is calling. */}
+        <VoiceCall
+          site={VOICE_SITE}
+          team="support"
+          label="Call Support"
+          className="btn btn-quiet"
+          caller={me.account.email}
+          icon={<Phone size={15} aria-hidden="true" />}
+        />
+      </PageHeader>
       <div className="page-body is-narrow">
         {active && thread ? (
           <>

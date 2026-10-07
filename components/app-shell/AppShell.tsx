@@ -55,13 +55,15 @@ interface Props {
   lang?: Locale;
   email: string;
   venues?: Venue[];
+  /** Adds the Admin group (Server) to the customer nav. */
+  isAdmin?: boolean;
   children: React.ReactNode;
 }
 
 /* The theme itself is the site's (components/Theme.tsx, in the root layout):
    one system for the marketing pages and the app, so a choice made here holds
    on the public site too. */
-export default function AppShell({ kind, lang, email, venues = [], children }: Props) {
+export default function AppShell({ kind, lang, email, venues = [], isAdmin = false, children }: Props) {
   const pathname = usePathname();
   const params = useParams<{ slug?: string }>();
 
@@ -85,7 +87,7 @@ export default function AppShell({ kind, lang, email, venues = [], children }: P
     venues.find((v) => v.slug === params.slug) ??
     (venues.length === 1 ? venues[0] : null);
 
-  const nav = kind === "staff" ? staffNav() : customerNav(venue, to);
+  const nav = kind === "staff" ? staffNav() : customerNav(venue, to, isAdmin);
 
   const isActive = (item: NavItem) =>
     pathname === item.href ||

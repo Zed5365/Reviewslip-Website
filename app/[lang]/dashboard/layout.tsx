@@ -30,6 +30,7 @@ export default async function DashboardLayout({
       lang={lang}
       email={me.account.email}
       venues={me.businesses.map(({ slug, name }) => ({ slug, name }))}
+      isAdmin={me.account.isAdmin === true}
     >
       {children}
     </AppShell>
