@@ -157,3 +157,60 @@ export function contactLinks(contact: { phone: string; email: string; line: stri
 export function photoSrc(id: number): string {
   return `/api/stays/photo/${id}`;
 }
+
+/* ------------------------------------------------------------------ embed */
+
+/**
+ * Embed mode: the Stays pages running inside another website's iframe
+ * (public/embed.js puts them there).
+ *
+ * Carried in the address, not a cookie, because a third-party iframe often
+ * cannot keep cookies — and because every link, form and redirect has to keep
+ * it, or one click takes the guest out of the frame and onto reviewslip.com.
+ *
+ * - embed=1   the flag: no site header or footer, height reported to the host
+ * - venue     lock to one venue: results go straight to it, no "All stays"
+ * - accent    the host site's colour for the main buttons, as hex without #
+ * - theme     light (the default: most host sites are), dark, or auto to
+ *             follow the visitor's own setting
+ */
+export interface Embed {
+  on: boolean;
+  venue: string | null;
+  accent: string | null;
+  theme: "light" | "dark" | "auto";
+}
+
+export const NO_EMBED: Embed = { on: false, venue: null, accent: null, theme: "auto" };
+
+export function embedFrom(params: Params): Embed {
+  if (one(params, "embed") !== "1") return NO_EMBED;
+  const venue = one(params, "venue").toLowerCase();
+  const accent = one(params, "accent").replace(/^#/, "").toLowerCase();
+  return {
+    on: true,
+    venue: /^[a-z0-9][a-z0-9-]{0,31}$/.test(venue) ? venue : null,
+    // Hex only: it ends up in a style attribute.
+    accent: /^([0-9a-f]{3}|[0-9a-f]{6})$/.test(accent) ? accent : null,
+    theme: one(params, "theme") === "dark" ? "dark" : one(params, "theme") === "auto" ? "auto" : "light",
+  };
+}
+
+/** The embed parameters, for hidden form fields and query strings. */
+export function embedQuery(embed: Embed): Record<string, string> {
+  if (!embed.on) return {};
+  return {
+    embed: "1",
+    ...(embed.venue ? { venue: embed.venue } : {}),
+    ...(embed.accent ? { accent: embed.accent } : {}),
+    ...(embed.theme !== "light" ? { theme: embed.theme } : {}),
+  };
+}
+
+/** A link inside the Stays pages, kept inside the frame. */
+export function withEmbed(href: string, embed: Embed): string {
+  if (!embed.on) return href;
+  const [path, hash] = href.split("#");
+  const extra = new URLSearchParams(embedQuery(embed)).toString();
+  return `${path}${path.includes("?") ? "&" : "?"}${extra}${hash !== undefined ? `#${hash}` : ""}`;
+}

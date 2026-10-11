@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 
+import EmbedFrame from "@/components/stays/EmbedFrame";
 import StaySearch from "@/components/stays/StaySearch";
 import VoiceCall from "@/components/VoiceCall";
 import { Photo, RatingBadge } from "@/components/stays/bits";
@@ -23,7 +24,7 @@ import styles from "@/components/stays/stays.module.css";
 import { isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import { market, type Venue } from "@/lib/market";
-import { contactLinks, count, day, fill, money, stayFromParams, stayQuery } from "@/lib/stays-format";
+import { contactLinks, count, day, embedFrom, embedQuery, fill, money, stayFromParams, stayQuery, withEmbed } from "@/lib/stays-format";
 import { amenityLabel, staysText } from "@/lib/stays-text";
 
 async function load(slug: string, query: string): Promise<{ venue: Venue | null; error: string | null }> {
@@ -64,7 +65,9 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
   const t = staysText(lang);
-  const stay = stayFromParams((await searchParams) ?? {});
+  const query = (await searchParams) ?? {};
+  const stay = stayFromParams(query);
+  const embed = embedFrom(query);
 
   const { venue, error } = await load(slug, stayQuery({ ...stay, q: "" }));
   if (!venue) notFound();
@@ -78,22 +81,26 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
   const pool = venue.photos.length ? venue.photos : venue.rooms.flatMap((r) => r.photos);
   const gallery = pool.slice(0, pool.length >= 5 ? 5 : pool.length >= 3 ? 3 : 1);
   const here = localizedPath(lang, `/stays/${venue.slug}`);
-  const results = localizedPath(lang, `/stays?${stayQuery(stay)}`);
+  const results = withEmbed(localizedPath(lang, `/stays?${stayQuery(stay)}`), embed);
 
   return (
-    <>
+    <EmbedFrame embed={embed}>
       <div className={`wrap ${styles.page}`} style={{ paddingBottom: "1.25rem" }}>
-        <nav className={styles.crumbs} aria-label="Breadcrumb">
-          <Link href={results}>{t.backToResults}</Link>
-          <span aria-hidden>›</span>
-          {venue.place && (
-            <>
-              <Link href={localizedPath(lang, `/stays?${stayQuery({ ...stay, q: venue.place })}`)}>{venue.place}</Link>
-              <span aria-hidden>›</span>
-            </>
-          )}
-          <span>{venue.name}</span>
-        </nav>
+        {/* No way back to "all stays" from an embed locked to this venue: on a
+            hotel's own website, the other hotels are not its to show. */}
+        {!embed.venue && (
+          <nav className={styles.crumbs} aria-label="Breadcrumb">
+            <Link href={results}>{t.backToResults}</Link>
+            <span aria-hidden>›</span>
+            {venue.place && (
+              <>
+                <Link href={withEmbed(localizedPath(lang, `/stays?${stayQuery({ ...stay, q: venue.place })}`), embed)}>{venue.place}</Link>
+                <span aria-hidden>›</span>
+              </>
+            )}
+            <span>{venue.name}</span>
+          </nav>
+        )}
 
         <div className={styles.venueHead}>
           <div>
@@ -119,7 +126,7 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
 
       <div className={styles.stickyBar}>
         <div className="wrap">
-          <StaySearch action={here} stay={stay} t={t} lang={lang} showWhere={false} tone="bar" />
+          <StaySearch action={here} stay={stay} t={t} lang={lang} showWhere={false} tone="bar" extra={embedQuery(embed)} />
         </div>
       </div>
 
@@ -228,9 +235,12 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
                                   {offer.bookable && offer.totalMinor !== null && (
                                     <Link
                                       className="btn btn-go"
-                                      href={localizedPath(
-                                        lang,
-                                        `/stays/${venue.slug}/book?${stayQuery({ ...stay, q: "" }, { room: room.id, plan: offer.planId })}`
+                                      href={withEmbed(
+                                        localizedPath(
+                                          lang,
+                                          `/stays/${venue.slug}/book?${stayQuery({ ...stay, q: "" }, { room: room.id, plan: offer.planId })}`
+                                        ),
+                                        embed
                                       )}
                                     >
                                       {t.reserve}
@@ -304,6 +314,6 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
           </aside>
         </div>
       </div>
-    </>
+    </EmbedFrame>
   );
 }

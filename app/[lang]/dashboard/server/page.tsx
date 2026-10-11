@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import ServerHealth from "@/components/admin/ServerHealth";
 import { currentStaff } from "@/lib/customer";
+import { isLocale } from "@/lib/i18n/config";
+import { localizedPath } from "@/lib/i18n/routing";
 
 export const metadata: Metadata = {
   title: "Server",
@@ -14,7 +16,10 @@ export const metadata: Metadata = {
  * it can be read without going to the staff host. Anybody else gets the same
  * not-found as an address that does not exist.
  */
-export default async function DashboardServerPage() {
+export default async function DashboardServerPage({ params, searchParams }: PageProps<"/[lang]/dashboard/server">) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
   if (!(await currentStaff())) notFound();
-  return <ServerHealth />;
+  const tab = (await searchParams)?.tab;
+  return <ServerHealth tab={typeof tab === "string" ? tab : undefined} base={localizedPath(lang, "/dashboard/server")} />;
 }

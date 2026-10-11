@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Check, Coffee, MapPin } from "lucide-react";
 
+import EmbedFrame from "@/components/stays/EmbedFrame";
 import StaySearch from "@/components/stays/StaySearch";
 import { Photo, RatingBadge } from "@/components/stays/bits";
 import styles from "@/components/stays/stays.module.css";
 import { isLocale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import { market, type SearchResult } from "@/lib/market";
-import { count, fill, money, nightsBetween, stayFromParams, stayQuery } from "@/lib/stays-format";
+import { count, embedFrom, embedQuery, fill, money, nightsBetween, stayFromParams, stayQuery, withEmbed } from "@/lib/stays-format";
 import { amenityLabel, staysText } from "@/lib/stays-text";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/stays">): Promise<Metadata> {
@@ -37,6 +38,13 @@ export default async function StaysPage({ params, searchParams }: PageProps<"/[l
   const t = staysText(lang);
   const query = (await searchParams) ?? {};
   const stay = stayFromParams(query);
+  const embed = embedFrom(query);
+
+  // An embed locked to one venue has no results page: the search is that
+  // venue's, so it goes straight there with the dates filled in.
+  if (embed.venue) {
+    redirect(withEmbed(localizedPath(lang, `/stays/${embed.venue}?${stayQuery({ ...stay, q: "" })}`), embed));
+  }
 
   const sort: Sort = SORTS.includes(query.sort as Sort) ? (query.sort as Sort) : "recommended";
   const breakfast = query.breakfast === "1";
@@ -76,17 +84,17 @@ export default async function StaysPage({ params, searchParams }: PageProps<"/[l
   const filtersOn = breakfast || freeCancel || maxPrice || minRating;
 
   return (
-    <>
+    <EmbedFrame embed={embed}>
       <div className={styles.top}>
         <div className="wrap">
-          <StaySearch action={base} stay={stay} places={places} t={t} lang={lang} tone="bar" />
+          <StaySearch action={base} stay={stay} places={places} t={t} lang={lang} tone="bar" extra={embedQuery(embed)} />
         </div>
       </div>
 
       <div className={`wrap ${styles.page}`}>
         <div className={styles.results}>
           <form method="get" action={base} className={styles.filters} aria-label={t.filters}>
-            {Object.entries({ q: stay.q, arrival: stay.arrival, departure: stay.departure, adults: stay.adults, children: stay.children, rooms: stay.rooms, sort: keep.sort }).map(
+            {Object.entries({ q: stay.q, arrival: stay.arrival, departure: stay.departure, adults: stay.adults, children: stay.children, rooms: stay.rooms, sort: keep.sort, ...embedQuery(embed) }).map(
               ([name, value]) => (value === undefined || value === "" ? null : <input key={name} type="hidden" name={name} value={value} />)
             )}
 
@@ -126,7 +134,7 @@ export default async function StaysPage({ params, searchParams }: PageProps<"/[l
             <div className={styles.filterActions}>
               <button type="submit" className={`btn btn-go ${styles.small}`}>{t.apply}</button>
               {filtersOn ? (
-                <Link className={`btn btn-quiet ${styles.small}`} href={`${base}?${stayQuery(stay, { sort: keep.sort })}`}>
+                <Link className={`btn btn-quiet ${styles.small}`} href={withEmbed(`${base}?${stayQuery(stay, { sort: keep.sort })}`, embed)}>
                   {t.clear}
                 </Link>
               ) : null}
@@ -149,7 +157,7 @@ export default async function StaysPage({ params, searchParams }: PageProps<"/[l
                     key={s}
                     className={styles.sortLink}
                     aria-current={s === sort ? "true" : undefined}
-                    href={`${base}?${stayQuery(stay, { ...keep, sort: s === "recommended" ? undefined : s })}`}
+                    href={withEmbed(`${base}?${stayQuery(stay, { ...keep, sort: s === "recommended" ? undefined : s })}`, embed)}
                   >
                     {s === "price" ? t.sortPrice : s === "rating" ? t.sortRating : t.sortRecommended}
                   </Link>
@@ -163,7 +171,7 @@ export default async function StaysPage({ params, searchParams }: PageProps<"/[l
 
             <ul className={styles.list}>
               {shown.map((r) => {
-                const href = localizedPath(lang, `/stays/${r.slug}?${stayQuery(stay)}`);
+                const href = withEmbed(localizedPath(lang, `/stays/${r.slug}?${stayQuery(stay)}`), embed);
                 return (
                   <li key={r.slug} className={styles.card}>
                     <Photo id={r.photo} alt={r.name} t={t} className={styles.cardPhoto} />
@@ -226,6 +234,6 @@ export default async function StaysPage({ params, searchParams }: PageProps<"/[l
           </section>
         </div>
       </div>
-    </>
+    </EmbedFrame>
   );
 }

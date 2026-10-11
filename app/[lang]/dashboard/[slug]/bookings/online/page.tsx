@@ -11,6 +11,7 @@ import { call, currentUser, sessionToken, venueName } from "@/lib/customer";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import type { MarketSettings, RoomProfile } from "@/lib/market";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Online Booking",
@@ -124,6 +125,29 @@ export default async function OnlineBookingPage({
             amenities={data.amenities.venue}
             save={saveListing}
           />
+        </section>
+
+        {/* The same booking pages on the venue's own website: two lines it
+            pastes into any site builder. public/embed.js does the rest. */}
+        <section className="group-box" aria-labelledby="embed-title">
+          <h2 id="embed-title">On Your Website</h2>
+          <p className={styles.hint} style={{ margin: 0 }}>
+            Paste this where you want guests to book on your own website — a Custom HTML block on WordPress, an
+            Embed element on Wix, a Code block on Squarespace. Bookings come here, as they do from Reviewslip.
+            Add <code>data-accent=&quot;#1f4fa3&quot;</code> to match your button colour.
+          </p>
+          <textarea
+            readOnly
+            rows={2}
+            aria-label="Embed code"
+            style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "0.8rem" }}
+            value={`<div data-reviewslip-booking data-venue="${slug}"></div>\n<script src="${SITE_URL}/embed.js" async></script>`}
+          />
+          {!data.listed && (
+            <p className={styles.hint} style={{ margin: 0 }}>
+              Switch on List on Reviewslip above first: the embed shows only listed venues.
+            </p>
+          )}
         </section>
 
         <section className="group-box" aria-labelledby="photos-title">

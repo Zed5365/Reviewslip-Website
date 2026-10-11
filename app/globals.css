@@ -11,7 +11,13 @@
    that are pictures of the product rather than the site.
    ========================================================================== */
 
-:root {
+/* [data-embed-theme]: an embedded page that picks its own theme, whatever
+   the visitor's is (EmbedFrame). Declaring the whole set again on it, not
+   only the base colours, matters: the bridge tokens below are computed where
+   they are declared, so a wrapper that changed --background alone would keep
+   the page's --shade, --ink and the rest. */
+:root,
+[data-embed-theme] {
   /* The ramp, as vibecraftedsoftware.com pins it. */
   --gray-950: #050505;
   --gray-900: #0c0c0c;
@@ -85,7 +91,8 @@
 }
 
 /* Dark: the same ramp, inverted. next-themes puts `dark` on <html>. */
-.dark {
+.dark,
+[data-embed-theme="dark"] {
   --background: var(--gray-950);
   --foreground: var(--gray-50);
   --muted: var(--gray-900);
@@ -2660,4 +2667,31 @@ img {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Embed mode                                                                  */
+/* -------------------------------------------------------------------------- */
+
+/* The Stays pages inside another website's iframe (components/stays/
+   EmbedFrame.tsx): only the page itself, no site header, footer or overlays.
+   By structure — every direct child of body but <main> — so a restyled header
+   is still caught, and in CSS rather than script so nothing flashes first. */
+body:has([data-embed]) > :not(main) {
+  display: none !important;
+}
+
+/* Transparent behind the frame's own page: the iframe is exactly as tall as
+   its content (embed.js), so nothing of the body ever shows, and a body in the
+   visitor's theme must not tint the edges. */
+html:has([data-embed]),
+body:has([data-embed]) {
+  background: transparent;
+}
+
+/* The frame paints its own page, so its theme holds even when the visitor's
+   differs and the body behind it is the other colour. */
+[data-embed] {
+  background: var(--background);
+  color: var(--foreground);
 }

@@ -8,7 +8,8 @@ import VoiceCall from "@/components/VoiceCall";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import { market, type BookingView, type ChangeQuote } from "@/lib/market";
-import { addDays, contactLinks, count, day, fill, money, todayInThailand } from "@/lib/stays-format";
+import EmbedFrame from "@/components/stays/EmbedFrame";
+import { addDays, contactLinks, count, day, embedFrom, embedQuery, fill, money, todayInThailand, withEmbed } from "@/lib/stays-format";
 import { staysText } from "@/lib/stays-text";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/stays/booking/[reference]">): Promise<Metadata> {
@@ -44,8 +45,11 @@ export default async function BookingPage({ params, searchParams }: PageProps<"/
   const failed = one(query.error).slice(0, 200) || null;
   const managing = one(query.manage) === "1";
   const changed = one(query.changed) === "1";
+  const embed = embedFrom(query);
   const path = localizedPath(locale, `/stays/booking/${reference}`);
-  const here = `${path}?k=${encodeURIComponent(key)}`;
+  // Embed parameters ride along on every address here, so managing a booking
+  // inside a host site's frame never drops the guest onto reviewslip.com.
+  const here = withEmbed(`${path}?k=${encodeURIComponent(key)}`, embed);
   const manage = `${here}&manage=1`;
 
   async function cancel() {
@@ -88,9 +92,11 @@ export default async function BookingPage({ params, searchParams }: PageProps<"/
 
   if (!booking) {
     return (
-      <div className={`wrap ${styles.page}`}>
-        <p className={styles.empty}>{t.bookingMissing}</p>
-      </div>
+      <EmbedFrame embed={embed}>
+        <div className={`wrap ${styles.page}`}>
+          <p className={styles.empty}>{t.bookingMissing}</p>
+        </div>
+      </EmbedFrame>
     );
   }
 
@@ -130,6 +136,7 @@ export default async function BookingPage({ params, searchParams }: PageProps<"/
   const range = (from: number, to: number) => Array.from({ length: Math.max(0, to - from + 1) }, (_, i) => from + i);
 
   return (
+    <EmbedFrame embed={embed}>
     <div className={`wrap ${styles.page}`}>
       <div className={styles.confirmed}>
         <div className={styles.confirmedHead}>
@@ -205,6 +212,9 @@ export default async function BookingPage({ params, searchParams }: PageProps<"/
                 <form method="get" action={path} className={styles.changeForm}>
                   <input type="hidden" name="k" value={key} />
                   <input type="hidden" name="manage" value="1" />
+                  {Object.entries(embedQuery(embed)).map(([name, value]) => (
+                    <input key={name} type="hidden" name={name} value={value} />
+                  ))}
                   <label className={styles.label}>
                     {t.checkIn}
                     <input className={styles.input} type="date" name="arrival" min={today} defaultValue={form.arrival} required />
@@ -303,9 +313,16 @@ export default async function BookingPage({ params, searchParams }: PageProps<"/
         )}
 
         <p style={{ textAlign: "center", marginTop: "1.5rem" }}>
-          <Link className="btn btn-quiet" href={localizedPath(lang, "/stays")}>{t.anotherStay}</Link>
+          {/* Locked to one venue: back to that venue, not to every venue. */}
+          <Link
+            className="btn btn-quiet"
+            href={withEmbed(localizedPath(lang, embed.venue ? `/stays/${embed.venue}` : "/stays"), embed)}
+          >
+            {t.anotherStay}
+          </Link>
         </p>
       </div>
     </div>
+    </EmbedFrame>
   );
 }

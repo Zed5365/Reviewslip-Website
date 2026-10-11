@@ -8,7 +8,8 @@ import styles from "@/components/stays/stays.module.css";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { localizedPath } from "@/lib/i18n/routing";
 import { market, type Venue } from "@/lib/market";
-import { count, day, fill, money, stayFromParams, stayQuery } from "@/lib/stays-format";
+import EmbedFrame from "@/components/stays/EmbedFrame";
+import { count, day, embedFrom, fill, money, stayFromParams, stayQuery, withEmbed } from "@/lib/stays-format";
 import { staysText } from "@/lib/stays-text";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/stays/[slug]/book">): Promise<Metadata> {
@@ -36,6 +37,7 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
   const stay = { ...stayFromParams(query), q: "" };
   const roomId = Number(query.room);
   const planId = Number(query.plan);
+  const embed = embedFrom(query);
 
   let venue: Venue;
   try {
@@ -47,15 +49,17 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
 
   const room = venue.rooms.find((r) => r.id === roomId);
   const offer = room?.offers.find((o) => o.planId === planId);
-  const back = localizedPath(lang, `/stays/${venue.slug}?${stayQuery(stay)}`);
+  const back = withEmbed(localizedPath(lang, `/stays/${venue.slug}?${stayQuery(stay)}`), embed);
 
   if (!room || !offer || !offer.bookable || offer.totalMinor === null || !venue.stay) {
     return (
-      <div className={`wrap ${styles.page}`}>
-        <p className={styles.empty}>
-          {t.unavailable}. <Link href={back}>{venue.name}</Link>
-        </p>
-      </div>
+      <EmbedFrame embed={embed}>
+        <div className={`wrap ${styles.page}`}>
+          <p className={styles.empty}>
+            {t.unavailable}. <Link href={back}>{venue.name}</Link>
+          </p>
+        </div>
+      </EmbedFrame>
     );
   }
 
@@ -94,10 +98,11 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
         values,
       };
     }
-    redirect(localizedPath(locale, `/stays/booking/${booked.reference}?k=${encodeURIComponent(booked.key ?? "")}`));
+    redirect(withEmbed(localizedPath(locale, `/stays/booking/${booked.reference}?k=${encodeURIComponent(booked.key ?? "")}`), embed));
   }
 
   return (
+    <EmbedFrame embed={embed}>
     <div className={`wrap ${styles.page}`}>
       <nav className={styles.crumbs} aria-label="Breadcrumb">
         <Link href={back}>{venue.name}</Link>
@@ -151,5 +156,6 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
         </aside>
       </div>
     </div>
+    </EmbedFrame>
   );
 }

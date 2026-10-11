@@ -28,6 +28,7 @@ export default function StaySearch({
   lang,
   showWhere = true,
   tone = "hero",
+  extra = {},
 }: {
   action: string;
   stay: Stay;
@@ -36,6 +37,8 @@ export default function StaySearch({
   lang: Locale;
   showWhere?: boolean;
   tone?: "hero" | "bar";
+  /** Fields carried through the search unchanged: embed mode's parameters. */
+  extra?: Record<string, string>;
 }) {
   const id = useId();
   const [arrival, setArrival] = useState(stay.arrival);
@@ -94,6 +97,9 @@ export default function StaySearch({
       className={`${styles.bar} ${tone === "bar" ? styles.barCompact : ""} ${showWhere ? "" : styles.barNoWhere}`}
       lang={lang}
     >
+      {Object.entries(extra).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
       {showWhere && (
         <label className={styles.field}>
           <span className={styles.fieldLabel}>
