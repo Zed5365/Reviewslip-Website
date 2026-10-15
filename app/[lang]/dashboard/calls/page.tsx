@@ -53,7 +53,7 @@ export default async function ReviewslipCallsPage({ params }: PageProps<"/[lang]
   return (
     <>
       <PageHeader title="Calls" sub="Reviewslip Sales and Support">
-        <a className="btn btn-go" href="/api/phone" target="_blank" rel="noopener">
+        <a className="btn btn-go" href="/api/phone?phone=reviewslip" target="_blank" rel="noopener">
           Open the Phone
         </a>
       </PageHeader>
@@ -110,12 +110,12 @@ export default async function ReviewslipCallsPage({ params }: PageProps<"/[lang]
             </div>
           ) : (
             <p style={{ margin: 0, color: "var(--muted-foreground)" }}>
-              No admin has opened the phone yet. Until someone does, the Call buttons stay hidden.
+              No admin has opened this phone yet. Until someone does, the Call Sales and Call Support buttons stay hidden.
             </p>
           )}
           <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
-            Every admin account can answer. Each person picks Sales, Support or both under Taking calls for on the
-            phone.
+            Every admin account can answer, on this phone — not the venue phone, so the two can be on duty apart. Each
+            person picks Sales, Support or both under Taking calls for.
           </p>
         </section>
       </div>
