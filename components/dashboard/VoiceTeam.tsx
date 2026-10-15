@@ -1,0 +1,188 @@
+"use client";
+
+import { useRef, useState, useTransition } from "react";
+
+export interface VoicePerson {
+  id: number;
+  name: string;
+  email: string;
+  you: boolean;
+  invited: boolean;
+  onDuty: boolean;
+  presence: "online" | "call" | "offline";
+}
+
+export interface VoiceTeamData {
+  status: "open" | "voicemail" | "off";
+  phoneUrl: string;
+  canEmail: boolean;
+  opened: boolean;
+  people: VoicePerson[];
+  link?: string | null;
+}
+
+type Result = { team?: VoiceTeamData; error?: string };
+
+/** Where someone is, in words: never a colour alone. */
+function state(p: VoicePerson): { text: string; tone: string } {
+  if (p.invited) return { text: "Invited, not signed in yet", tone: "var(--muted-foreground)" };
+  if (p.presence === "call") return { text: "On a call", tone: "var(--warning)" };
+  if (p.onDuty && p.presence === "online") return { text: "On duty, phone open", tone: "var(--success)" };
+  if (p.onDuty) return { text: "On duty, phone closed", tone: "var(--warning)" };
+  return { text: "Off duty", tone: "var(--muted-foreground)" };
+}
+
+/**
+ * Who answers this venue's calls: the owner, and the staff they invite.
+ *
+ * Staff get an email with a link to set a password for the phone page. They
+ * answer this venue only and never see the dashboard. Without email set up on
+ * the server, the link comes back here to send by hand.
+ */
+export default function VoiceTeam({
+  initial,
+  invite,
+  reinvite,
+  remove,
+}: {
+  initial: VoiceTeamData;
+  invite: (name: string, email: string) => Promise<Result>;
+  reinvite: (id: number) => Promise<Result>;
+  remove: (id: number) => Promise<Result>;
+}) {
+  const [team, setTeam] = useState(initial);
+  const [error, setError] = useState("");
+  const [link, setLink] = useState<{ name: string; url: string } | null>(null);
+  const [pending, start] = useTransition();
+  const form = useRef<HTMLFormElement>(null);
+
+  function run(job: () => Promise<Result>, after?: (r: Result) => void) {
+    setError("");
+    start(async () => {
+      const r = await job();
+      if (r.error) return setError(r.error);
+      if (r.team) setTeam(r.team);
+      after?.(r);
+    });
+  }
+
+  function onInvite(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const name = String(data.get("name") ?? "");
+    const email = String(data.get("email") ?? "");
+    run(() => invite(name, email), (r) => {
+      form.current?.reset();
+      setLink(r.team?.link ? { name, url: r.team.link } : null);
+    });
+  }
+
+  return (
+    <div style={{ display: "grid", gap: "1rem" }}>
+      {error ? (
+        <p role="alert" style={{ color: "var(--destructive)", margin: 0 }}>
+          {error}
+        </p>
+      ) : null}
+
+      <div className="admin-scroll">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th aria-label="Actions" />
+            </tr>
+          </thead>
+          <tbody>
+            {!team.opened ? (
+              <tr>
+                <td className="primary">You</td>
+                <td colSpan={2} style={{ color: "var(--muted-foreground)" }}>
+                  Open the phone once to answer your own calls.
+                </td>
+                <td />
+              </tr>
+            ) : null}
+            {team.people.map((p) => {
+              const s = state(p);
+              return (
+                <tr key={p.id}>
+                  <td className="primary">
+                    {p.name}
+                    {p.you ? " (you)" : ""}
+                  </td>
+                  <td>{p.email}</td>
+                  <td style={{ color: s.tone }}>{s.text}</td>
+                  <td className="num" style={{ whiteSpace: "nowrap" }}>
+                    {p.invited ? (
+                      <button
+                        type="button"
+                        className="btn btn-quiet"
+                        disabled={pending}
+                        onClick={() =>
+                          run(() => reinvite(p.id), (r) =>
+                            setLink(r.team?.link ? { name: p.name, url: r.team.link } : null)
+                          )
+                        }
+                      >
+                        Resend Invite
+                      </button>
+                    ) : null}{" "}
+                    {!p.you ? (
+                      <button
+                        type="button"
+                        className="btn btn-quiet"
+                        disabled={pending}
+                        onClick={() => {
+                          if (window.confirm(`Stop ${p.name} answering calls for this venue?`)) run(() => remove(p.id));
+                        }}
+                      >
+                        Remove
+                      </button>
+                    ) : null}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {link ? (
+        <div className="group-box" role="status" style={{ margin: 0 }}>
+          <p style={{ margin: 0 }}>
+            Send this link to {link.name}. It lets them set a password for the phone and works for 14 days.
+          </p>
+          <input
+            readOnly
+            value={link.url}
+            onFocus={(e) => e.currentTarget.select()}
+            aria-label="Invite link"
+            style={{ width: "100%", marginTop: "0.5rem" }}
+          />
+        </div>
+      ) : null}
+
+      <form ref={form} onSubmit={onInvite} style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "end" }}>
+        <label style={{ display: "grid", gap: "0.25rem", flex: "1 1 10rem" }}>
+          <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>Name</span>
+          <input name="name" required maxLength={60} autoComplete="off" disabled={pending} />
+        </label>
+        <label style={{ display: "grid", gap: "0.25rem", flex: "2 1 14rem" }}>
+          <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>Email</span>
+          <input name="email" type="email" required autoComplete="off" disabled={pending} />
+        </label>
+        <button type="submit" className="btn btn-go" disabled={pending}>
+          Add Person
+        </button>
+      </form>
+      <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
+        {team.canEmail
+          ? "We email them a link to set a password. They sign in on the phone page only, and answer this venue's calls."
+          : "You will get a link to send them yourself. They sign in on the phone page only, and answer this venue's calls."}
+      </p>
+    </div>
+  );
+}

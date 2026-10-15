@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   List,
   MessageSquareText,
+  PhoneCall,
   QrCode,
   Settings,
   Stamp,
@@ -80,6 +81,7 @@ export function customerNav(
             { title: "Reviews", href: at("/reviews"), icon: MessageSquareText },
             { title: "Table Card", href: at("/poster"), icon: QrCode },
             { title: "Guest App", href: at("/welcome"), icon: HandHeart },
+            { title: "Calls", href: at("/calls"), icon: PhoneCall },
           ],
         },
         {
@@ -98,11 +100,15 @@ export function customerNav(
     : [];
 
   // Admin accounts see the server's health here too, without going to the
-  // staff host. Everybody else never sees the group.
+  // staff host, and Reviewslip's own Sales and Support lines. Everybody else
+  // never sees the group.
   if (isAdmin) {
     modules.push({
       label: "Admin",
-      items: [{ title: "Server", href: to("/dashboard/server"), icon: Activity }],
+      items: [
+        { title: "Server", href: to("/dashboard/server"), icon: Activity },
+        { title: "Sales & Support", href: to("/dashboard/calls"), icon: PhoneCall, exact: true },
+      ],
     });
   }
 

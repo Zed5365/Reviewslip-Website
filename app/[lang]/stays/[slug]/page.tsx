@@ -73,8 +73,9 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
   if (!venue) notFound();
 
   const links = contactLinks(venue.profile.contact);
-  const voiceSite = venue.profile.contact.voiceSite || null;
-  const hasContact = Object.values(links).some(Boolean) || Boolean(voiceSite);
+  // Every venue has a line on the softphone; its button shows only while
+  // someone answers it, so the box is there even with no other way to reach them.
+  const hasLinks = Object.values(links).some(Boolean);
   const nights = venue.stay ? count(t, "night", venue.stay.nights) : "";
   // One, three or five: the grid is a big photo and pairs beside it, and an
   // even count leaves a hole in it.
@@ -287,19 +288,21 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
           </div>
 
           <aside className={styles.aside}>
-            {hasContact && (
-              <div className={styles.box}>
+            {(
+              <div className={styles.box} data-voice-only={hasLinks ? undefined : ""}>
                 <h2 className={styles.boxTitle}>{fill(t.contactTitle, { venue: venue.name })}</h2>
                 <p className={styles.muted} style={{ margin: 0, fontSize: "0.875rem" }}>{t.contactLede}</p>
                 <div className={styles.contactButtons}>
                   <VoiceCall
-                    site={voiceSite}
+                    line={venue.slug}
                     team="sales"
-                    label={t.call}
+                    label={fill(t.voiceCallTeam, { team: t.voiceReservations })}
+                    leaveLabel={t.voiceLeave}
                     fallbackHref={links.phone}
+                    fallbackLabel={t.call}
+                    phone={venue.profile.contact.phone}
                     className="btn btn-quiet"
                     icon={<Phone size={15} aria-hidden />}
-                    words={{ callTeam: t.voiceCallTeam, teamSales: t.voiceReservations, teamSupport: t.voiceFrontDesk, leave: t.voiceLeave }}
                   />
                   {links.line && <a className="btn btn-quiet" href={links.line} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden /> {t.line}</a>}
                   {links.whatsapp && <a className="btn btn-quiet" href={links.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden /> {t.whatsapp}</a>}

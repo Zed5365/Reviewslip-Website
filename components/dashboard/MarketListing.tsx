@@ -148,20 +148,10 @@ export default function MarketListing({
             <input value={profile.contact.whatsapp} placeholder="+66 81 234 5678" onChange={(e) => setContact({ whatsapp: e.target.value })} />
           </label>
         </div>
-        <div className={styles.row2}>
-          <label className={styles.field}>
-            Softphone Site Key
-            <input
-              value={profile.contact.voiceSite ?? ""}
-              placeholder="baanponglodge"
-              onChange={(e) => setContact({ voiceSite: e.target.value.trim().toLowerCase() })}
-            />
-            <span className={styles.hint}>
-              From the Vibe Crafted softphone. With it, Call on your booking pages and in the Guest App rings your
-              team in the browser; the phone number stays for browsers that cannot place a call.
-            </span>
-          </label>
-        </div>
+        <p className={styles.hint}>
+          Guests can also call you in the browser from these pages and the Guest App. Choose who answers under
+          Calls in the sidebar; the phone number above stays for browsers that cannot place a call.
+        </p>
       </fieldset>
 
       <fieldset className={styles.fieldset}>

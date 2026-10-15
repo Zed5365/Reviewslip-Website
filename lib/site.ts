@@ -23,12 +23,14 @@ export const SITE_URL =
 export const CONTACT_EMAIL = "info@reviewslip.com";
 
 /**
- * Reviewslip's own site key on the Vibe Crafted softphone: Call Sales on the
- * Contact page, Call Support in the dashboard. Set VOICE_SITE at build time if
- * the key the portal gave is not "reviewslip"; a wrong key shows no button, as
- * the widget only shows one once the site answers.
+ * Where the softphone lives: the review app's public address. Call buttons
+ * load voice-call.js from it and ring through it, and Open the phone goes to
+ * its /phone/ page. NEXT_PUBLIC_ because the browser loads the script; set
+ * NEXT_PUBLIC_VOICE_URL at build time if the review app answers elsewhere.
  */
-export const VOICE_SITE = process.env.VOICE_SITE?.trim() || "reviewslip";
+export const VOICE_URL =
+  process.env.NEXT_PUBLIC_VOICE_URL?.replace(/\/$/, "") ||
+  (process.env.NODE_ENV === "production" ? "https://api.reviewslip.com" : "http://localhost:3000");
 
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
   "Reviewslip enquiry"

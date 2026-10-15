@@ -4,7 +4,6 @@ import DemoSlip from "@/components/marketing/DemoSlip";
 import ContactForm from "@/components/marketing/ContactForm";
 import VoiceCall from "@/components/VoiceCall";
 import { Phone } from "lucide-react";
-import { VOICE_SITE } from "@/lib/site";
 import { isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { buildPageMetadata } from "@/lib/i18n/metadata";
@@ -49,7 +48,7 @@ export default async function ContactPage({
                 someone can answer or take a message, so it never promises a
                 call that cannot happen. */}
             <VoiceCall
-              site={VOICE_SITE}
+              line="reviewslip"
               team="sales"
               label="Call Sales"
               className="btn btn-go"

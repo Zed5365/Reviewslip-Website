@@ -288,22 +288,28 @@ export default async function BookingPage({ params, searchParams }: PageProps<"/
           </p>
         )}
 
-        {(Object.values(links).some(Boolean) || booking.venue.contact.voiceSite) && (
-          <div className={styles.box} style={{ marginTop: "1rem" }}>
+        {!cancelled && (
+          <div
+            className={styles.box}
+            style={{ marginTop: "1rem" }}
+            data-voice-only={Object.values(links).some(Boolean) ? undefined : ""}
+          >
             <h2 className={styles.boxTitle}>{fill(t.contactTitle, { venue: booking.venue.name })}</h2>
             <div className={styles.contactButtons}>
               {/* The guest's name and reference go to whoever answers, so they
                   can open the booking before the guest has finished saying who
                   they are. */}
               <VoiceCall
-                site={booking.venue.contact.voiceSite || null}
+                line={booking.venue.slug}
                 team="sales"
-                label={t.call}
+                label={fill(t.voiceCallTeam, { team: t.voiceReservations })}
+                leaveLabel={t.voiceLeave}
                 fallbackHref={links.phone}
+                fallbackLabel={t.call}
+                phone={booking.venue.contact.phone}
                 className="btn btn-quiet"
                 caller={`${booking.guestName} · ${booking.reference}`}
                 icon={<Phone size={15} aria-hidden />}
-                words={{ callTeam: t.voiceCallTeam, teamSales: t.voiceReservations, teamSupport: t.voiceFrontDesk, leave: t.voiceLeave }}
               />
               {links.line && <a className="btn btn-quiet" href={links.line} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden /> {t.line}</a>}
               {links.whatsapp && <a className="btn btn-quiet" href={links.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden /> {t.whatsapp}</a>}

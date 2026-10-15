@@ -14,8 +14,6 @@ export interface Contact {
   email: string;
   line: string;
   whatsapp: string;
-  /** The venue's softphone site key; empty when it has none. */
-  voiceSite?: string;
 }
 
 export interface MarketProfile {

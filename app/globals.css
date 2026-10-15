@@ -2695,3 +2695,9 @@ body:has([data-embed]) {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* A contact box whose only way to reach the venue is the call button: gone
+   while the button is, which is whenever nobody answers that line. */
+[data-voice-only]:has([data-voice-call][hidden]) {
+  display: none;
+}

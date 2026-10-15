@@ -6,7 +6,6 @@ import { Phone } from "lucide-react";
 
 import PageHeader from "@/components/app-shell/PageHeader";
 import VoiceCall from "@/components/VoiceCall";
-import { VOICE_SITE } from "@/lib/site";
 import Thread from "@/components/dashboard/Thread";
 import {
   NewTicketForm,
@@ -164,7 +163,7 @@ export default async function SupportPage({
         {/* Talk to us now instead of writing. The person answering sees who
             is calling. */}
         <VoiceCall
-          site={VOICE_SITE}
+          line="reviewslip"
           team="support"
           label="Call Support"
           className="btn btn-quiet"
