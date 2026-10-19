@@ -566,7 +566,8 @@ export default function RateMonth({
             Every rate on every room type. Delete one you no longer sell; bookings already taken keep
             their price.
           </p>
-          <table className="admin-table">
+          <div className="admin-scroll">
+          <table className="admin-table rates-table">
             <thead>
               <tr>
                 <th>Room Type</th>
@@ -606,6 +607,7 @@ export default function RateMonth({
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       ) : null}
 

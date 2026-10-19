@@ -3,6 +3,7 @@
 
 .stack {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 
@@ -42,6 +43,9 @@
 .fieldset {
   display: grid;
   gap: 0.5rem;
+  /* A fieldset never shrinks below its content unless told: one wide table
+     in it held a whole room past the edge of a phone. */
+  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
@@ -180,6 +184,7 @@
 /* Rooms. */
 .room {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
   padding: 0.85rem;
   border: 1px solid var(--border);

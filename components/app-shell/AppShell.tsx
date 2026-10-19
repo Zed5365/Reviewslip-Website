@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { useSyncExternalStore } from "react";
-import { LogOut, PanelLeft, UserRound } from "lucide-react";
+import { useState, useSyncExternalStore } from "react";
+import { LogOut, Menu, PanelLeft, UserRound, X } from "lucide-react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import type { Locale } from "@/lib/i18n/config";
@@ -25,7 +25,9 @@ import {
  * modules, a separator, the account-level entries, and a footer holding the
  * account menu and the theme toggle.
  *
- * Desktop only, which is this app's form factor — there is no phone tree.
+ * On a phone (below 768px, app.css) the Sidebar is a drawer instead: the
+ * Menu button at the top left opens it over the page, and choosing a screen,
+ * the backdrop or Escape closes it. The same nav, so nothing is listed twice.
  */
 
 const COLLAPSED_KEY = "rs:sidebar-collapsed";
@@ -69,6 +71,12 @@ export default function AppShell({ kind, lang, email, venues = [], isAdmin = fal
 
   const collapsed = useSyncExternalStore(watchCollapsed, readCollapsed, () => false);
 
+  // The phone drawer is open for the screen it was opened on: moving to
+  // another screen closes it with no effect to run.
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const drawerOpen = openOn === pathname;
+  const closeDrawer = () => setOpenOn(null);
+
   function toggle() {
     localStorage.setItem(COLLAPSED_KEY, collapsed ? "0" : "1");
     window.dispatchEvent(new Event(COLLAPSED_EVENT));
@@ -103,6 +111,7 @@ export default function AppShell({ kind, lang, email, venues = [], isAdmin = fal
           href={item.href}
           className="nav-item"
           aria-current={isActive(item) ? "page" : undefined}
+          onClick={closeDrawer}
           // The label is hidden in the rail, so the name has to come from here.
           title={collapsed ? item.title : undefined}
         >
@@ -114,13 +123,33 @@ export default function AppShell({ kind, lang, email, venues = [], isAdmin = fal
   );
 
   return (
-    <div className="app" data-collapsed={collapsed}>
-      <aside className="sidebar" aria-label="Sidebar">
+    <div
+      className="app"
+      data-collapsed={collapsed}
+      data-drawer={drawerOpen ? "open" : undefined}
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && drawerOpen) closeDrawer();
+      }}
+    >
+      {/* Phones only: opens the Sidebar as a drawer. */}
+      <button
+        type="button"
+        className="icon-btn drawer-btn"
+        onClick={() => setOpenOn(drawerOpen ? null : pathname)}
+        aria-expanded={drawerOpen}
+        aria-controls="app-sidebar"
+        aria-label={drawerOpen ? "Close menu" : "Open menu"}
+      >
+        {drawerOpen ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
+      </button>
+      <div className="drawer-backdrop" onClick={closeDrawer} aria-hidden="true" />
+
+      <aside className="sidebar" id="app-sidebar" aria-label="Sidebar">
         <div className="sidebar-scroll">
           <div className="nav-group">
             <button
               type="button"
-              className="nav-item"
+              className="nav-item sidebar-toggle"
               onClick={toggle}
               aria-expanded={!collapsed}
               title="Toggle Sidebar"

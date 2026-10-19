@@ -135,7 +135,7 @@ export default function MarketRoom({
             No rates yet. Add one on the Rates screen — a room type with no price cannot be booked.
           </p>
         ) : (
-          <table className="admin-table">
+          <table className="admin-table terms-table">
             <thead>
               <tr>
                 <th>Rate</th>

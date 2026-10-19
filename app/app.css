@@ -331,6 +331,9 @@ body:has(.app) {
   flex-wrap: wrap;
   gap: 0.5rem;
   min-height: 56px;
+  /* The panel scrolls in a column of fixed height, which would otherwise
+     squash the header to its minimum and spill a wrapped toolbar onto the page. */
+  flex-shrink: 0;
   padding: 0.5rem 1rem;
   background: var(--background);
   border-bottom: 1px solid var(--border);
@@ -767,4 +770,342 @@ body:has(.app) {
 
 .app .btn-link-danger:hover:not(:disabled) {
   text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Phones                                                                     */
+/* -------------------------------------------------------------------------- */
+
+/* The Menu button and its backdrop belong to phones only. */
+.drawer-btn,
+.drawer-backdrop {
+  display: none;
+}
+
+/* Below 768px there is no room for a Sidebar beside the page: it becomes a
+   drawer over it, opened by the Menu button that sits where the header's left
+   edge is. The rail (collapsed) is a desktop choice and means nothing here. */
+@media (max-width: 767px) {
+  .app,
+  .app[data-collapsed="true"] {
+    --sidebar-width: min(17rem, 82vw);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 60;
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: none;
+  }
+
+  .app[data-drawer="open"] .sidebar {
+    transform: none;
+    box-shadow: 0 0 40px color-mix(in srgb, #000 30%, transparent);
+  }
+
+  /* In the drawer the full labels always show, whatever the desktop rail says. */
+  .app[data-collapsed="true"] :is(.sidebar-scroll .nav-item, .account > summary) {
+    justify-content: flex-start;
+    padding: 0 0.5rem;
+  }
+
+  .app[data-collapsed="true"] :is(.sidebar-scroll .nav-item span, .account > summary span, .nav-label) {
+    display: revert;
+  }
+
+  .app[data-collapsed="true"] .sidebar-footer {
+    flex-direction: row;
+  }
+
+  /* Collapsing a drawer is closing it: the Menu button does that. */
+  .sidebar-toggle {
+    pointer-events: none;
+  }
+
+  .sidebar-toggle svg {
+    display: none;
+  }
+
+  /* A thumb, not a mouse: taller rows. */
+  .nav-item {
+    height: 40px;
+    font-size: 0.9375rem;
+  }
+
+  .drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: color-mix(in srgb, #000 45%, transparent);
+  }
+
+  .app[data-drawer="open"] .drawer-backdrop {
+    display: block;
+  }
+
+  .drawer-btn {
+    display: inline-flex;
+    position: fixed;
+    top: 12px;
+    left: 8px;
+    z-index: 61;
+    width: 36px;
+    height: 36px;
+    background: var(--background);
+  }
+
+  .app[data-drawer="open"] .drawer-btn {
+    left: calc(var(--sidebar-width) + 8px);
+  }
+
+  /* Room for the Menu button at the header's left edge. */
+  .page-header {
+    padding: 0.5rem 0.75rem 0.5rem 3.25rem;
+    min-height: 60px;
+  }
+
+  .page-actions {
+    width: 100%;
+  }
+
+  .page-actions:empty {
+    display: none;
+  }
+
+  .page-body {
+    padding: 0.85rem 0.85rem 2rem;
+  }
+
+  .app .group-box {
+    padding: 0.85rem;
+  }
+
+  .app .btn {
+    height: 38px;
+  }
+
+  /* 16px in editors, or iOS zooms the page in on every tap into one. */
+  .app select,
+  .app textarea,
+  .app
+    input:not(
+      [type="checkbox"],
+      [type="radio"],
+      [type="color"],
+      [type="range"],
+      [type="file"],
+      [type="hidden"]
+    ) {
+    height: 42px !important;
+    font-size: 16px !important;
+  }
+
+  .app textarea {
+    height: auto !important;
+  }
+
+  .app .admin-table :is(th, td) {
+    padding: 0.5rem 0.6rem;
+  }
+}
+
+/* The bookings list on a phone: each booking a card — who and the status,
+   the stay, then the room and the total — instead of five columns scrolled
+   sideways to find the last three. */
+@media (max-width: 600px) {
+  .app .bl-table thead {
+    display: none;
+  }
+
+  .app .bl-table,
+  .app .bl-table tbody {
+    display: block;
+  }
+
+  .app .bl-table tr.bl-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 0.75rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .app .bl-table tr.bl-row > td {
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .app .bl-table tr.bl-row > td:nth-child(1) {
+    grid-area: 1 / 1;
+  }
+
+  .app .bl-table tr.bl-row > td:nth-child(4) {
+    grid-area: 1 / 2;
+    justify-self: end;
+  }
+
+  .app .bl-table tr.bl-row > td:nth-child(2) {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+
+  .app .bl-table tr.bl-row > td:nth-child(3) {
+    grid-area: 3 / 1;
+  }
+
+  .app .bl-table tr.bl-row > td:nth-child(5) {
+    grid-area: 3 / 2;
+    align-self: end;
+    font-weight: 600;
+  }
+}
+
+/* All Rates on a phone: a card a rate, its buttons under it rather than off
+   the right-hand edge. */
+@media (max-width: 600px) {
+  .app .rates-table thead {
+    display: none;
+  }
+
+  .app .rates-table,
+  .app .rates-table tbody {
+    display: block;
+  }
+
+  .app .rates-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .app .rates-table td {
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .app .rates-table td:nth-child(1) {
+    grid-area: 1 / 1;
+    font-weight: 600;
+  }
+
+  .app .rates-table td:nth-child(3) {
+    grid-area: 1 / 2;
+    justify-self: end;
+  }
+
+  .app .rates-table td:nth-child(2) {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+
+  .app .rates-table td:nth-child(4) {
+    grid-area: 3 / 1 / 4 / 3;
+    text-align: left !important;
+    padding-top: 0.35rem !important;
+  }
+}
+
+/* A box sizes its column to its content unless told not to: one wide table
+   inside used to widen the whole box past the screen. */
+.app .group-box {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* A room's rate terms on a phone: a card a rate — its name and price, then
+   breakfast, then the cancellation choice at full width. */
+@media (max-width: 600px) {
+  .app .terms-table thead {
+    display: none;
+  }
+
+  .app .terms-table,
+  .app .terms-table tbody {
+    display: block;
+  }
+
+  .app .terms-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.4rem 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .app .terms-table td {
+    min-width: 0;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .app .terms-table td:nth-child(1) {
+    font-weight: 600;
+  }
+
+  .app .terms-table td:nth-child(2) {
+    justify-self: end;
+  }
+
+  .app .terms-table td:nth-child(3),
+  .app .terms-table td:nth-child(4) {
+    grid-column: 1 / -1;
+  }
+
+  .app .terms-table select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+/* The printable previews are drawn at paper size; on a phone they are shown
+   smaller, and still print at full size. */
+@media screen and (max-width: 600px) {
+  .app .venue-look[class*="sheet"] {
+    zoom: 0.58;
+  }
+
+  .card-page {
+    padding-inline: 0;
+  }
+
+  .card-page > .card {
+    zoom: 0.8;
+  }
+}
+
+/* Editors on a phone take the whole screen: a floating box with a margin
+   round it leaves a strip of page nobody can use and a form to scroll in a
+   keyhole. */
+@media (max-width: 600px) {
+  .app .editor {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0 !important;
+  }
+
+  .app .editor-body {
+    padding: 1rem 0.9rem calc(1.25rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* The same for every fieldset in the app: its default minimum is its widest
+   content, which on a phone is wider than the phone. */
+.app fieldset {
+  min-width: 0;
+}
+
+/* Tables laid out as cards on a phone (above) drop the minimum width that
+   makes the others scroll sideways. */
+@media (max-width: 600px) {
+  .app :is(.bl-table, .rates-table, .terms-table) {
+    min-width: 0;
+  }
 }
