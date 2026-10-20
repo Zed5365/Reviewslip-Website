@@ -129,6 +129,7 @@ export const config = {
    * routes that must stay at the domain root.
    */
   matcher: [
-    "/((?!_next|api|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)",
+    // phone: the softphone, served by the review app beside the dashboard.
+    "/((?!_next|api|phone|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)",
   ],
 };

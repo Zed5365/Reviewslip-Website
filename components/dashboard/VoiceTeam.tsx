@@ -35,7 +35,8 @@ function state(p: VoicePerson): { text: string; tone: string } {
 /**
  * Who answers this venue's calls: the owner, and the staff they invite.
  *
- * Staff get an email with a link to set a password for the phone page. They
+ * Staff get an email with a link to choose a password: that makes them a
+ * Reviewslip account that opens only the phone, signed in like anyone else. They
  * answer this venue only and never see the dashboard. Without email set up on
  * the server, the link comes back here to send by hand.
  */
@@ -153,7 +154,7 @@ export default function VoiceTeam({
       {link ? (
         <div className="group-box" role="status" style={{ margin: 0 }}>
           <p style={{ margin: 0 }}>
-            Send this link to {link.name}. It lets them set a password for the phone and works for 14 days.
+            Send this link to {link.name}. It lets them choose a password for Reviewslip and works for 14 days.
           </p>
           <input
             readOnly
@@ -180,8 +181,8 @@ export default function VoiceTeam({
       </form>
       <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
         {team.canEmail
-          ? "We email them a link to set a password. They sign in on the phone page only, and answer this venue's calls."
-          : "You will get a link to send them yourself. They sign in on the phone page only, and answer this venue's calls."}
+          ? "We email them a link to choose a password. They sign in to Reviewslip like you do, see only the Phone, and answer this venue's calls."
+          : "You will get a link to send them yourself. They sign in to Reviewslip like you do, see only the Phone, and answer this venue's calls."}
       </p>
     </div>
   );

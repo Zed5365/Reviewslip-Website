@@ -204,6 +204,8 @@ export interface Account {
   plan: string;
   status: string;
   isAdmin?: boolean;
+  /** Staff a venue invited to answer its calls: the phone, and nothing else. */
+  phoneOnly?: boolean;
   createdAt: string;
 }
 

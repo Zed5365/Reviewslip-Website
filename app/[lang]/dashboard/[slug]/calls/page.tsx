@@ -81,8 +81,8 @@ export default async function CallsPage({ params }: PageProps<"/[lang]/dashboard
   return (
     <>
       <PageHeader title="Calls" sub={venue} back={localizedPath(locale, `/dashboard/${slug}`)}>
-        {/* A plain link: the route makes a one-time sign-in, which a prefetch would waste. */}
-        <a className="btn btn-go" href="/api/phone" target="_blank" rel="noopener">
+        {/* A plain link: the phone is served beside the dashboard, not by this app's router. */}
+        <a className="btn btn-go" href="/phone/" target="_blank" rel="noopener">
           Open the Phone
         </a>
       </PageHeader>

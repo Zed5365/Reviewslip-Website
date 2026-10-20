@@ -105,20 +105,36 @@ export default function AppShell({ kind, lang, email, venues = [], isAdmin = fal
   const group = (g: NavGroup, key: number) => (
     <div className="nav-group" key={key}>
       {g.label ? <div className="nav-label">{g.label}</div> : null}
-      {g.items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className="nav-item"
-          aria-current={isActive(item) ? "page" : undefined}
-          onClick={closeDrawer}
-          // The label is hidden in the rail, so the name has to come from here.
-          title={collapsed ? item.title : undefined}
-        >
-          <item.icon size={16} aria-hidden="true" />
-          <span>{item.title}</span>
-        </Link>
-      ))}
+      {g.items.map((item) =>
+        item.external ? (
+          // The phone: its own page, kept open on the desk, so a tab of its own.
+          <a
+            key={item.href}
+            href={item.href}
+            target="_blank"
+            rel="noopener"
+            className="nav-item"
+            onClick={closeDrawer}
+            title={collapsed ? item.title : undefined}
+          >
+            <item.icon size={16} aria-hidden="true" />
+            <span>{item.title}</span>
+          </a>
+        ) : (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="nav-item"
+            aria-current={isActive(item) ? "page" : undefined}
+            onClick={closeDrawer}
+            // The label is hidden in the rail, so the name has to come from here.
+            title={collapsed ? item.title : undefined}
+          >
+            <item.icon size={16} aria-hidden="true" />
+            <span>{item.title}</span>
+          </Link>
+        )
+      )}
     </div>
   );
 

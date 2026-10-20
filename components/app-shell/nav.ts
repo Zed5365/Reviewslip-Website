@@ -10,6 +10,8 @@ import {
   LifeBuoy,
   List,
   MessageSquareText,
+  Phone,
+  PhoneCall,
   QrCode,
   Settings,
   Stamp,
@@ -37,6 +39,9 @@ export interface NavItem {
   /** A second prefix that also belongs to this entry: a List at one address whose
    *  records open at another. */
   also?: string;
+  /** Not a page of this site: the phone, which the review app serves beside
+   *  it. A plain link, so the client router never tries to load it. */
+  external?: boolean;
 }
 
 export interface NavGroup {
@@ -80,6 +85,8 @@ export function customerNav(
             { title: "Reviews", href: at("/reviews"), icon: MessageSquareText },
             { title: "Table Card", href: at("/poster"), icon: QrCode },
             { title: "Guest App", href: at("/welcome"), icon: HandHeart },
+            { title: "Phone", href: "/phone/", icon: Phone, external: true },
+            { title: "Calls", href: at("/calls"), icon: PhoneCall },
           ],
         },
         {
@@ -98,11 +105,15 @@ export function customerNav(
     : [];
 
   // Admin accounts see the server's health here too, without going to the
-  // staff host. Everybody else never sees the group.
+  // staff host, and answer Reviewslip's own Sales and Support on their phone.
+  // Everybody else never sees the group.
   if (isAdmin) {
     modules.push({
       label: "Admin",
-      items: [{ title: "Server", href: to("/dashboard/server"), icon: Activity }],
+      items: [
+        { title: "Server", href: to("/dashboard/server"), icon: Activity },
+        { title: "Sales & Support Phone", href: "/phone/reviewslip/", icon: Phone, external: true },
+      ],
     });
   }
 

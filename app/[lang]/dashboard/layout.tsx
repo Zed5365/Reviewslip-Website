@@ -23,6 +23,8 @@ export default async function DashboardLayout({
 
   const me = await currentUser();
   if (!me) redirect(localizedPath(lang, "/login"));
+  // Invited front-desk staff have an account for the phone and nothing else.
+  if (me.account.phoneOnly) redirect("/phone/");
 
   return (
     <AppShell

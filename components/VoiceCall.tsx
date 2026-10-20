@@ -2,98 +2,92 @@
 
 import { useEffect } from "react";
 
-import { PORTAL_VOICE_API, PORTAL_VOICE_SITE } from "@/lib/site";
+import { VOICE_URL } from "@/lib/site";
 
 import styles from "./VoiceCall.module.css";
 
 /**
- * A call button in the browser, through the Vibe Crafted portal softphone:
- * our team answers it there, on the phone they already work on, so nobody
- * signs in to anything else. A voice message when nobody is free.
+ * A call button through Reviewslip's own softphone: an in-browser call to a
+ * venue's desk, or to Reviewslip's Sales or Support, and a voice message when
+ * nobody is free. Whoever answers does so on the phone beside the dashboard
+ * (/phone/), signed in as they are on the dashboard.
  *
- * Every button on this site rings the one portal site, PORTAL_VOICE_SITE —
- * Sales on the public pages, Support for customers and booked guests. A
- * venue's buttons ring us too, on the venue's behalf: `caller` says which
- * venue, and the guest, so whoever picks up knows before they say hello.
- *
- * The widget (the portal's voice-widget.js) binds every [data-voice-call] by
- * one click listener on the document and shows a button only once its list
- * answers the status check. So the phone link, when there is one, stays
- * beside it as the fallback, and CSS hides the link the moment the button
- * appears. It reads its site once per page load — always ours here.
+ * The widget (the review app's public/voice-call.js) binds every
+ * [data-rs-call] element by one click listener on the document and shows a
+ * button only once its line answers the status check — so the phone link,
+ * when there is one, stays beside it as the fallback, and CSS hides the link
+ * the moment the button appears. Each button names its own line, and the
+ * widget notices buttons added later, so one script serves every page this
+ * site navigates to without reloading.
  */
 
 declare global {
   interface Window {
-    VOICE_REFRESH?: () => void;
-    VOICE_CALLER?: string;
-    VOICE_I18N?: Record<string, string>;
+    ReviewslipVoice?: { refresh: () => void };
   }
 }
 
-/**
- * The widget's own words for the button, by its keys: callTeam ("Call
- * {team}"), teamSales, teamSupport, leave. Read each time it labels a button.
- */
-export type VoiceWords = Partial<Record<"callTeam" | "teamSales" | "teamSupport" | "leave", string>>;
+const SCRIPT_ID = "rs-voice-call";
 
-const SCRIPT_ID = "vcs-voice-widget";
-
-function useWidget(caller: string | undefined, words: VoiceWords | undefined) {
-  const wordsKey = JSON.stringify(words ?? {});
+function useWidget() {
   useEffect(() => {
-    // Who is calling and the button's words are page-wide for the widget, so
-    // each page sets its own as it opens.
-    window.VOICE_CALLER = caller ?? "";
-    window.VOICE_I18N = { ...(window.VOICE_I18N ?? {}), ...JSON.parse(wordsKey) };
-
     if (document.getElementById(SCRIPT_ID)) {
-      // Already running: a button this page added waits for the next poll for
-      // its label and visibility unless asked now.
-      window.VOICE_REFRESH?.();
+      window.ReviewslipVoice?.refresh();
       return;
     }
     const script = document.createElement("script");
     script.id = SCRIPT_ID;
-    script.src = `${PORTAL_VOICE_API}/assets/voice-widget.js`;
+    script.src = `${VOICE_URL}/voice-call.js`;
     script.defer = true;
-    script.dataset.voiceApi = PORTAL_VOICE_API;
-    script.dataset.voiceSite = PORTAL_VOICE_SITE;
-    // These pages carry their own buttons; a floating bubble would be a second
-    // way to ring the same people, following the reader down the page.
-    script.dataset.voiceFab = "off";
+    script.dataset.voiceApi = VOICE_URL;
     document.body.appendChild(script);
-  }, [caller, wordsKey]);
+  }, []);
 }
 
 export default function VoiceCall({
+  line,
   team,
   label,
-  words,
-  caller,
+  leaveLabel,
   fallbackHref,
   fallbackLabel,
+  phone,
   className,
+  caller,
   icon,
 }: {
-  /** Which of the portal site's lists rings: Sales or Support. */
+  /** A venue's address, or "reviewslip" for Sales and Support. */
+  line: string;
   team: "sales" | "support";
-  /** The button until the widget writes its own label: "Call Sales". */
+  /** The button while someone can answer: "Call Reservations". */
   label: string;
-  words?: VoiceWords;
-  /** Who is calling and about what, shown to the person who answers. */
-  caller?: string;
+  /** The button when only a message can be left. */
+  leaveLabel?: string;
   /** A tel: link shown until (and unless) the call button appears. */
   fallbackHref?: string | null;
   fallbackLabel?: string;
+  /** The number as written, offered in the panel if the browser cannot call. */
+  phone?: string | null;
   className?: string;
+  /** Who is calling, shown to the person who answers. */
+  caller?: string;
   icon?: React.ReactNode;
 }) {
-  useWidget(caller, words);
+  useWidget();
 
   return (
     <span className={styles.pair}>
-      <button type="button" className={`${className ?? ""} ${styles.call}`} data-voice-call data-voice-team={team} hidden>
+      <button
+        type="button"
+        className={`${className ?? ""} ${styles.call}`}
+        data-rs-call
+        data-voice-line={line}
+        data-voice-team={team}
+        data-voice-leave={leaveLabel}
+        data-voice-caller={caller}
+        data-voice-phone={phone || undefined}
+        hidden
+      >
         {icon} <span data-voice-label>{label}</span>
       </button>
       {fallbackHref ? (

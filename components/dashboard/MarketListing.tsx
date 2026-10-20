@@ -149,8 +149,9 @@ export default function MarketListing({
           </label>
         </div>
         <p className={styles.hint}>
-          Guests can also call from these pages in the browser. Reviewslip&apos;s team answers those calls for you;
-          the phone number above stays for anyone whose browser cannot place a call.
+          Guests can also call you in the browser from these pages and the Guest App, on the Phone in the
+          sidebar. Choose who answers under Calls; the phone number above stays for browsers that cannot place a
+          call.
         </p>
       </fieldset>
 

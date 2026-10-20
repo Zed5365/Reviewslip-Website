@@ -2698,6 +2698,6 @@ body:has([data-embed]) {
 
 /* A contact box whose only way to reach the venue is the call button: gone
    while the button is, which is whenever nobody answers that line. */
-[data-voice-only]:has([data-voice-call][hidden]) {
+[data-voice-only]:has([data-rs-call][hidden]) {
   display: none;
 }

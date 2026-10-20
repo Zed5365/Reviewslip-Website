@@ -151,8 +151,12 @@ export default function AuthForm({
       }
 
       // The session is set as an httpOnly cookie; a full navigation is what
-      // makes the server-rendered dashboard pick it up.
-      window.location.assign(data.redirect ?? localizedPath(lang, "/"));
+      // makes the server-rendered dashboard pick it up. ?next= sends someone
+      // back where they came from — the phone, signing in to answer — and only
+      // ever to a path on this site, never another one.
+      const next = new URLSearchParams(window.location.search).get("next") ?? "";
+      const back = next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : null;
+      window.location.assign(back ?? data.redirect ?? localizedPath(lang, "/"));
     } catch {
       clearSecrets();
       setStatus("error");
