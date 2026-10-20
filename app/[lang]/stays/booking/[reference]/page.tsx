@@ -300,15 +300,13 @@ export default async function BookingPage({ params, searchParams }: PageProps<"/
                   can open the booking before the guest has finished saying who
                   they are. */}
               <VoiceCall
-                line={booking.venue.slug}
-                team="sales"
+                team="support"
                 label={fill(t.voiceCallTeam, { team: t.voiceReservations })}
-                leaveLabel={t.voiceLeave}
+                words={{ callTeam: t.voiceCallTeam, teamSales: t.voiceReservations, teamSupport: t.voiceReservations, leave: t.voiceLeave }}
+                caller={`${booking.guestName} · ${booking.reference} · ${booking.venue.name}`}
                 fallbackHref={links.phone}
                 fallbackLabel={t.call}
-                phone={booking.venue.contact.phone}
                 className="btn btn-quiet"
-                caller={`${booking.guestName} · ${booking.reference}`}
                 icon={<Phone size={15} aria-hidden />}
               />
               {links.line && <a className="btn btn-quiet" href={links.line} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden /> {t.line}</a>}

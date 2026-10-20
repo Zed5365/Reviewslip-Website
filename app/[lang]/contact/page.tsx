@@ -48,7 +48,6 @@ export default async function ContactPage({
                 someone can answer or take a message, so it never promises a
                 call that cannot happen. */}
             <VoiceCall
-              line="reviewslip"
               team="sales"
               label="Call Sales"
               className="btn btn-go"

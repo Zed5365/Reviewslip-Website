@@ -10,7 +10,6 @@ import {
   LifeBuoy,
   List,
   MessageSquareText,
-  PhoneCall,
   QrCode,
   Settings,
   Stamp,
@@ -81,7 +80,6 @@ export function customerNav(
             { title: "Reviews", href: at("/reviews"), icon: MessageSquareText },
             { title: "Table Card", href: at("/poster"), icon: QrCode },
             { title: "Guest App", href: at("/welcome"), icon: HandHeart },
-            { title: "Calls", href: at("/calls"), icon: PhoneCall },
           ],
         },
         {

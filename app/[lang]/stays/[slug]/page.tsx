@@ -294,13 +294,12 @@ export default async function VenuePage({ params, searchParams }: PageProps<"/[l
                 <p className={styles.muted} style={{ margin: 0, fontSize: "0.875rem" }}>{t.contactLede}</p>
                 <div className={styles.contactButtons}>
                   <VoiceCall
-                    line={venue.slug}
                     team="sales"
                     label={fill(t.voiceCallTeam, { team: t.voiceReservations })}
-                    leaveLabel={t.voiceLeave}
+                    words={{ callTeam: t.voiceCallTeam, teamSales: t.voiceReservations, teamSupport: t.voiceFrontDesk, leave: t.voiceLeave }}
+                    caller={`Guest · ${venue.name}`}
                     fallbackHref={links.phone}
                     fallbackLabel={t.call}
-                    phone={venue.profile.contact.phone}
                     className="btn btn-quiet"
                     icon={<Phone size={15} aria-hidden />}
                   />
