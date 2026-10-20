@@ -100,15 +100,11 @@ export function customerNav(
     : [];
 
   // Admin accounts see the server's health here too, without going to the
-  // staff host, and Reviewslip's own Sales and Support lines. Everybody else
-  // never sees the group.
+  // staff host. Everybody else never sees the group.
   if (isAdmin) {
     modules.push({
       label: "Admin",
-      items: [
-        { title: "Server", href: to("/dashboard/server"), icon: Activity },
-        { title: "Sales & Support", href: to("/dashboard/calls"), icon: PhoneCall, exact: true },
-      ],
+      items: [{ title: "Server", href: to("/dashboard/server"), icon: Activity }],
     });
   }
 

@@ -32,6 +32,16 @@ export const VOICE_URL =
   process.env.NEXT_PUBLIC_VOICE_URL?.replace(/\/$/, "") ||
   (process.env.NODE_ENV === "production" ? "https://api.reviewslip.com" : "http://localhost:3000");
 
+/**
+ * Reviewslip's own Sales and Support calls ring the Vibe Crafted portal
+ * softphone, where our team already works, rather than a second phone they
+ * would have to sign in to. The portal knows this website as a site: its key
+ * here, and https://reviewslip.com as its one allowed origin, set in the
+ * portal's admin under Calls. A key the portal doesn't know shows no button.
+ */
+export const PORTAL_VOICE_API = "https://portal.vibecraftedsoftware.com";
+export const PORTAL_VOICE_SITE = process.env.NEXT_PUBLIC_PORTAL_VOICE_SITE?.trim() || "reviewslip";
+
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
   "Reviewslip enquiry"
 )}`;
